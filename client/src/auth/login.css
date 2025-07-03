@@ -1,0 +1,160 @@
+/* LoginPage.css */
+
+.login-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url('../../public/bg.gif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: 'Inter', sans-serif; /* Modern font */
+  color: #292c34; /* Light grey text */
+  position: relative;
+  overflow: hidden; /* Important for background animations */
+}
+
+/* ParticlesBackground would be positioned absolute, cover 100% */
+
+.login-card {
+  background: rgba(255, 255, 255, 0.08); /* Semi-transparent white */
+  backdrop-filter: blur(10px); /* Glassmorphism effect */
+  border: 1px solid rgba(135, 206, 235, 0.2); /* Subtle light blue border */
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 0 30px #292c34; /* Soft blue glow shadow */
+  text-align: center;
+  z-index: 10; /* Ensure it's above the background */
+  width: 500px; /* Example width */
+  max-width: 90%;
+  animation: fadeInScale 0.8s ease-out;
+}
+
+.logo-title {
+  font-size: 2.8em;
+  margin-bottom: 30px;
+  font-weight: 700;
+  background: #292c34; /* Blue to purple gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(135, 206, 235, 0.6); /* Text glow */
+  letter-spacing: 1px;
+}
+
+.input-group {
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  color: #9ca5b4;
+}
+
+.input-group input {
+  width: 95%;
+  padding: 12px 15px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #9ca5b4; 
+  color: #292c34;
+  font-size: 1.1em;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input::placeholder {
+  color: #888;
+}
+
+.input-group input:focus {
+  border-color: #747986; /* Brighter blue on focus */
+  
+}
+
+.form-error {
+  color: #ff4d4d;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background: #292c34; /* Blue to purple gradient */
+  border: none;
+  border-radius: 8px;
+  color: #9ca5b4;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 0 20px rgba(135, 206, 235, 0.5); /* Stronger glow */
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.login-button:hover {
+  background: #2c2e33; /* Invert gradient or intensify */
+  box-shadow: 0 0 30px rgba(135, 206, 235, 0.8);
+  transform: translateY(-2px); /* Slight lift */
+}
+
+.links-group {
+  margin-top: 25px;
+  font-size: 0.9em;
+  color: #9ca5b4;
+}
+
+.links-group a {
+  color: #9ca5b4; /* Accent color for links */
+  text-decoration: none;
+  transition: text-decoration 0.2s ease;
+}
+
+.links-group a:hover {
+  text-decoration: underline;
+}
+
+.links-group .separator {
+  margin: 0 10px;
+  color: #666;
+}
+
+/* Optional: Social login styles */
+.social-login {
+  margin-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+
+.social-login p {
+  margin-bottom: 15px;
+  color: #9ca5b4;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* .social-icon-button {
+  
+} */
+
+/* Keyframe Animations */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

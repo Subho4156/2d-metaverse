@@ -1,0 +1,55 @@
+.space-card {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1e1e2f;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.space-card:hover {
+  transform: scale(1.03);
+}
+
+.space-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.space-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.space-title {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-overflow: hidden;
+}
+
+.enter-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #87ceeb;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.enter-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}

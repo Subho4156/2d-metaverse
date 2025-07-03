@@ -1,0 +1,17 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables (sensitive data)
+.env
+/server/.env # If you have a .env specific to the server folder
+/client/.env # If you have a .env specific to the client folder
+
+# Build outputs
+build/
+dist/
+
+# Other common ignores (add as needed)
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
