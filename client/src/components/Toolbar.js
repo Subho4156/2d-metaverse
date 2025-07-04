@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { updateSpace } from "../api";
-import { set } from "mongoose";
+
 const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, changeSpeed, wallHackEnabled,
   setWallHackEnabled, triggerEmote }) => {
   const [isEditingName, setIsEditingName] = useState(false);
