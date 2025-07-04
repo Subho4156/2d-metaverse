@@ -22,6 +22,7 @@ export const login = (credentials) => API.post("/auth/login", credentials);
 export const createSpace = (data) => API.post("/spaces/create", data);
 export const getMySpaces = () => API.get("/spaces/myspace");
 export const getSpaceById = (id) => API.get(`/spaces/${id}`);
+export const updateSpace = (id, data) => API.put(`/spaces/update/${id}`, data);
 
 // User APIs
 export const getUser = () => API.get("/auth/user");

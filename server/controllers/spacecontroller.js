@@ -45,3 +45,20 @@ exports.getSpaceById = async (req, res) => {
   }
 };
 
+exports.updateSpace = async (req, res) => {
+   try {
+    const { name, description } = req.body;
+    const space = await Space.findById(req.params.id);
+
+    if (!space) return res.status(404).json({ error: "Space not found" });
+
+    space.name = name || space.name;
+    space.description = description || space.description;
+
+    await space.save();
+    res.status(200).json(space);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update space" });
+  }
+}
+
