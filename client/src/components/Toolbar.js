@@ -59,7 +59,7 @@ const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, c
         { emoji: "👋", name: "Wave" },
         { emoji: "👍", name: "Thumbs Up" },
         { emoji: "✌️", name: "Peace" },
-        { emoji: "🖕", name: "F u" },
+        { emoji: "🖕", name: "Fork u" },
         { emoji: "👏", name: "Clap" },
         { emoji: "🤝", name: "Handshake" }
       ]
