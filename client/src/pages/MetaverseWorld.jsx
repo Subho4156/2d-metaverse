@@ -1602,7 +1602,7 @@ const createCubicle = (x, y, width = 120, height = 100) => {
 
 
 // New meeting room table
-const createMeetingTable = (x, y) => {
+const createMeetingTable = (x, y, camera, colliders) => {
   const table = new Graphics();
   
   // Large oval table
@@ -1625,6 +1625,24 @@ const createMeetingTable = (x, y) => {
     table.circle(leg.x, leg.y, 6);
     table.fill(0x654321);
   });
+
+  // collider = {
+  //   x: x - 80,     // Left bound
+  //   y: y - 50,     // Top bound
+  //   width: 160,    // Full width
+  //   height: 100    // Full height
+  // };
+  const bounds = {
+    x: x - 80,
+    y: y - 50,
+    width: 160,
+    height: 100,
+    label: "meeting-table"
+  };
+  
+  if (colliders) {
+    addWithCollider(camera, table, bounds, colliders);
+  }
   
   return table;
 };
@@ -4574,35 +4592,79 @@ const populateRooms = (gameState) => {
 
           break;
           
-        case "1,0": // Meeting Rooms
-          // Large meeting table
-          camera.addChild(createMeetingTable(offsetX + 400, offsetY + 300));
-          
-          // Chairs around table
-          const chairPositions = [
-            { x: offsetX + 320, y: offsetY + 280 },
-            { x: offsetX + 480, y: offsetY + 280 },
-            { x: offsetX + 320, y: offsetY + 320 },
-            { x: offsetX + 480, y: offsetY + 320 },
-            { x: offsetX + 400, y: offsetY + 230 },
-            { x: offsetX + 400, y: offsetY + 370 }
-          ];
-          
-          chairPositions.forEach(pos => {
-            camera.addChild(createOfficeChair(pos.x, pos.y));
-          });
-          
-          // Whiteboard
-          camera.addChild(createWhiteboard(offsetX + 700, offsetY + 300));
-          
-          
-          // Projector screen
-          const screen = new Graphics();
-          screen.rect(offsetX + 50, offsetY + 200, 60, 40);
-          screen.fill(0xffffff);
-          screen.stroke({ width: 2, color: 0x2c3e50 });
-          camera.addChild(screen);
-          break;
+        case "1,0": // Meeting Room
+                // Central meeting table
+                camera.addChild(
+                  createMeetingTable(
+                    offsetX + 400,
+                    offsetY + 300,
+                    camera,
+                    gameState.colliders
+                  )
+                );
+
+                // Chairs around the table
+                const meetingChairs = [
+                  { x: offsetX + 320, y: offsetY + 280 },
+                  { x: offsetX + 480, y: offsetY + 280 },
+                  { x: offsetX + 320, y: offsetY + 320 },
+                  { x: offsetX + 480, y: offsetY + 320 },
+                  { x: offsetX + 400, y: offsetY + 230 },
+                  { x: offsetX + 400, y: offsetY + 370 },
+                ];
+                meetingChairs.forEach((pos) => {
+                  camera.addChild(createOfficeChair(pos.x, pos.y));
+                });
+
+                // Whiteboard at front wall
+                camera.addChild(createWhiteboard(offsetX + 700, offsetY + 280));
+
+                // Projector screen
+                const projectorScreen = new Graphics();
+                projectorScreen.rect(offsetX + 50, offsetY + 200, 60, 40);
+                projectorScreen.fill(0xffffff);
+                projectorScreen.stroke({ width: 2, color: 0x2c3e50 });
+                camera.addChild(projectorScreen);
+
+                // Plants in corners for aesthetics
+                camera.addChild(createPlant(offsetX + 40, offsetY + 120));
+                camera.addChild(
+                  createPlant(offsetX + roomWidth - 40, offsetY + 120)
+                );
+                camera.addChild(createPlant(offsetX + 40, offsetY + 400, gameState.colliders));
+                camera.addChild(
+                  createPlant(offsetX + roomWidth - 40, offsetY + 400, gameState.colliders)
+                );
+
+                // Wall clock
+                camera.addChild(
+                  createDigitalClock(offsetX + roomWidth / 2 - 40, offsetY)
+                );
+
+                // Waste bin near door or corner
+                camera.addChild(
+                  createWasteBin(offsetX + roomWidth - 60, offsetY + 450)
+                );
+
+                // Small bookshelf or credenza
+                camera.addChild(
+                  createBookshelf(
+                    offsetX + roomWidth - 200,
+                    offsetY + 50,
+                    camera,
+                    gameState.colliders
+                  )
+                );
+
+                // Floor mat near entrance (bottom-left)
+                camera.addChild(createFloorMat(offsetX + 305, offsetY + 80));
+
+                // Lobby seating areas (left and right)
+                camera.addChild(createLobbySeating(offsetX + 100, offsetY + 450, camera, gameState.colliders));
+                camera.addChild(createLobbySeating(offsetX + roomWidth - 280, offsetY + 450, camera, gameState.colliders));
+
+                break; 
+
           
         case "1,1": // Executive Office
           camera.addChild(createOfficeCounters(offsetX + 560, offsetY + 70, 4 , camera, gameState.colliders));
