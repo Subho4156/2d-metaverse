@@ -6492,13 +6492,13 @@ const populateRooms = (gameState) => {
                 camera.addChild(createWhiteboard(offsetX + 38, offsetY + 280, camera,gameState.colliders));
 
                 // Plants in corners for aesthetics
-                camera.addChild(createPlant(offsetX + 40, offsetY + 120));
+                camera.addChild(createPlant(offsetX + 40, offsetY + 120, camera, gameState.colliders));
                 camera.addChild(
-                  createPlant(offsetX + roomWidth - 40, offsetY + 120)
+                  createPlant(offsetX + roomWidth - 40, offsetY + 120, camera, gameState.colliders)
                 );
-                camera.addChild(createPlant(offsetX + 40, offsetY + 400, gameState.colliders));
+                camera.addChild(createPlant(offsetX + 40, offsetY + 400, camera, gameState.colliders));
                 camera.addChild(
-                  createPlant(offsetX + roomWidth - 40, offsetY + 400, gameState.colliders)
+                  createPlant(offsetX + roomWidth - 40, offsetY + 400, camera, gameState.colliders)
                 );
 
                 // Wall clock
