@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { updateSpace } from "../api";
 import { set } from "mongoose";
 const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, changeSpeed, wallHackEnabled,
-  setWallHackEnabled, triggerEmote }) => {
+  setWallHackEnabled, triggerEmote, changeAvatar }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [selectedSpeed, setSelectedSpeed] = useState(2); // Default speed
@@ -15,7 +15,15 @@ const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, c
   const [openemote, setOpenEmote] = useState(false);
   const [selectedEmote, setSelectedEmote] = useState(null);
   const [hoveredEmote, setHoveredEmote] = useState(null);
+    const [selectedAvatar, setSelectedAvatar] = useState(null);
 
+
+  const avatarOptions = [
+  { src: "/assets/avatar5.png", label: "Spiderman", width: 50, height: 60 },
+  { src: "/assets/avatar4.png", label: "Batman", width: 30, height: 55 },
+  { src: "/assets/avatar2.png", label: "Male", width: 35, height: 55 },
+  { src: "/assets/avatar3.png", label: "Female", width: 35, height: 55 },
+];
 
   const teleportLocations = [
   { label: "Meeting Room", x: 400, y: 300 },
@@ -75,6 +83,10 @@ const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, c
   };
 
 
+  const changeavatar = (label) => {
+    changeAvatar(label);
+    setSelectedAvatar(label);
+  };
 
   const pixelFont = {
     fontFamily: "'Pixelify Sans', cursive",
@@ -281,7 +293,7 @@ const handleSave = async (type, value) => {
     <div
       style={{
         position: "absolute",
-        top: "45%",
+        top: "54%",
         transform: "translateY(-50%)",
         width: "300px",
         background:
@@ -1411,6 +1423,148 @@ const handleSave = async (type, value) => {
       `}</style>
     </div>
         )}
+
+{/* Avatar Customization Section */}
+<div style={{ maxWidth: "600px", margin: "0 auto" }}>
+      <div
+        style={{
+          marginTop: "30px",
+          marginBottom: "20px",
+        }}
+      >
+        <div
+          style={{
+            ...pixelFont,
+            fontSize: "13px",
+            color: "#94a3b8",
+            marginBottom: "12px",
+            textTransform: "uppercase",
+            letterSpacing: "0.8px",
+            background: "linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+          }}
+        >
+          Avatar Customization
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
+          {avatarOptions.map((avatar, index) => (
+            <div
+              key={index}
+              onClick={() => changeavatar(avatar.label)}
+              style={{
+                border: selectedAvatar === avatar.label 
+                  ? "2px solid #60a5fa" 
+                  : "2px solid transparent",
+                borderRadius: "12px",
+                overflow: "hidden",
+                cursor: "pointer",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                padding: "4px",
+                background: "rgba(255,255,255,0.08)",
+                boxShadow: selectedAvatar === avatar.label
+                  ? "0 8px 25px rgba(96, 165, 250, 0.25), 0 4px 12px rgba(0, 0, 0, 0.1)"
+                  : "0 4px 12px rgba(0, 0, 0, 0.05)",
+                transform: selectedAvatar === avatar.label ? "translateY(-2px)" : "translateY(0)",
+                position: "relative",
+              }}
+              onMouseEnter={(e) => {
+                if (selectedAvatar !== avatar.label) {
+                  e.currentTarget.style.border = "2px solid #60a5fa";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(96, 165, 250, 0.15), 0 3px 8px rgba(0, 0, 0, 0.08)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectedAvatar !== avatar.label) {
+                  e.currentTarget.style.border = "2px solid transparent";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.05)";
+                }
+              }}
+            >
+              <div
+                style={{
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  background: "",
+                  padding: "2px",
+                }}
+              >
+                <img
+                  src={avatar.src}
+                  alt={avatar.label}
+                  style={{
+                    width: `${avatar.width}px`,
+                    height: `${avatar.height}px`,
+                    objectFit: "cover",
+                    display: "block",
+                    borderRadius: "6px",
+                    filter: selectedAvatar === avatar.label 
+                      ? "brightness(1.1) contrast(1.05)" 
+                      : "brightness(1) contrast(1)",
+                    transition: "filter 0.3s ease",
+                  }}
+                />
+              </div>
+              
+              {selectedAvatar === avatar.label && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-2px",
+                    right: "-2px",
+                    width: "16px",
+                    height: "16px",
+                    background: "rgba(255,255,255,0.08)",
+                    borderRadius: "50%",
+                    border: "2px solid white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "8px",
+                    color: "white",
+                    fontWeight: "bold",
+                    boxShadow: "0 2px 8px rgba(96, 165, 250, 0.4)",
+                  }}
+                >
+                  ✓
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div style={{ textAlign: "center", marginTop: "20px" }}>
+  <button
+    onClick={() => changeavatar("default")}
+    style={{
+      padding: "8px 16px",
+      backgroundColor: "#1e293b",
+      color: "#fff",
+      fontSize: "13px",
+      fontFamily: "monospace",
+      border: "1px solid #475569",
+      borderRadius: "6px",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = "#334155";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = "#1e293b";
+    }}
+  >
+    Reset
+  </button>
+</div>
+
+
         <div
           style={{
             ...pixelFont,

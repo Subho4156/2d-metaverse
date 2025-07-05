@@ -21,6 +21,8 @@ const MetaverseWorld = () => {
   const [playerName, setPlayerName] = useState("Player");
   const canvasRef = useRef(null);
   const appRef = useRef(null);
+  const [avatarType, setAvatarType] = useState("null");
+
 
   const gameStateRef = useRef({
     colliders: [],
@@ -46,6 +48,1554 @@ const PLAYER_BOUNDS = {
   width: 16,
   height: 45
 };
+
+const createGirlPlayer = (gameState, playerName = "You") => {
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Professional color palette for office girl
+  const skinColor = 0xf4c2a1;
+  const skinShadow = 0xe6b596;
+  const blouseColor = 0xffffff; // White blouse
+  const blouseShadow = 0xe8e8e8;
+  const suitColor = 0x2c3e50; // Navy blue suit
+  const suitShadow = 0x1a252f;
+  const hairColor = 0x4a4a4a; // Dark brown/black hair
+  const hairHighlight = 0x666666;
+  const shoeColor = 0x000000; // Black heels
+  const stockingColor = 0xf5deb3; // Nude stockings
+  
+  // Player body (white blouse)
+  player.beginFill(blouseColor);
+  player.drawRect(-8, -5, 16, 18);
+  player.endFill();
+  
+  // Blouse shadow/depth
+  player.beginFill(blouseShadow);
+  player.drawRect(-8, 11, 16, 2);
+  player.endFill();
+  
+  // Professional collar
+  player.beginFill(blouseShadow);
+  player.drawRect(-7, -4, 14, 3);
+  player.endFill();
+  
+  // Suit jacket/blazer
+  player.beginFill(suitColor);
+  player.drawRect(-9, -3, 18, 16);
+  player.endFill();
+  
+  // Jacket shadow
+  player.beginFill(suitShadow);
+  player.drawRect(-9, 11, 18, 2);
+  player.endFill();
+  
+  // Jacket lapels
+  player.beginFill(suitShadow);
+  player.drawRect(-8, -2, 6, 8);
+  player.drawRect(2, -2, 6, 8);
+  player.endFill();
+  
+  // Showing white blouse underneath
+  player.beginFill(blouseColor);
+  player.drawRect(-2, -2, 4, 8);
+  player.endFill();
+  
+  // Head with better shading
+  player.beginFill(skinColor);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+  
+  // Face shadow
+  player.beginFill(skinShadow);
+  player.drawRect(-6, -8, 12, 2);
+  player.endFill();
+  
+  // Professional hair (neat bun/updo)
+  player.beginFill(hairColor);
+  player.drawRect(-7, -19, 14, 7);
+  player.endFill();
+  
+  // Hair bun at back
+  player.beginFill(hairColor);
+  player.drawRect(-3, -21, 6, 4);
+  player.endFill();
+  
+  // Hair highlights (subtle)
+  player.beginFill(hairHighlight);
+  player.drawRect(-6, -18, 3, 4);
+  player.endFill();
+  
+  // Side part
+  player.beginFill(hairHighlight);
+  player.drawRect(-1, -19, 1, 6);
+  player.endFill();
+  
+  // Eyes (professional makeup)
+  player.beginFill(0xffffff);
+  player.drawRect(-4, -15, 2, 2);
+  player.drawRect(2, -15, 2, 2);
+  player.endFill();
+  
+  // Eye pupils
+  player.beginFill(0x000000);
+  player.drawRect(-3.5, -14.5, 1, 1);
+  player.drawRect(2.5, -14.5, 1, 1);
+  player.endFill();
+  
+  // Subtle eyeliner
+  player.beginFill(0x000000);
+  player.drawRect(-4, -16, 2, 0.5);
+  player.drawRect(2, -16, 2, 0.5);
+  player.endFill();
+  
+  // Nose
+  player.beginFill(skinShadow);
+  player.drawRect(-0.5, -12, 1, 1);
+  player.endFill();
+  
+  // Professional lipstick (subtle)
+  player.beginFill(0xd63384);
+  player.drawRect(-1, -10, 2, 1);
+  player.endFill();
+  
+  // Arms in suit jacket
+  armLeft.beginFill(suitColor);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+  
+  // Jacket cuffs
+  armLeft.beginFill(suitShadow);
+  armLeft.drawRect(-10, 8, 3, 2);
+  armLeft.endFill();
+  
+  // Hand showing
+  armLeft.beginFill(skinColor);
+  armLeft.drawRect(-9, 10, 2, 3);
+  armLeft.endFill();
+  
+  armRight.beginFill(suitColor);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+  
+  armRight.beginFill(suitShadow);
+  armRight.drawRect(7, 8, 3, 2);
+  armRight.endFill();
+  
+  armRight.beginFill(skinColor);
+  armRight.drawRect(7, 10, 2, 3);
+  armRight.endFill();
+  
+  player.addChild(armLeft);
+  player.addChild(armRight);
+  
+  // Professional pencil skirt
+  player.beginFill(suitColor);
+  player.drawRect(-7, 13, 14, 10);
+  player.endFill();
+  
+  // Skirt shadow
+  player.beginFill(suitShadow);
+  player.drawRect(-7, 21, 14, 2);
+  player.endFill();
+  
+  // Legs with stockings
+  legLeft.beginFill(stockingColor);
+  legLeft.drawRect(-5, 23, 4, 6);
+  legLeft.endFill();
+  
+  legRight.beginFill(stockingColor);
+  legRight.drawRect(1, 23, 4, 6);
+  legRight.endFill();
+  
+  player.addChild(legLeft);
+  player.addChild(legRight);
+  
+  // Professional heels
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(shoeColor);
+  shoeLeft.drawRect(-6, 29, 5, 3);
+  shoeLeft.endFill();
+  
+  // Heel
+  shoeLeft.beginFill(shoeColor);
+  shoeLeft.drawRect(-3, 32, 2, 2);
+  shoeLeft.endFill();
+  
+  // Shoe highlight
+  shoeLeft.beginFill(0x333333);
+  shoeLeft.drawRect(-6, 29, 5, 1);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(shoeColor);
+  shoeRight.drawRect(1, 29, 5, 3);
+  shoeRight.endFill();
+  
+  // Heel
+  shoeRight.beginFill(shoeColor);
+  shoeRight.drawRect(2, 32, 2, 2);
+  shoeRight.endFill();
+  
+  // Shoe highlight
+  shoeRight.beginFill(0x333333);
+  shoeRight.drawRect(1, 29, 5, 1);
+  shoeRight.endFill();
+  
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+  
+  // Name tag
+ let tickerFn = null;
+  // Name tag with better styling
+   const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+  
+  // Initial position
+  player.x = 400;
+  player.y = 300;
+  
+  // Add to scene
+  gameState.camera.addChild(player);
+  gameState.player = player;
+  
+  // Enhanced animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+
+  tickerFn = () => {
+  if (!player || !player.parent) return; // prevent stale access
+      if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      // Leg animation (opposite swing)
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+      
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+      
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      // Body bobbing
+      player.children.forEach(child => {
+        if (child !== legLeft && child !== legRight && 
+            child !== shoeLeft && child !== shoeRight) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+      
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+      
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+
+      // Reset body parts to original positions
+      // Body bobbing (exclude nameTag)
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight &&
+          child !== nameTag
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+    }
+};
+  
+  // Ticker-based enhanced animation
+ Ticker.shared.add(tickerFn);
+ player._tickerFn = tickerFn;
+
+  
+  // Enhanced movement API
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 2;
+    
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+  
+  player.stop = () => {
+    walking = false;
+  };
+  
+  // Store original positions for smooth transitions
+  player.children.forEach(child => {
+    child.originalY = child.y;
+  });
+  return player;
+};
+
+
+const createSpidey = (gameState, playerName = "Spiderman") => {
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Enhanced Spiderman color palette
+  const spidermanRed = 0xdc143c;
+  const spidermanRedShadow = 0xa01024;
+  const spidermanRedHighlight = 0xff3050;
+  const spidermanBlue = 0x1e40af;
+  const spidermanBlueShadow = 0x1e3a8a;
+  const spidermanBlueHighlight = 0x3b82f6;
+  const webColor = 0x000000;
+  const eyeColor = 0xffffff;
+  const eyeReflection = 0xe0e0e0;
+  const muscleShadow = 0x8b1538;
+  
+  // Create separate graphics objects for emblem and web patterns
+  const emblem = new Graphics();
+  const webPattern = new Graphics();
+  
+  // Main body (red suit with muscle definition)
+  player.beginFill(spidermanRed);
+  player.drawRect(-8, -5, 16, 18);
+  player.endFill();
+  
+  // Muscle definition on torso
+  player.beginFill(spidermanRedShadow);
+  player.drawRect(-6, -3, 2, 8);  // Left pec
+  player.drawRect(4, -3, 2, 8);   // Right pec
+  player.drawRect(-2, 2, 4, 6);   // Abs
+  player.endFill();
+  
+  // Body highlights
+  player.beginFill(spidermanRedHighlight);
+  player.drawRect(-7, -4, 1, 6);  // Left highlight
+  player.drawRect(6, -4, 1, 6);   // Right highlight
+  player.endFill();
+  
+  // Body shadow
+  player.beginFill(spidermanRedShadow);
+  player.drawRect(-8, 11, 16, 2);
+  player.endFill();
+  
+  // Enhanced spider emblem on chest
+  emblem.beginFill(webColor);
+  // Spider body (more detailed)
+  emblem.drawRect(-1, -3, 2, 8);
+  emblem.drawRect(-2, -1, 4, 2);
+  // Spider legs (more realistic)
+  emblem.drawRect(-5, -1, 3, 1);
+  emblem.drawRect(2, -1, 3, 1);
+  emblem.drawRect(-4, 1, 2, 1);
+  emblem.drawRect(2, 1, 2, 1);
+  emblem.drawRect(-3, 3, 1, 1);
+  emblem.drawRect(2, 3, 1, 1);
+  // Add spider head
+  emblem.drawRect(-1, -4, 2, 2);
+  emblem.endFill();
+  
+  // Enhanced web pattern on torso
+  webPattern.beginFill(webColor);
+  // Vertical web lines
+  for (let i = -6; i <= 6; i += 2) {
+    webPattern.drawRect(i, -4, 1, 16);
+  }
+  // Horizontal web lines
+  for (let i = -4; i <= 12; i += 2) {
+    webPattern.drawRect(-7, i, 14, 1);
+  }
+  // Diagonal web connections
+  for (let i = -6; i <= 4; i += 2) {
+    webPattern.drawRect(i, -3 + Math.abs(i), 1, 1);
+    webPattern.drawRect(i, 1 + Math.abs(i), 1, 1);
+  }
+  webPattern.endFill();
+  
+  // Head (full mask with better shape)
+  player.beginFill(spidermanRed);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+  
+  // Head muscle definition
+  player.beginFill(spidermanRedShadow);
+  player.drawRect(-5, -16, 2, 3);  // Left cheek
+  player.drawRect(3, -16, 2, 3);   // Right cheek
+  player.drawRect(-2, -12, 4, 2);  // Jaw line
+  player.endFill();
+  
+  // Head highlights
+  player.beginFill(spidermanRedHighlight);
+  player.drawRect(-5, -17, 1, 2);
+  player.drawRect(4, -17, 1, 2);
+  player.endFill();
+  
+  // Enhanced web pattern on head
+  player.beginFill(webColor);
+  // Radial web pattern from center
+  for (let i = -5; i <= 5; i += 2) {
+    player.drawRect(i, -18, 1, 12);
+  }
+  for (let i = -17; i <= -7; i += 2) {
+    player.drawRect(-6, i, 12, 1);
+  }
+  // Curved web lines around eyes
+  player.drawRect(-6, -15, 2, 1);
+  player.drawRect(-6, -14, 3, 1);
+  player.drawRect(3, -15, 3, 1);
+  player.drawRect(4, -14, 2, 1);
+  player.endFill();
+  
+  // Enhanced Spiderman eyes (larger and more expressive)
+  player.beginFill(eyeColor);
+  // Left eye (teardrop shape)
+  player.drawRect(-5, -16, 4, 5);
+  player.drawRect(-4, -17, 2, 1);
+  player.drawRect(-4, -11, 2, 1);
+  // Right eye
+  player.drawRect(1, -16, 4, 5);
+  player.drawRect(2, -17, 2, 1);
+  player.drawRect(2, -11, 2, 1);
+  player.endFill();
+  
+  // Eye reflections
+  player.beginFill(eyeReflection);
+  player.drawRect(-4, -15, 1, 1);
+  player.drawRect(2, -15, 1, 1);
+  player.endFill();
+  
+  // Eye outline (more detailed)
+  player.beginFill(webColor);
+  // Left eye outline
+  player.drawRect(-5, -17, 4, 1);
+  player.drawRect(-5, -11, 4, 1);
+  player.drawRect(-5, -16, 1, 5);
+  player.drawRect(-1, -16, 1, 5);
+  player.drawRect(-4, -17, 1, 1);
+  player.drawRect(-2, -17, 1, 1);
+  // Right eye outline
+  player.drawRect(1, -17, 4, 1);
+  player.drawRect(1, -11, 4, 1);
+  player.drawRect(1, -16, 1, 5);
+  player.drawRect(4, -16, 1, 5);
+  player.drawRect(2, -17, 1, 1);
+  player.drawRect(4, -17, 1, 1);
+  player.endFill();
+  
+  // Enhanced arms (red with better muscle definition)
+  armLeft.beginFill(spidermanRed);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+  
+  // Muscle definition on arms
+  armLeft.beginFill(spidermanRedShadow);
+  armLeft.drawRect(-9, 0, 1, 8);  // Bicep
+  armLeft.endFill();
+  
+  armLeft.beginFill(spidermanRedHighlight);
+  armLeft.drawRect(-10, 1, 1, 6);
+  armLeft.endFill();
+  
+  // Enhanced web pattern on arms
+  armLeft.beginFill(webColor);
+  armLeft.drawRect(-10, 0, 3, 1);
+  armLeft.drawRect(-10, 3, 3, 1);
+  armLeft.drawRect(-10, 6, 3, 1);
+  armLeft.drawRect(-9, -2, 1, 12);
+  // Diagonal connections
+  armLeft.drawRect(-10, 1, 1, 1);
+  armLeft.drawRect(-8, 2, 1, 1);
+  armLeft.drawRect(-10, 4, 1, 1);
+  armLeft.drawRect(-8, 5, 1, 1);
+  armLeft.endFill();
+  
+  // Enhanced hands
+  armLeft.beginFill(spidermanRed);
+  armLeft.drawRect(-9, 10, 2, 3);
+  armLeft.endFill();
+  
+  // Hand web pattern
+  armLeft.beginFill(webColor);
+  armLeft.drawRect(-9, 11, 2, 1);
+  armLeft.endFill();
+  
+  // Right arm (mirrored)
+  armRight.beginFill(spidermanRed);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+  
+  armRight.beginFill(spidermanRedShadow);
+  armRight.drawRect(8, 0, 1, 8);
+  armRight.endFill();
+  
+  armRight.beginFill(spidermanRedHighlight);
+  armRight.drawRect(9, 1, 1, 6);
+  armRight.endFill();
+  
+  armRight.beginFill(webColor);
+  armRight.drawRect(7, 0, 3, 1);
+  armRight.drawRect(7, 3, 3, 1);
+  armRight.drawRect(7, 6, 3, 1);
+  armRight.drawRect(8, -2, 1, 12);
+  armRight.drawRect(9, 1, 1, 1);
+  armRight.drawRect(7, 2, 1, 1);
+  armRight.drawRect(9, 4, 1, 1);
+  armRight.drawRect(7, 5, 1, 1);
+  armRight.endFill();
+  
+  armRight.beginFill(spidermanRed);
+  armRight.drawRect(7, 10, 2, 3);
+  armRight.endFill();
+  
+  armRight.beginFill(webColor);
+  armRight.drawRect(7, 11, 2, 1);
+  armRight.endFill();
+  
+  // Enhanced legs (blue suit with muscle definition)
+  legLeft.beginFill(spidermanBlue);
+  legLeft.drawRect(-5, 13, 4, 16);
+  legLeft.endFill();
+  
+  // Muscle definition on legs
+  legLeft.beginFill(spidermanBlueShadow);
+  legLeft.drawRect(-4, 15, 1, 12);  // Quad muscle
+  legLeft.drawRect(-2, 17, 1, 8);   // Inner muscle
+  legLeft.endFill();
+  
+  legLeft.beginFill(spidermanBlueHighlight);
+  legLeft.drawRect(-5, 16, 1, 10);
+  legLeft.endFill();
+  
+  // Enhanced web pattern on legs
+  legLeft.beginFill(webColor);
+  legLeft.drawRect(-5, 16, 4, 1);
+  legLeft.drawRect(-5, 20, 4, 1);
+  legLeft.drawRect(-5, 24, 4, 1);
+  legLeft.drawRect(-3, 13, 1, 16);
+  // Diagonal connections
+  legLeft.drawRect(-5, 17, 1, 1);
+  legLeft.drawRect(-2, 18, 1, 1);
+  legLeft.drawRect(-5, 21, 1, 1);
+  legLeft.drawRect(-2, 22, 1, 1);
+  legLeft.endFill();
+  
+  // Right leg (mirrored)
+  legRight.beginFill(spidermanBlue);
+  legRight.drawRect(1, 13, 4, 16);
+  legRight.endFill();
+  
+  legRight.beginFill(spidermanBlueShadow);
+  legRight.drawRect(3, 15, 1, 12);
+  legRight.drawRect(1, 17, 1, 8);
+  legRight.endFill();
+  
+  legRight.beginFill(spidermanBlueHighlight);
+  legRight.drawRect(4, 16, 1, 10);
+  legRight.endFill();
+  
+  legRight.beginFill(webColor);
+  legRight.drawRect(1, 16, 4, 1);
+  legRight.drawRect(1, 20, 4, 1);
+  legRight.drawRect(1, 24, 4, 1);
+  legRight.drawRect(2, 13, 1, 16);
+  legRight.drawRect(4, 17, 1, 1);
+  legRight.drawRect(1, 18, 1, 1);
+  legRight.drawRect(4, 21, 1, 1);
+  legRight.drawRect(1, 22, 1, 1);
+  legRight.endFill();
+  
+  // Enhanced boots
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(spidermanRed);
+  shoeLeft.drawRect(-6, 29, 5, 3);
+  shoeLeft.endFill();
+  
+  // Boot details
+  shoeLeft.beginFill(spidermanRedShadow);
+  shoeLeft.drawRect(-6, 30, 5, 1);
+  shoeLeft.endFill();
+  
+  shoeLeft.beginFill(webColor);
+  shoeLeft.drawRect(-5, 29, 1, 3);
+  shoeLeft.drawRect(-3, 29, 1, 3);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(spidermanRed);
+  shoeRight.drawRect(1, 29, 5, 3);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(spidermanRedShadow);
+  shoeRight.drawRect(1, 30, 5, 1);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(webColor);
+  shoeRight.drawRect(2, 29, 1, 3);
+  shoeRight.drawRect(4, 29, 1, 3);
+  shoeRight.endFill();
+  
+  // Add all child elements in correct order
+  player.addChild(webPattern);  // Web pattern first
+  player.addChild(emblem);      // Emblem on top
+  player.addChild(armLeft);
+  player.addChild(armRight);
+  player.addChild(legLeft);
+  player.addChild(legRight);
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+  
+  // Name tag
+  const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+  
+  return setupPlayerAnimation(player, gameState, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, null, emblem, webPattern);
+};
+
+// Batman Character Design
+const createBatman = (gameState, playerName = "Batman") => {
+  let tickerFn = null;
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+
+  // Batman color palette
+  const batmanGray = 0x4a5568;
+  const batmanGrayShadow = 0x2d3748;
+  const batmanBlack = 0x1a202c;
+  const batmanBlackShadow = 0x000000;
+  const batmanYellow = 0xffd700;
+  const batmanYellowShadow = 0xe6c200;
+  const batmanBlue = 0x2563eb;
+  const capeColor = 0x1a202c;
+
+  // Cape (behind character) - Ensure this is added first to be at the back
+  const cape = new Graphics();
+  cape.beginFill(capeColor);
+  cape.drawRect(-12, -8, 24, 25);
+  cape.endFill();
+
+  // Cape shadow
+  cape.beginFill(batmanBlackShadow);
+  cape.drawRect(-12, 15, 24, 2);
+  cape.endFill();
+
+  player.addChild(cape); // Add cape first
+
+  // Main body (gray suit)
+  player.beginFill(batmanGray);
+  player.drawRect(-8, -5, 16, 18);
+  player.endFill();
+
+  // Body shadow
+  player.beginFill(batmanGrayShadow);
+  player.drawRect(-8, 11, 16, 2);
+  player.endFill();
+
+  // Head with cowl (drawn after body)
+  player.beginFill(batmanGray);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+
+  // Batman cowl ears
+  player.beginFill(batmanGray);
+  player.drawRect(-4, -22, 2, 4);
+  player.drawRect(2, -22, 2, 4);
+  player.endFill();
+
+  // Cowl shadow
+  player.beginFill(batmanGrayShadow);
+  player.drawRect(-6, -8, 12, 2);
+  player.endFill();
+
+  // Batman eyes (white slits)
+  player.beginFill(0xffffff);
+  player.drawRect(-4, -15, 2, 1);
+  player.drawRect(2, -15, 2, 1);
+  player.endFill();
+
+  // Mouth (stern expression)
+  player.beginFill(batmanGrayShadow);
+  player.drawRect(-1, -10, 2, 1);
+  player.endFill();
+
+  // Create separate graphics objects for emblem and belt
+  const emblem = new Graphics();
+  const belt = new Graphics();
+
+  // Bat emblem on chest - separate object
+  emblem.beginFill(batmanYellow);
+  emblem.drawRect(-3, -2, 6, 4);
+  emblem.endFill();
+
+  // Bat symbol
+  emblem.beginFill(batmanBlack);
+  // Bat body
+  emblem.drawRect(-1, -1, 2, 2);
+  // Bat wings
+  emblem.drawRect(-3, 0, 2, 1);
+  emblem.drawRect(1, 0, 2, 1);
+  // Wing tips
+  emblem.drawRect(-4, 1, 1, 1);
+  emblem.drawRect(3, 1, 1, 1);
+  emblem.endFill();
+
+  // Utility belt - separate object
+  belt.beginFill(batmanYellow);
+  belt.drawRect(-8, 8, 16, 2);
+  belt.endFill();
+
+  // Belt pouches
+  belt.beginFill(batmanYellowShadow);
+  belt.drawRect(-6, 8, 2, 2);
+  belt.drawRect(-2, 8, 2, 2);
+  belt.drawRect(2, 8, 2, 2);
+  belt.endFill();
+
+  // Belt buckle
+  belt.beginFill(batmanYellowShadow);
+  belt.drawRect(-1, 8, 2, 2);
+  belt.endFill();
+
+  // Add emblem and belt to player
+  player.addChild(emblem);
+  player.addChild(belt);
+
+  // Arms (gray with black gloves)
+  armLeft.beginFill(batmanGray);
+  armLeft.drawRect(-10, -2, 3, 10);
+  armLeft.endFill();
+
+  // Black gloves
+  armLeft.beginFill(batmanBlack);
+  armLeft.drawRect(-10, 8, 3, 5);
+  armLeft.endFill();
+
+  armRight.beginFill(batmanGray);
+  armRight.drawRect(7, -2, 3, 10);
+  armRight.endFill();
+
+  armRight.beginFill(batmanBlack);
+  armRight.drawRect(7, 8, 3, 5);
+  armRight.endFill();
+
+  player.addChild(armLeft);
+  player.addChild(armRight);
+
+  // Legs (gray with black boots)
+  legLeft.beginFill(batmanGray);
+  legLeft.drawRect(-5, 13, 4, 12);
+  legLeft.endFill();
+
+  // Black boots
+  legLeft.beginFill(batmanBlack);
+  legLeft.drawRect(-5, 25, 4, 4);
+  legLeft.endFill();
+
+  legRight.beginFill(batmanGray);
+  legRight.drawRect(1, 13, 4, 12);
+  legRight.endFill();
+
+  legRight.beginFill(batmanBlack);
+  legRight.drawRect(1, 25, 4, 4);
+  legRight.endFill();
+
+  player.addChild(legLeft);
+  player.addChild(legRight);
+
+  // Boots
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(batmanBlack);
+  shoeLeft.drawRect(-6, 29, 5, 3);
+  shoeLeft.endFill();
+
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(batmanBlack);
+  shoeRight.drawRect(1, 29, 5, 3);
+  shoeRight.endFill();
+
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+
+  // Name tag
+  const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+
+  return setupPlayerAnimation(player, gameState, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, cape, emblem, belt);
+};
+
+
+// Shared animation setup function
+const setupPlayerAnimation = (player, gameState, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, cape = null, emblem = null, belt = null) => {
+  // Initial position
+  let tickerFn = null;
+  player.x = 400;
+  player.y = 300;
+  
+  // Add to scene
+  gameState.camera.addChild(player);
+  gameState.player = player;
+  
+  // Animation variables
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+
+  tickerFn = () => {
+  if (!player || !player.parent) return; // prevent stale access
+
+ if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+      
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+      
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      player.children.forEach(child => {
+        if (child !== legLeft && child !== legRight && 
+            child !== shoeLeft && child !== shoeRight && child !== cape &&
+            child !== emblem && child !== belt) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+      
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+      
+    } else {
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight &&
+          child !== nameTag &&
+          child !== cape &&
+          child !== emblem &&
+          child !== belt
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+    }
+};
+  
+Ticker.shared.add(tickerFn);
+player._tickerFn = tickerFn;
+  
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 2;
+    
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+  
+  player.stop = () => {
+    walking = false;
+  };
+  
+  player.children.forEach(child => {
+    child.originalY = child.y;
+  });
+  
+  return player;
+};
+
+
+// ALTERNATIVE MALE VERSION (CASUAL STYLE)
+const createMalePlayer = (gameState, playerName = "You") => {
+  let tickerFn= null;
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Enhanced color palette for casual male
+  const skinColor = 0xd4a574; // Slightly different skin tone
+  const skinShadow = 0xc19660;
+  const hoodieColor = 0x27ae60; // Green hoodie
+  const hoodieShadow = 0x229954;
+  const jeansColor = 0x34495e; // Dark blue jeans
+  const jeansShadow = 0x2c3e50;
+  const hairColor = 0x2c3e50; // Dark hair
+  const sneakerColor = 0xff6b6b; // Red sneakers
+  
+  // Player body (hoodie)
+  player.beginFill(hoodieColor);
+  player.drawRect(-9, -5, 18, 22);
+  player.endFill();
+  
+  // Hoodie shadow
+  player.beginFill(hoodieShadow);
+  player.drawRect(-9, 15, 18, 2);
+  player.endFill();
+  
+  // Hoodie pocket
+  player.beginFill(hoodieShadow);
+  player.drawRect(-6, 5, 12, 8);
+  player.endFill();
+  
+  // Hoodie strings
+  player.beginFill(0xffffff);
+  player.drawRect(-2, -3, 1, 8);
+  player.drawRect(1, -3, 1, 8);
+  player.endFill();
+  
+  // Head
+  player.beginFill(skinColor);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+  
+  // Face shadow
+  player.beginFill(skinShadow);
+  player.drawRect(-6, -8, 12, 2);
+  player.endFill();
+  
+  // Messy hair style
+  player.beginFill(hairColor);
+  player.drawRect(-7, -19, 14, 7);
+  player.endFill();
+  
+  // Hair spikes/texture
+  player.beginFill(0x1a252f);
+  player.drawRect(-6, -18, 2, 3);
+  player.drawRect(-2, -19, 2, 3);
+  player.drawRect(2, -18, 2, 3);
+  player.drawRect(5, -17, 2, 2);
+  player.endFill();
+  
+  // Eyes with different expression
+  player.beginFill(0xffffff);
+  player.drawRect(-4, -15, 2, 2);
+  player.drawRect(2, -15, 2, 2);
+  player.endFill();
+  
+  // Eye pupils
+  player.beginFill(0x000000);
+  player.drawRect(-3.5, -14.5, 1, 1);
+  player.drawRect(2.5, -14.5, 1, 1);
+  player.endFill();
+  
+  // Nose
+  player.beginFill(skinShadow);
+  player.drawRect(-0.5, -12, 1, 1);
+  player.endFill();
+  
+  // Slight smile
+  player.beginFill(skinShadow);
+  player.drawRect(-1, -10, 3, 1);
+  player.endFill();
+  
+  // Arms in hoodie sleeves
+  armLeft.beginFill(hoodieColor);
+  armLeft.drawRect(-11, -2, 4, 14);
+  armLeft.endFill();
+  
+  // Sleeve cuffs
+  armLeft.beginFill(hoodieShadow);
+  armLeft.drawRect(-11, 10, 4, 2);
+  armLeft.endFill();
+  
+  // Hand showing
+  armLeft.beginFill(skinColor);
+  armLeft.drawRect(-10, 12, 2, 3);
+  armLeft.endFill();
+  
+  armRight.beginFill(hoodieColor);
+  armRight.drawRect(7, -2, 4, 14);
+  armRight.endFill();
+  
+  armRight.beginFill(hoodieShadow);
+  armRight.drawRect(7, 10, 4, 2);
+  armRight.endFill();
+  
+  armRight.beginFill(skinColor);
+  armRight.drawRect(8, 12, 2, 3);
+  armRight.endFill();
+  
+  player.addChild(armLeft);
+  player.addChild(armRight);
+  
+  // Jeans
+  legLeft.beginFill(jeansColor);
+  legLeft.drawRect(-7, 17, 6, 10);
+  legLeft.endFill();
+  
+  // Jeans shadow
+  legLeft.beginFill(jeansShadow);
+  legLeft.drawRect(-7, 25, 6, 2);
+  legLeft.endFill();
+  
+  // Jeans stitching
+  legLeft.beginFill(0x5d6d7e);
+  legLeft.drawRect(-6, 17, 1, 10);
+  legLeft.endFill();
+  
+  legRight.beginFill(jeansColor);
+  legRight.drawRect(1, 17, 6, 10);
+  legRight.endFill();
+  
+  legRight.beginFill(jeansShadow);
+  legRight.drawRect(1, 25, 6, 2);
+  legRight.endFill();
+  
+  legRight.beginFill(0x5d6d7e);
+  legRight.drawRect(5, 17, 1, 10);
+  legRight.endFill();
+  
+  player.addChild(legLeft);
+  player.addChild(legRight);
+  
+  // Sneakers
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(sneakerColor);
+  shoeLeft.drawRect(-8, 27, 7, 4);
+  shoeLeft.endFill();
+  
+  // Sneaker sole
+  shoeLeft.beginFill(0xffffff);
+  shoeLeft.drawRect(-8, 30, 7, 1);
+  shoeLeft.endFill();
+  
+  // Sneaker details
+  shoeLeft.beginFill(0xffffff);
+  shoeLeft.drawRect(-7, 28, 5, 1);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(sneakerColor);
+  shoeRight.drawRect(1, 27, 7, 4);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(0xffffff);
+  shoeRight.drawRect(1, 30, 7, 1);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(0xffffff);
+  shoeRight.drawRect(2, 28, 5, 1);
+  shoeRight.endFill();
+  
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+  
+  // Name tag
+  const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+  
+  // Initial position
+  player.x = 400;
+  player.y = 300;
+  
+  // Add to scene
+  gameState.camera.addChild(player);
+  gameState.player = player;
+  
+  // Enhanced animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+
+  tickerFn = () => {
+  if (!player || !player.parent) return; // prevent stale access
+      if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      // Leg animation (opposite swing)
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+      
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+      
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      // Body bobbing
+      player.children.forEach(child => {
+        if (child !== legLeft && child !== legRight && 
+            child !== shoeLeft && child !== shoeRight) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+      
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+      
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+
+      // Reset body parts to original positions
+      // Body bobbing (exclude nameTag)
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight &&
+          child !== nameTag
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+    }
+};
+  
+  // Ticker-based enhanced animation
+ Ticker.shared.add(tickerFn);
+ player._tickerFn = tickerFn;
+
+  
+  // Enhanced movement API
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 2;
+    
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+  
+  player.stop = () => {
+    walking = false;
+  };
+  
+  // Store original positions for smooth transitions
+  player.children.forEach(child => {
+    child.originalY = child.y;
+  });
+  return player;
+};
+
+const createPlayer = (gameState, playerName = "You") => {
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Enhanced color palette
+  const skinColor = 0xf4c2a1;
+  const skinShadow = 0xe6b596;
+  const shirtColor = 0x3498db;
+  const shirtShadow = 0x2980b9;
+  const pantsColor = 0x2c3e50;
+  const pantsShadow = 0x1a252f;
+  const hairColor = 0x4b2e1e;
+  const shoeColor = 0x000000;
+  
+  // Player body with depth
+  player.beginFill(shirtColor);
+  player.drawRect(-8, -5, 16, 20);
+  player.endFill();
+  
+  // Body shadow/depth
+  player.beginFill(shirtShadow);
+  player.drawRect(-8, 13, 16, 2);
+  player.endFill();
+  
+  // Shirt collar
+  player.beginFill(shirtShadow);
+  player.drawRect(-7, -4, 14, 3);
+  player.endFill();
+  
+  // Head with better shading
+  player.beginFill(skinColor);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+  
+  // Face shadow
+  player.beginFill(skinShadow);
+  player.drawRect(-6, -8, 12, 2);
+  player.endFill();
+  
+  // Hair with more detail
+  player.beginFill(hairColor);
+  player.drawRect(-7, -19, 14, 6);
+  player.endFill();
+  
+  // Hair highlight
+  player.beginFill(0x6b4423);
+  player.drawRect(-6, -18, 3, 4);
+  player.endFill();
+  
+  // Eyes with pupils
+  player.beginFill(0xffffff);
+  player.drawRect(-4, -15, 2, 2);
+  player.drawRect(2, -15, 2, 2);
+  player.endFill();
+  
+  // Eye pupils
+  player.beginFill(0x000000);
+  player.drawRect(-3.5, -14.5, 1, 1);
+  player.drawRect(2.5, -14.5, 1, 1);
+  player.endFill();
+  
+  // Nose (small dot)
+  player.beginFill(skinShadow);
+  player.drawRect(-0.5, -12, 1, 1);
+  player.endFill();
+  
+  // Arms (separate for animation)
+  armLeft.beginFill(skinColor);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+  
+  // Left arm shadow
+  armLeft.beginFill(skinShadow);
+  armLeft.drawRect(-8, 8, 3, 2);
+  armLeft.endFill();
+  
+  armRight.beginFill(skinColor);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+  
+  // Right arm shadow
+  armRight.beginFill(skinShadow);
+  armRight.drawRect(7, 8, 3, 2);
+  armRight.endFill();
+  
+  player.addChild(armLeft);
+  player.addChild(armRight);
+  
+  // Legs with better detail
+  legLeft.beginFill(pantsColor);
+  legLeft.drawRect(-6, 15, 5, 12);
+  legLeft.endFill();
+  
+  // Left leg shadow
+  legLeft.beginFill(pantsShadow);
+  legLeft.drawRect(-6, 25, 5, 2);
+  legLeft.endFill();
+  
+  legRight.beginFill(pantsColor);
+  legRight.drawRect(1, 15, 5, 12);
+  legRight.endFill();
+  
+  // Right leg shadow
+  legRight.beginFill(pantsShadow);
+  legRight.drawRect(1, 25, 5, 2);
+  legRight.endFill();
+  
+  player.addChild(legLeft);
+  player.addChild(legRight);
+  
+  // Enhanced shoes
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(shoeColor);
+  shoeLeft.drawRect(-7, 27, 6, 4);
+  shoeLeft.endFill();
+  
+  // Shoe highlight
+  shoeLeft.beginFill(0x333333);
+  shoeLeft.drawRect(-7, 27, 6, 1);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(shoeColor);
+  shoeRight.drawRect(1, 27, 6, 4);
+  shoeRight.endFill();
+  
+  // Shoe highlight
+  shoeRight.beginFill(0x333333);
+  shoeRight.drawRect(1, 27, 6, 1);
+  shoeRight.endFill();
+  
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+  
+  // Belt detail
+  player.beginFill(0x8b4513);
+  player.drawRect(-8, 13, 16, 2);
+  player.endFill();
+  
+  // Belt buckle
+  player.beginFill(0xffd700);
+  player.drawRect(-1, 13.5, 2, 1);
+  player.endFill();
+
+
+  let tickerFn = null;
+  // Name tag with better styling
+   const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+  
+  // Initial position
+  player.x = 400;
+  player.y = 300;
+  
+  // Add to scene
+  gameState.camera.addChild(player);
+  gameState.player = player;
+  
+  // Enhanced animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+
+  tickerFn = () => {
+  if (!player || !player.parent) return; // prevent stale access
+      if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      // Leg animation (opposite swing)
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+      
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+      
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      // Body bobbing
+      player.children.forEach(child => {
+        if (child !== legLeft && child !== legRight && 
+            child !== shoeLeft && child !== shoeRight) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+      
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+      
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+
+      // Reset body parts to original positions
+      // Body bobbing (exclude nameTag)
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight &&
+          child !== nameTag
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+    }
+};
+  
+  // Ticker-based enhanced animation
+ Ticker.shared.add(tickerFn);
+ player._tickerFn = tickerFn;
+
+  
+  // Enhanced movement API
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 2;
+    
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+  
+  player.stop = () => {
+    walking = false;
+  };
+  
+  // Store original positions for smooth transitions
+  player.children.forEach(child => {
+    child.originalY = child.y;
+  });
+  return player;
+};
+
+  const avatarMap = {
+  default: createPlayer,
+  Batman: createBatman,
+  Spiderman: createSpidey,
+  Male: createMalePlayer,
+  Female: createGirlPlayer
+};
+const createFn = avatarMap[avatarType] || createPlayer;
 
 
   useEffect(() => {
@@ -120,7 +1670,8 @@ const initGame = (app) => {
 
   createWorldGrid(gameState);
   populateRooms(gameState);
-  createPlayer(gameState, playerName);
+  
+  createFn(gameState, playerName);
   setupInput(gameState, app);
 
   // app.ticker drives the game loop
@@ -1620,15 +3171,60 @@ const createCubicle = (x, y, width = 120, height = 100) => {
 const createMeetingTable = (x, y, camera, colliders) => {
   const table = new Graphics();
   
-  // Large oval table
+  // Enhanced professional color palette
+  const tableColor = 0x8b4513;
+  const tableHighlight = 0xcd853f;
+  const tableShadow = 0x5d4037;
+  const tableDark = 0x3e2723;
+  const legColor = 0x6d4c41;
+  const legShadow = 0x4e342e;
+  const glossyHighlight = 0xf4a460;
+  const metalAccent = 0x37474f;
+  const metalHighlight = 0x546e7a;
+  
+  // Enhanced table shadow with soft edges
+  table.ellipse(x + 3, y + 3, 78, 48);
+  table.fill({ color: tableShadow, alpha: 0.6 });
+  
+  // Main oval table surface
   table.ellipse(x, y, 80, 50);
-  table.fill(0x8b4513);
+  table.fill(tableColor);
   
-  // Table shadow
-  table.ellipse(x + 2, y + 2, 78, 48);
-  table.fill(0x654321);
+  // Inner table surface with slight inset
+  table.ellipse(x, y, 76, 46);
+  table.fill(tableColor);
   
-  // Table legs (visible at corners)
+  // Sophisticated wood grain pattern following oval shape
+  for (let i = 0; i < 8; i++) {
+    const grainOffset = (i - 4) * 8;
+    const grainWidth = 65 - Math.abs(grainOffset) * 0.3;
+    const grainHeight = 35 - Math.abs(grainOffset) * 0.2;
+    
+    table.ellipse(x, y + grainOffset, grainWidth, grainHeight);
+    table.fill({ color: tableShadow, alpha: 0.15 });
+    
+    table.ellipse(x - 1, y + grainOffset - 1, grainWidth - 2, grainHeight - 2);
+    table.fill({ color: tableHighlight, alpha: 0.1 });
+  }
+  
+  // Premium glossy surface highlights
+  table.ellipse(x - 15, y - 10, 35, 12);
+  table.fill({ color: glossyHighlight, alpha: 0.4 });
+  
+  table.ellipse(x + 20, y + 5, 25, 8);
+  table.fill({ color: glossyHighlight, alpha: 0.3 });
+  
+  table.ellipse(x - 5, y + 15, 40, 10);
+  table.fill({ color: glossyHighlight, alpha: 0.35 });
+  
+  // Professional table edge with beveled effect
+  table.ellipse(x, y, 80, 50);
+  table.stroke({ width: 2, color: metalAccent });
+  
+  table.ellipse(x - 1, y - 1, 78, 48);
+  table.stroke({ width: 1, color: tableHighlight });
+  
+  // Enhanced table legs with modern design
   const legPositions = [
     { x: x - 60, y: y - 30 },
     { x: x + 60, y: y - 30 },
@@ -1637,16 +3233,106 @@ const createMeetingTable = (x, y, camera, colliders) => {
   ];
   
   legPositions.forEach(leg => {
+    // Leg base (chrome finish)
+    table.circle(leg.x, leg.y, 8);
+    table.fill(metalAccent);
+    
+    // Leg highlight ring
+    table.circle(leg.x - 1, leg.y - 1, 7);
+    table.fill(metalHighlight);
+    
+    // Leg main body
     table.circle(leg.x, leg.y, 6);
-    table.fill(0x654321);
+    table.fill(legColor);
+    
+    // Leg wood grain
+    table.circle(leg.x, leg.y, 5);
+    table.fill(tableColor);
+    
+    // Leg shadow
+    table.circle(leg.x + 1, leg.y + 1, 4);
+    table.fill({ color: legShadow, alpha: 0.7 });
+    
+    // Center detail
+    table.circle(leg.x, leg.y, 2);
+    table.fill(tableDark);
+    
+    // Enhanced connection bracket to table
+    table.ellipse(leg.x, leg.y - 4, 8, 4);
+    table.fill(metalAccent);
+    
+    table.ellipse(leg.x, leg.y - 3, 6, 3);
+    table.fill(legColor);
+    
+    table.ellipse(leg.x, leg.y - 3, 6, 1);
+    table.fill(metalHighlight);
   });
-
-  // collider = {
-  //   x: x - 80,     // Left bound
-  //   y: y - 50,     // Top bound
-  //   width: 160,    // Full width
-  //   height: 100    // Full height
-  // };
+  
+  // Modern cable management system (center)
+  table.ellipse(x, y, 20, 12);
+  table.fill(tableDark);
+  
+  table.ellipse(x, y, 16, 10);
+  table.fill(metalAccent);
+  
+  table.ellipse(x, y, 14, 8);
+  table.fill(0x263238);
+  
+  // Professional cable ports with metal finish
+  table.circle(x - 4, y, 1.5);
+  table.circle(x + 4, y, 1.5);
+  table.fill(0x000000);
+  
+  // Port rings (chrome finish)
+  table.circle(x - 4, y, 2);
+  table.circle(x + 4, y, 2);
+  table.stroke({ width: 0.5, color: metalHighlight });
+  
+  // Executive surface details
+  
+  // Corner accent details
+  const cornerAccents = [
+    { x: x - 35, y: y - 20, angle: 0 },
+    { x: x + 35, y: y - 20, angle: 90 },
+    { x: x - 35, y: y + 20, angle: 270 },
+    { x: x + 35, y: y + 20, angle: 180 }
+  ];
+  
+  cornerAccents.forEach(accent => {
+    table.ellipse(accent.x, accent.y, 8, 4);
+    table.fill({ color: metalAccent, alpha: 0.3 });
+    
+    table.ellipse(accent.x, accent.y, 6, 3);
+    table.fill({ color: metalHighlight, alpha: 0.2 });
+  });
+  
+  // Professional surface reflection
+  table.ellipse(x - 10, y - 8, 50, 20);
+  table.fill({ color: 0xffffff, alpha: 0.08 });
+  
+  // Subtle ambient lighting effect
+  table.ellipse(x, y - 5, 60, 15);
+  table.fill({ color: glossyHighlight, alpha: 0.12 });
+  
+  // Premium edge inlay
+  table.ellipse(x, y, 78, 48);
+  table.stroke({ width: 1, color: tableHighlight });
+  
+  // Outer professional border
+  table.ellipse(x, y, 82, 52);
+  table.stroke({ width: 1, color: metalAccent });
+  
+  // Table surface texture details
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * 90) * Math.PI / 180;
+    const textureX = x + Math.cos(angle) * 25;
+    const textureY = y + Math.sin(angle) * 15;
+    
+    table.ellipse(textureX, textureY, 12, 3);
+    table.fill({ color: tableShadow, alpha: 0.1 });
+  }
+  
+  // Maintain exact same collision bounds
   const bounds = {
     x: x - 80,
     y: y - 50,
@@ -3150,64 +4836,71 @@ const createOfficeCat = (x, y) => {
 
 
 
-    const createConferenceTable = (x, y) => {
+const createConferenceTable = (x, y) => {
   const table = new Graphics();
   
-  // Enhanced color palette
+  // Enhanced professional color palette
   const tableColor = 0x8b4513;
-  const tableHighlight = 0xa0522d;
-  const tableShadow = 0x654321;
-  const tableDark = 0x4a2c17;
-  const legColor = 0x654321;
-  const legShadow = 0x4a2c17;
-  const glossyHighlight = 0xd2691e;
+  const tableHighlight = 0xcd853f;
+  const tableShadow = 0x5d4037;
+  const tableDark = 0x3e2723;
+  const legColor = 0x6d4c41;
+  const legShadow = 0x4e342e;
+  const glossyHighlight = 0xf4a460;
+  const metalAccent = 0x37474f;
+  const metalHighlight = 0x546e7a;
   
-  // Table surface with depth
+  // Main table surface with enhanced depth
   table.rect(x - 100, y - 50, 200, 100);
   table.fill(tableColor);
   
-  // Table edge highlight (top and left)
-  table.rect(x - 100, y - 50, 200, 3);
+  // Enhanced beveled edges
+  table.rect(x - 100, y - 50, 200, 4);
   table.fill(tableHighlight);
   
-  table.rect(x - 100, y - 50, 3, 100);
+  table.rect(x - 100, y - 50, 4, 100);
   table.fill(tableHighlight);
   
-  // Table edge shadow (bottom and right)
-  table.rect(x - 100, y + 47, 200, 3);
+  table.rect(x - 100, y + 46, 200, 4);
   table.fill(tableShadow);
   
-  table.rect(x + 97, y - 50, 3, 100);
+  table.rect(x + 96, y - 50, 4, 100);
   table.fill(tableShadow);
   
-  // Inner table surface (main area)
-  table.rect(x - 95, y - 45, 190, 90);
+  // Inner table surface (main working area)
+  table.rect(x - 96, y - 46, 192, 92);
   table.fill(tableColor);
   
-  // Wood grain effect
-  for (let i = 0; i < 8; i++) {
-    const grainY = y - 35 + i * 10;
-    table.rect(x - 90, grainY, 180, 1);
-    table.fill(tableShadow);
-    table.rect(x - 85, grainY + 2, 170, 0.5);
-    table.fill(tableHighlight);
+  // Sophisticated wood grain pattern
+  for (let i = 0; i < 12; i++) {
+    const grainY = y - 40 + i * 7;
+    const grainWidth = 170 + Math.sin(i * 0.5) * 10;
+    
+    table.rect(x - 85, grainY, grainWidth, 0.8);
+    table.fill({ color: tableShadow, alpha: 0.6 });
+    
+    table.rect(x - 80, grainY + 1, grainWidth - 10, 0.4);
+    table.fill({ color: tableHighlight, alpha: 0.4 });
   }
   
-  // Glossy surface highlights
-  table.rect(x - 80, y - 35, 60, 2);
-  table.fill(glossyHighlight);
+  // Premium glossy surface highlights
+  table.rect(x - 75, y - 35, 50, 3);
+  table.fill({ color: glossyHighlight, alpha: 0.8 });
   
-  table.rect(x + 20, y - 25, 40, 1);
-  table.fill(glossyHighlight);
+  table.rect(x + 15, y - 25, 35, 2);
+  table.fill({ color: glossyHighlight, alpha: 0.6 });
   
-  table.rect(x - 60, y + 10, 80, 1);
-  table.fill(glossyHighlight);
+  table.rect(x - 55, y + 8, 70, 1.5);
+  table.fill({ color: glossyHighlight, alpha: 0.7 });
   
-  // Table border/trim
+  // Professional metal trim
   table.rect(x - 100, y - 50, 200, 100);
-  table.stroke({ width: 2, color: tableDark });
+  table.stroke({ width: 3, color: metalAccent });
   
-  // Enhanced table legs with better design
+  table.rect(x - 98, y - 48, 196, 96);
+  table.stroke({ width: 1, color: metalHighlight });
+  
+  // Enhanced table legs with modern design
   const legPositions = [
     { x: x - 80, y: y - 30 },
     { x: x + 80, y: y - 30 },
@@ -3216,60 +4909,103 @@ const createOfficeCat = (x, y) => {
   ];
   
   legPositions.forEach((leg) => {
-    // Leg base (larger circle)
-    table.circle(leg.x, leg.y, 6);
-    table.fill(legColor);
+    // Leg base (chrome finish)
+    table.circle(leg.x, leg.y, 7);
+    table.fill(metalAccent);
     
-    // Leg highlight
-    table.circle(leg.x - 1, leg.y - 1, 5);
-    table.fill(tableHighlight);
+    // Leg highlight ring
+    table.circle(leg.x - 1, leg.y - 1, 6);
+    table.fill(metalHighlight);
     
     // Leg main body
-    table.circle(leg.x, leg.y, 4);
+    table.circle(leg.x, leg.y, 5);
     table.fill(legColor);
+    
+    // Leg wood grain
+    table.circle(leg.x, leg.y, 4);
+    table.fill(tableColor);
     
     // Leg shadow
     table.circle(leg.x + 1, leg.y + 1, 3);
-    table.fill(legShadow);
+    table.fill({ color: legShadow, alpha: 0.7 });
     
-    // Leg center
-    table.circle(leg.x, leg.y, 2);
+    // Center detail
+    table.circle(leg.x, leg.y, 1.5);
     table.fill(tableDark);
     
-    // Connection to table (support bracket)
-    table.rect(leg.x - 2, leg.y - 5, 4, 5);
-    table.fill(legShadow);
+    // Enhanced connection bracket
+    table.rect(leg.x - 3, leg.y - 6, 6, 6);
+    table.fill(metalAccent);
     
-    // Bracket highlight
+    table.rect(leg.x - 2, leg.y - 5, 4, 4);
+    table.fill(legColor);
+    
     table.rect(leg.x - 2, leg.y - 5, 4, 1);
-    table.fill(tableHighlight);
+    table.fill(metalHighlight);
   });
   
-  // Add conference table accessories
-  
-  // Center cable management (modern touch)
-  table.rect(x - 15, y - 5, 30, 10);
+  // Modern cable management system
+  table.rect(x - 18, y - 8, 36, 16);
   table.fill(tableDark);
   
-  table.rect(x - 12, y - 2, 24, 4);
-  table.fill(0x2c3e50);
+  table.rect(x - 16, y - 6, 32, 12);
+  table.fill(metalAccent);
   
-  // Small cable ports
-  table.circle(x - 8, y, 1);
-  table.circle(x, y, 1);
-  table.circle(x + 8, y, 1);
+  table.rect(x - 15, y - 5, 30, 10);
+  table.fill(0x263238);
+  
+  // Professional cable ports with metal finish
+  table.circle(x - 10, y, 1.5);
+  table.circle(x, y, 1.5);
+  table.circle(x + 10, y, 1.5);
   table.fill(0x000000);
   
-  // Conference table name plate area
-  table.rect(x - 25, y - 45, 50, 8);
+  // Port rings (chrome finish)
+  table.circle(x - 10, y, 2);
+  table.circle(x, y, 2);
+  table.circle(x + 10, y, 2);
+  table.stroke({ width: 0.5, color: metalHighlight });
+  
+  // Executive nameplate area
+  table.rect(x - 30, y - 46, 60, 10);
   table.fill(tableDark);
   
-  table.rect(x - 23, y - 43, 46, 4);
-  table.fill(0x2c3e50);
+  table.rect(x - 28, y - 44, 56, 6);
+  table.fill(metalAccent);
   
-  // Subtle reflection on glossy surface
-  table.rect(x - 90, y - 40, 180, 15);
-  table.fill({ color: 0xffffff, alpha: 0.1 });
+  table.rect(x - 26, y - 42, 52, 2);
+  table.fill(metalHighlight);
+  
+  // Professional surface reflection
+  table.rect(x - 90, y - 42, 180, 20);
+  table.fill({ color: 0xffffff, alpha: 0.08 });
+  
+  // Additional premium details
+  
+  // Corner reinforcements
+  const cornerSize = 8;
+  const corners = [
+    { x: x - 95, y: y - 45 },
+    { x: x + 95 - cornerSize, y: y - 45 },
+    { x: x - 95, y: y + 45 - cornerSize },
+    { x: x + 95 - cornerSize, y: y + 45 - cornerSize }
+  ];
+  
+  corners.forEach(corner => {
+    table.rect(corner.x, corner.y, cornerSize, cornerSize);
+    table.fill({ color: metalAccent, alpha: 0.3 });
+    
+    table.rect(corner.x + 1, corner.y + 1, cornerSize - 2, cornerSize - 2);
+    table.fill({ color: metalHighlight, alpha: 0.2 });
+  });
+  
+  // Subtle ambient lighting effect
+  table.rect(x - 85, y - 38, 170, 8);
+  table.fill({ color: glossyHighlight, alpha: 0.15 });
+  
+  // Professional edge detail
+  table.rect(x - 99, y - 49, 198, 98);
+  table.stroke({ width: 1, color: tableHighlight });
   
   return table;
 };
@@ -4493,6 +6229,130 @@ const createTable = (x, y, camera, colliders) => {
   return table;
 };
 
+const createInfoBoard = (offsetX, offsetY) => {
+  const infoBoard = new Graphics();
+  
+  // Enhanced professional color palette
+  const boardColor = 0xffffff;
+  const frameColor = 0x2c3e50;
+  const frameShadow = 0x1a252f;
+  const frameHighlight = 0x34495e;
+  const metalAccent = 0x546e7a;
+  const screenGlow = 0xe3f2fd;
+  
+  // Board shadow (cast shadow)
+  infoBoard.rect(offsetX + 127, offsetY - 8, 30, 40);
+  infoBoard.fill({ color: 0x000000, alpha: 0.2 });
+  
+  // Professional frame (outer)
+  infoBoard.rect(offsetX + 123, offsetY - 12, 34, 44);
+  infoBoard.fill(frameColor);
+  
+  // Frame highlight (top and left)
+  infoBoard.rect(offsetX + 123, offsetY - 12, 34, 2);
+  infoBoard.fill(frameHighlight);
+  
+  infoBoard.rect(offsetX + 123, offsetY - 12, 2, 44);
+  infoBoard.fill(frameHighlight);
+  
+  // Frame shadow (bottom and right)
+  infoBoard.rect(offsetX + 123, offsetY + 30, 34, 2);
+  infoBoard.fill(frameShadow);
+  
+  infoBoard.rect(offsetX + 155, offsetY - 12, 2, 44);
+  infoBoard.fill(frameShadow);
+  
+  // Inner frame
+  infoBoard.rect(offsetX + 124, offsetY - 11, 32, 42);
+  infoBoard.fill(frameColor);
+  
+  // Main board surface (slightly inset)
+  infoBoard.rect(offsetX + 125, offsetY - 10, 30, 40);
+  infoBoard.fill(boardColor);
+  
+  // Screen/display area with subtle glow
+  infoBoard.rect(offsetX + 126, offsetY - 9, 28, 38);
+  infoBoard.fill(screenGlow);
+  
+  // Professional bezel
+  infoBoard.rect(offsetX + 125, offsetY - 10, 30, 40);
+  infoBoard.stroke({ width: 1, color: metalAccent });
+  
+  // Content area grid lines (subtle)
+  for (let i = 1; i < 4; i++) {
+    const lineY = offsetY - 10 + (i * 10);
+    infoBoard.rect(offsetX + 127, lineY, 26, 0.5);
+    infoBoard.fill({ color: 0xbdc3c7, alpha: 0.3 });
+  }
+  
+  // Vertical separator
+  infoBoard.rect(offsetX + 139, offsetY - 8, 0.5, 36);
+  infoBoard.fill({ color: 0xbdc3c7, alpha: 0.3 });
+  
+  // LED indicator (top right)
+  infoBoard.circle(offsetX + 150, offsetY - 6, 1.5);
+  infoBoard.fill(0x27ae60);
+  
+  // LED glow
+  infoBoard.circle(offsetX + 150, offsetY - 6, 2.5);
+  infoBoard.fill({ color: 0x27ae60, alpha: 0.3 });
+  
+  // Professional mounting brackets
+  const bracketPositions = [
+    { x: offsetX + 122, y: offsetY - 8 },
+    { x: offsetX + 158, y: offsetY - 8 },
+    { x: offsetX + 122, y: offsetY + 26 },
+    { x: offsetX + 158, y: offsetY + 26 }
+  ];
+  
+  bracketPositions.forEach(bracket => {
+    infoBoard.circle(bracket.x, bracket.y, 2);
+    infoBoard.fill(metalAccent);
+    
+    infoBoard.circle(bracket.x, bracket.y, 1.5);
+    infoBoard.fill(frameColor);
+    
+    infoBoard.circle(bracket.x, bracket.y, 0.5);
+    infoBoard.fill(frameShadow);
+  });
+  
+  // Content placeholders (simulate text/info)
+  
+  // Title area
+  infoBoard.rect(offsetX + 127, offsetY - 7, 20, 2);
+  infoBoard.fill({ color: 0x2c3e50, alpha: 0.8 });
+  
+  // Info lines
+  const infoLines = [
+    { x: offsetX + 127, y: offsetY - 2, width: 22, height: 1 },
+    { x: offsetX + 127, y: offsetY + 2, width: 18, height: 1 },
+    { x: offsetX + 127, y: offsetY + 6, width: 24, height: 1 },
+    { x: offsetX + 127, y: offsetY + 10, width: 16, height: 1 },
+    { x: offsetX + 127, y: offsetY + 14, width: 20, height: 1 },
+    { x: offsetX + 127, y: offsetY + 18, width: 14, height: 1 },
+    { x: offsetX + 127, y: offsetY + 22, width: 18, height: 1 }
+  ];
+  
+  infoLines.forEach(line => {
+    infoBoard.rect(line.x, line.y, line.width, line.height);
+    infoBoard.fill({ color: 0x7f8c8d, alpha: 0.6 });
+  });
+  
+  // Professional logo/brand area (bottom)
+  infoBoard.rect(offsetX + 127, offsetY + 26, 26, 2);
+  infoBoard.fill({ color: 0x3498db, alpha: 0.7 });
+  
+  // Subtle reflection on screen
+  infoBoard.rect(offsetX + 126, offsetY - 8, 12, 15);
+  infoBoard.fill({ color: 0xffffff, alpha: 0.1 });
+  
+  // Professional edge detail
+  infoBoard.rect(offsetX + 125, offsetY - 10, 30, 40);
+  infoBoard.stroke({ width: 0.5, color: frameHighlight });
+  
+  return infoBoard;
+};
+
 
 
 const populateRooms = (gameState) => {
@@ -4537,10 +6397,7 @@ const populateRooms = (gameState) => {
           camera.addChild(createPlant(offsetX + roomWidth - 40, offsetY + 280, camera, gameState.colliders ));
           
           // Information board/directory
-          const infoBoard = new Graphics();
-          infoBoard.rect(offsetX + 125, offsetY - 10, 30, 40);
-          infoBoard.fill(0xffffff);
-          camera.addChild(infoBoard);
+          camera.addChild(createInfoBoard(offsetX + 10, offsetY - 3));
           
           // Waste bins
          camera.addChild(createWasteBin(offsetX + 470, offsetY + 430));
@@ -4632,14 +6489,7 @@ const populateRooms = (gameState) => {
                 });
 
                 // Whiteboard at front wall
-                camera.addChild(createWhiteboard(offsetX + 700, offsetY + 280));
-
-                // Projector screen
-                const projectorScreen = new Graphics();
-                projectorScreen.rect(offsetX + 50, offsetY + 200, 60, 40);
-                projectorScreen.fill(0xffffff);
-                projectorScreen.stroke({ width: 2, color: 0x2c3e50 });
-                camera.addChild(projectorScreen);
+                camera.addChild(createWhiteboard(offsetX + 38, offsetY + 280, camera,gameState.colliders));
 
                 // Plants in corners for aesthetics
                 camera.addChild(createPlant(offsetX + 40, offsetY + 120));
@@ -4665,18 +6515,33 @@ const populateRooms = (gameState) => {
                 camera.addChild(
                   createBookshelf(
                     offsetX + roomWidth - 200,
-                    offsetY + 50,
+                    offsetY + 20,
+                    camera,
+                    gameState.colliders
+                  )
+                );
+                 camera.addChild(
+                  createBookshelf(
+                    offsetX + roomWidth - 280,
+                    offsetY + 20,
                     camera,
                     gameState.colliders
                   )
                 );
 
+
                 // Floor mat near entrance (bottom-left)
-                camera.addChild(createFloorMat(offsetX + 305, offsetY + 80));
+                camera.addChild(createFloorMat(offsetX + 305, offsetY + 80,Math.PI/2));
 
                 // Lobby seating areas (left and right)
-                camera.addChild(createLobbySeating(offsetX + 100, offsetY + 450, camera, gameState.colliders));
-                camera.addChild(createLobbySeating(offsetX + roomWidth - 280, offsetY + 450, camera, gameState.colliders));
+                camera.addChild(createLobbySeating(offsetX + 100, offsetY + 500, camera, gameState.colliders));
+                camera.addChild(createLobbySeating(offsetX + roomWidth - 280, offsetY + 500, camera, gameState.colliders));
+
+                //water-dispenser
+                camera.addChild(createWaterDispenser(offsetX + roomWidth - 80, offsetY + 500, camera, gameState.colliders));
+
+                //dectable
+                camera.addChild(createDecorTable(offsetX + 390, offsetY + 510, camera, gameState.colliders));
 
                 break; 
 
@@ -4700,277 +6565,6 @@ const populateRooms = (gameState) => {
     }
   }
 };
-
-
-const createPlayer = (gameState, playerName = "You") => {
-  const player = new Graphics();
-  const legLeft = new Graphics();
-  const legRight = new Graphics();
-  const armLeft = new Graphics();
-  const armRight = new Graphics();
-  
-  // Enhanced color palette
-  const skinColor = 0xf4c2a1;
-  const skinShadow = 0xe6b596;
-  const shirtColor = 0x3498db;
-  const shirtShadow = 0x2980b9;
-  const pantsColor = 0x2c3e50;
-  const pantsShadow = 0x1a252f;
-  const hairColor = 0x4b2e1e;
-  const shoeColor = 0x000000;
-  
-  // Player body with depth
-  player.beginFill(shirtColor);
-  player.drawRect(-8, -5, 16, 20);
-  player.endFill();
-  
-  // Body shadow/depth
-  player.beginFill(shirtShadow);
-  player.drawRect(-8, 13, 16, 2);
-  player.endFill();
-  
-  // Shirt collar
-  player.beginFill(shirtShadow);
-  player.drawRect(-7, -4, 14, 3);
-  player.endFill();
-  
-  // Head with better shading
-  player.beginFill(skinColor);
-  player.drawRect(-6, -18, 12, 12);
-  player.endFill();
-  
-  // Face shadow
-  player.beginFill(skinShadow);
-  player.drawRect(-6, -8, 12, 2);
-  player.endFill();
-  
-  // Hair with more detail
-  player.beginFill(hairColor);
-  player.drawRect(-7, -19, 14, 6);
-  player.endFill();
-  
-  // Hair highlight
-  player.beginFill(0x6b4423);
-  player.drawRect(-6, -18, 3, 4);
-  player.endFill();
-  
-  // Eyes with pupils
-  player.beginFill(0xffffff);
-  player.drawRect(-4, -15, 2, 2);
-  player.drawRect(2, -15, 2, 2);
-  player.endFill();
-  
-  // Eye pupils
-  player.beginFill(0x000000);
-  player.drawRect(-3.5, -14.5, 1, 1);
-  player.drawRect(2.5, -14.5, 1, 1);
-  player.endFill();
-  
-  // Nose (small dot)
-  player.beginFill(skinShadow);
-  player.drawRect(-0.5, -12, 1, 1);
-  player.endFill();
-  
-  // Arms (separate for animation)
-  armLeft.beginFill(skinColor);
-  armLeft.drawRect(-10, -2, 3, 12);
-  armLeft.endFill();
-  
-  // Left arm shadow
-  armLeft.beginFill(skinShadow);
-  armLeft.drawRect(-8, 8, 3, 2);
-  armLeft.endFill();
-  
-  armRight.beginFill(skinColor);
-  armRight.drawRect(7, -2, 3, 12);
-  armRight.endFill();
-  
-  // Right arm shadow
-  armRight.beginFill(skinShadow);
-  armRight.drawRect(7, 8, 3, 2);
-  armRight.endFill();
-  
-  player.addChild(armLeft);
-  player.addChild(armRight);
-  
-  // Legs with better detail
-  legLeft.beginFill(pantsColor);
-  legLeft.drawRect(-6, 15, 5, 12);
-  legLeft.endFill();
-  
-  // Left leg shadow
-  legLeft.beginFill(pantsShadow);
-  legLeft.drawRect(-6, 25, 5, 2);
-  legLeft.endFill();
-  
-  legRight.beginFill(pantsColor);
-  legRight.drawRect(1, 15, 5, 12);
-  legRight.endFill();
-  
-  // Right leg shadow
-  legRight.beginFill(pantsShadow);
-  legRight.drawRect(1, 25, 5, 2);
-  legRight.endFill();
-  
-  player.addChild(legLeft);
-  player.addChild(legRight);
-  
-  // Enhanced shoes
-  const shoeLeft = new Graphics();
-  shoeLeft.beginFill(shoeColor);
-  shoeLeft.drawRect(-7, 27, 6, 4);
-  shoeLeft.endFill();
-  
-  // Shoe highlight
-  shoeLeft.beginFill(0x333333);
-  shoeLeft.drawRect(-7, 27, 6, 1);
-  shoeLeft.endFill();
-  
-  const shoeRight = new Graphics();
-  shoeRight.beginFill(shoeColor);
-  shoeRight.drawRect(1, 27, 6, 4);
-  shoeRight.endFill();
-  
-  // Shoe highlight
-  shoeRight.beginFill(0x333333);
-  shoeRight.drawRect(1, 27, 6, 1);
-  shoeRight.endFill();
-  
-  player.addChild(shoeLeft);
-  player.addChild(shoeRight);
-  
-  // Belt detail
-  player.beginFill(0x8b4513);
-  player.drawRect(-8, 13, 16, 2);
-  player.endFill();
-  
-  // Belt buckle
-  player.beginFill(0xffd700);
-  player.drawRect(-1, 13.5, 2, 1);
-  player.endFill();
-  
-  // Name tag with better styling
-  const nameTag = new Text({
-    text: playerName,
-    style: new TextStyle({
-      fontSize: 12,
-      fill: 0xffffff,
-      fontFamily: "Arial",
-      stroke: { color: 0x000000, width: 2 },
-      dropShadow: {
-        color: 0x000000,
-        blur: 2,
-        angle: Math.PI / 4,
-        distance: 2,
-      },
-    }),
-  });
-  nameTag.anchor.set(0.5);
-  nameTag.y = -35;
-  player.addChild(nameTag);
-  
-  // Initial position
-  player.x = 400;
-  player.y = 300;
-  
-  // Add to scene
-  gameState.camera.addChild(player);
-  gameState.player = player;
-  
-  // Enhanced animation state
-  let walking = false;
-  let walkFrame = 0;
-  let direction = "down";
-  const walkSpeed = 0.3;
-  const legSwingAmount = 4;
-  const armSwingAmount = 3;
-  const bodyBobAmount = 1;
-  
-  // Ticker-based enhanced animation
-  Ticker.shared.add(() => {
-    if (walking) {
-      walkFrame += walkSpeed;
-      
-      const legAngle = Math.sin(walkFrame) * legSwingAmount;
-      const armAngle = Math.sin(walkFrame) * armSwingAmount;
-      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
-      
-      // Leg animation (opposite swing)
-      legLeft.y = 0 + legAngle;
-      legRight.y = 0 - legAngle;
-      
-      // Arm animation (opposite to legs for natural walking)
-      armLeft.y = 0 - armAngle * 0.7;
-      armRight.y = 0 + armAngle * 0.7;
-      
-      // Slight arm rotation
-      armLeft.rotation = -armAngle * 0.1;
-      armRight.rotation = armAngle * 0.1;
-      
-      // Body bobbing
-      player.children.forEach(child => {
-        if (child !== legLeft && child !== legRight && 
-            child !== shoeLeft && child !== shoeRight) {
-          child.y += Math.sin(walkFrame * 2) * 0.3;
-        }
-      });
-      
-      // Directional facing (flip sprite)
-      if (direction === "left") {
-        player.scale.x = -1;
-      } else if (direction === "right") {
-        player.scale.x = 1;
-      }
-      nameTag.scale.x = 1 / player.scale.x;
-      
-    } else {
-      // Return to idle position smoothly
-      legLeft.y += (0 - legLeft.y) * 0.1;
-      legRight.y += (0 - legRight.y) * 0.1;
-      armLeft.y += (0 - armLeft.y) * 0.1;
-      armRight.y += (0 - armRight.y) * 0.1;
-      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
-      armRight.rotation += (0 - armRight.rotation) * 0.1;
-
-      // Reset body parts to original positions
-      // Body bobbing (exclude nameTag)
-      player.children.forEach((child) => {
-        if (
-          child !== legLeft &&
-          child !== legRight &&
-          child !== shoeLeft &&
-          child !== shoeRight &&
-          child !== nameTag
-        ) {
-          child.y += Math.sin(walkFrame * 2) * 0.3;
-        }
-      });
-
-    }
-  });
-  
-  // Enhanced movement API
-  player.walk = (dir) => {
-    walking = true;
-    direction = dir;
-    const speed = 2;
-    
-    if (dir === "left") player.x -= speed;
-    if (dir === "right") player.x += speed;
-    if (dir === "up") player.y -= speed;
-    if (dir === "down") player.y += speed;
-  };
-  
-  player.stop = () => {
-    walking = false;
-  };
-  
-  // Store original positions for smooth transitions
-  player.children.forEach(child => {
-    child.originalY = child.y;
-  });
-};
-
 
 const createSittingNPC = (x, y, camera,colliders, gameState, npcName = "??") => {
   const npc = new Graphics();
@@ -5852,6 +7446,34 @@ const triggerEmote = (emoji) => {
   requestAnimationFrame(animate);
 };
 
+const changeAvatar = (avatarKey) => {
+  const gameState = gameStateRef.current;
+  const createFn = avatarMap[avatarKey];
+  if (!createFn || !gameState || !gameState.camera) return;
+
+  // 1. Save current position
+  const previousX = gameState.player?.x ?? 400;
+  const previousY = gameState.player?.y ?? 300;
+
+if (gameState.player) {
+  if (gameState.player._tickerFn) {
+    Ticker.shared.remove(gameState.player._tickerFn);
+  }
+  gameState.camera.removeChild(gameState.player);
+  gameState.player.destroy({ children: true });
+  gameState.player = null;
+}
+
+
+  // 3. Create new avatar
+  const newPlayer = createFn(gameState, playerName);
+
+  // 4. Restore previous position
+  newPlayer.x = previousX;
+  newPlayer.y = previousY;
+};
+
+
 return (
   <div
     style={{
@@ -5950,6 +7572,7 @@ return (
         wallHackEnabled={wallHackEnabled}
         setWallHackEnabled={setWallHackEnabled}
         triggerEmote={triggerEmote}
+        changeAvatar={changeAvatar}
       />
 
       {/* Chat Panel */}
