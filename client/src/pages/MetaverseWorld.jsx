@@ -6,6 +6,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { Application, Graphics, Container, Text, TextStyle, Ticker } from "pixi.js";
 import MetaverseMinimap from "../components/Minimap";
 import LeftToolbar from "../components/Toolbar";
+import { io } from "socket.io-client";
 
 const MetaverseWorld = () => {
   const [showFade, setShowFade] = useState(false);
@@ -29,7 +30,8 @@ const MetaverseWorld = () => {
     player: null,
     world: null,
     camera: null,
-    otherPlayers: [],
+    otherPlayers: {},
+    socketId: null,
     furniture: [],
     keys: {},
     TILE_SIZE: 32,
@@ -1588,6 +1590,94 @@ const createPlayer = (gameState, playerName = "You") => {
   return player;
 };
 
+const createOtherPlayer = (name, position) => {
+  const container = new Container();
+
+  // Body
+  const body = new Graphics();
+  body.beginFill(0x6b7280); // slightly different from main player blue
+  body.drawRect(-8, -5, 16, 20);
+  body.endFill();
+
+  // Head
+  const head = new Graphics();
+  head.beginFill(0xe0ac69);
+  head.drawRect(-6, -18, 12, 12);
+  head.endFill();
+
+  // Eyes
+  const leftEye = new Graphics();
+  leftEye.beginFill(0xffffff);
+  leftEye.drawRect(-4, -15, 2, 2);
+  leftEye.endFill();
+
+  const rightEye = new Graphics();
+  rightEye.beginFill(0xffffff);
+  rightEye.drawRect(2, -15, 2, 2);
+  rightEye.endFill();
+
+  // Arms
+  const armLeft = new Graphics();
+  armLeft.beginFill(0xe0ac69);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+
+  const armRight = new Graphics();
+  armRight.beginFill(0xe0ac69);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+
+  // Legs
+  const legLeft = new Graphics();
+  legLeft.beginFill(0x374151); // slate gray
+  legLeft.drawRect(-6, 15, 5, 12);
+  legLeft.endFill();
+
+  const legRight = new Graphics();
+  legRight.beginFill(0x374151);
+  legRight.drawRect(1, 15, 5, 12);
+  legRight.endFill();
+
+  // Shoes
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(0x000000);
+  shoeLeft.drawRect(-7, 27, 6, 4);
+  shoeLeft.endFill();
+
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(0x000000);
+  shoeRight.drawRect(1, 27, 6, 4);
+  shoeRight.endFill();
+
+  // Name Tag
+  const nameTag = new Text({
+    text: name,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+
+  // Add all parts
+  container.addChild(body, head, leftEye, rightEye, armLeft, armRight, legLeft, legRight, shoeLeft, shoeRight, nameTag);
+
+  // Position
+  container.x = position.x;
+  container.y = position.y;
+
+  return container;
+};
+
   const avatarMap = {
   default: createPlayer,
   Batman: createBatman,
@@ -1636,6 +1726,12 @@ useEffect(() => {
   }
 }, [wallHackEnabled]);
 
+const socket = io("http://localhost:5000"); // ✅ change port if different
+socket.on("connect", () => {
+  console.log("🟢 Connected:", socket.id);
+  gameStateRef.current.socketId = socket.id;
+});
+
 
   useEffect(() => {
     if (!loadingPage && space && canvasRef.current) {
@@ -1669,15 +1765,89 @@ const initGame = (app) => {
   gameState.world.addChild(gameState.camera);
 
   createWorldGrid(gameState);
-  populateRooms(gameState);
-  
+  populateRooms(gameState); 
   createFn(gameState, playerName);
+ setupSocketListeners(gameState);
+
+      // ✅ Now emit player-join after everything is ready
+      socket.emit("player-join", {
+        name: playerName,
+        position: {
+          x: gameState.player.x,
+          y: gameState.player.y
+        }
+      });
+console.log("🙋 Sending player-join", playerName, gameState.player.x, gameState.player.y);
+
   setupInput(gameState, app);
 
   // app.ticker drives the game loop
   app.ticker.add(() => gameLoop(gameState, app));
 };
 
+const setupSocketListeners = (gameState) => {
+      // ✅ Remove any existing listeners first
+      socket.off("existing-players");
+      socket.off("player-joined");
+      socket.off("player-moved");
+      socket.off("player-left");
+
+      socket.on("existing-players", (players) => {
+        console.log("📥 Received existing players:", players);
+        console.log("🆔 My socket ID:", gameState.socketId);
+        
+        for (const id in players) {
+          if (id === gameState.socketId) {
+            console.log("⏭️ Skipping own player:", id);
+            continue;
+          }
+          
+          const data = players[id];
+          console.log("➕ Adding existing player:", id, data);
+          
+          const container = createOtherPlayer(data.name, data.position);
+          gameState.otherPlayers[id] = container;
+          gameState.camera.addChild(container);
+        }
+      });
+
+      socket.on("player-joined", (data) => {
+        console.log("📥 New player joined:", data);
+        
+        if (data.id === gameState.socketId) {
+          console.log("⏭️ Skipping own player join event");
+          return;
+        }
+        
+        if (gameState.otherPlayers[data.id]) {
+          console.log("⏭️ Player already exists:", data.id);
+          return;
+        }
+        
+        const container = createOtherPlayer(data.name, data.position);
+        gameState.otherPlayers[data.id] = container;
+        gameState.camera.addChild(container);
+        console.log("➕ Added new player:", data.id);
+      });
+
+      socket.on("player-moved", ({ id, position }) => {
+        const player = gameState.otherPlayers[id];
+        if (player) {
+          player.x = position.x;
+          player.y = position.y;
+        }
+      });
+
+      socket.on("player-left", (id) => {
+        console.log("📤 Player left:", id);
+        const player = gameState.otherPlayers[id];
+        if (player) {
+          gameState.camera.removeChild(player);
+          player.destroy();
+          delete gameState.otherPlayers[id];
+        }
+      });
+    };
 
       const createWorldGrid = (gameState) => {
         const { camera, ROOM_GRID } = gameState;
@@ -6922,6 +7092,11 @@ const gameLoop = (gameState, app) => {
     if (newX !== originalX || newY !== originalY) {
       player.x = newX;
       player.y = newY;
+      // 🔁 Emit updated position to other players
+      socket.emit("player-move", {
+        x: player.x,
+        y: player.y
+      });
 
       // Determine animation direction based on actual movement
       const actualDx = newX - originalX;
@@ -6956,11 +7131,15 @@ const gameLoop = (gameState, app) => {
   world.y = Math.max(-(ROOM_HEIGHT - app.screen.height), Math.min(0, world.y));
 
   // Idle animation for other players
-  gameState.otherPlayers.forEach((p, i) => {
-    const t = Date.now() * 0.001;
-    p.x = p.originalX + Math.sin(t + i) * 20;
-    p.y = p.originalY + Math.cos(t + i * 0.5) * 15;
-  });
+const lerp = (start, end, amt) => start + (end - start) * amt;
+
+Object.values(gameState.otherPlayers).forEach((p) => {
+  if (p.targetX !== undefined && p.targetY !== undefined) {
+    p.x = lerp(p.x, p.targetX, 0.1); // smooth move
+    p.y = lerp(p.y, p.targetY, 0.1);
+  }
+});
+
 
   // ─── Z-Key Elevator Interaction ───
 if (keys["KeyZ"] && !window.textBubbleActive) {
