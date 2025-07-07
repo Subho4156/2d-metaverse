@@ -1592,64 +1592,146 @@ const createPlayer = (gameState, playerName = "You") => {
 
 const createOtherPlayer = (name, position) => {
   const container = new Container();
-
-  // Body
+  
+  // Enhanced color palette (slightly different from main player)
+  const skinColor = 0xe0ac69;
+  const skinShadow = 0xd49c5a;
+  const shirtColor = 0x6b7280; // Gray instead of blue
+  const shirtShadow = 0x4b5563;
+  const pantsColor = 0x374151;
+  const pantsShadow = 0x1f2937;
+  const hairColor = 0x8b4513;
+  const shoeColor = 0x000000;
+  
+  // Create main body graphics
   const body = new Graphics();
-  body.beginFill(0x6b7280); // slightly different from main player blue
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Enhanced body with depth
+  body.beginFill(shirtColor);
   body.drawRect(-8, -5, 16, 20);
   body.endFill();
-
-  // Head
-  const head = new Graphics();
-  head.beginFill(0xe0ac69);
-  head.drawRect(-6, -18, 12, 12);
-  head.endFill();
-
-  // Eyes
-  const leftEye = new Graphics();
-  leftEye.beginFill(0xffffff);
-  leftEye.drawRect(-4, -15, 2, 2);
-  leftEye.endFill();
-
-  const rightEye = new Graphics();
-  rightEye.beginFill(0xffffff);
-  rightEye.drawRect(2, -15, 2, 2);
-  rightEye.endFill();
-
-  // Arms
-  const armLeft = new Graphics();
-  armLeft.beginFill(0xe0ac69);
+  
+  // Body shadow/depth
+  body.beginFill(shirtShadow);
+  body.drawRect(-8, 13, 16, 2);
+  body.endFill();
+  
+  // Shirt collar
+  body.beginFill(shirtShadow);
+  body.drawRect(-7, -4, 14, 3);
+  body.endFill();
+  
+  // Head with better shading
+  body.beginFill(skinColor);
+  body.drawRect(-6, -18, 12, 12);
+  body.endFill();
+  
+  // Face shadow
+  body.beginFill(skinShadow);
+  body.drawRect(-6, -8, 12, 2);
+  body.endFill();
+  
+  // Hair with more detail
+  body.beginFill(hairColor);
+  body.drawRect(-7, -19, 14, 6);
+  body.endFill();
+  
+  // Hair highlight
+  body.beginFill(0xa0522d);
+  body.drawRect(-6, -18, 3, 4);
+  body.endFill();
+  
+  // Eyes with pupils
+  body.beginFill(0xffffff);
+  body.drawRect(-4, -15, 2, 2);
+  body.drawRect(2, -15, 2, 2);
+  body.endFill();
+  
+  // Eye pupils
+  body.beginFill(0x000000);
+  body.drawRect(-3.5, -14.5, 1, 1);
+  body.drawRect(2.5, -14.5, 1, 1);
+  body.endFill();
+  
+  // Nose (small dot)
+  body.beginFill(skinShadow);
+  body.drawRect(-0.5, -12, 1, 1);
+  body.endFill();
+  
+  // Enhanced arms (separate for animation)
+  armLeft.beginFill(skinColor);
   armLeft.drawRect(-10, -2, 3, 12);
   armLeft.endFill();
-
-  const armRight = new Graphics();
-  armRight.beginFill(0xe0ac69);
+  
+  // Left arm shadow
+  armLeft.beginFill(skinShadow);
+  armLeft.drawRect(-8, 8, 3, 2);
+  armLeft.endFill();
+  
+  armRight.beginFill(skinColor);
   armRight.drawRect(7, -2, 3, 12);
   armRight.endFill();
-
-  // Legs
-  const legLeft = new Graphics();
-  legLeft.beginFill(0x374151); // slate gray
+  
+  // Right arm shadow
+  armRight.beginFill(skinShadow);
+  armRight.drawRect(7, 8, 3, 2);
+  armRight.endFill();
+  
+  // Enhanced legs with better detail
+  legLeft.beginFill(pantsColor);
   legLeft.drawRect(-6, 15, 5, 12);
   legLeft.endFill();
-
-  const legRight = new Graphics();
-  legRight.beginFill(0x374151);
+  
+  // Left leg shadow
+  legLeft.beginFill(pantsShadow);
+  legLeft.drawRect(-6, 25, 5, 2);
+  legLeft.endFill();
+  
+  legRight.beginFill(pantsColor);
   legRight.drawRect(1, 15, 5, 12);
   legRight.endFill();
-
-  // Shoes
+  
+  // Right leg shadow
+  legRight.beginFill(pantsShadow);
+  legRight.drawRect(1, 25, 5, 2);
+  legRight.endFill();
+  
+  // Enhanced shoes
   const shoeLeft = new Graphics();
-  shoeLeft.beginFill(0x000000);
+  shoeLeft.beginFill(shoeColor);
   shoeLeft.drawRect(-7, 27, 6, 4);
   shoeLeft.endFill();
-
+  
+  // Shoe highlight
+  shoeLeft.beginFill(0x333333);
+  shoeLeft.drawRect(-7, 27, 6, 1);
+  shoeLeft.endFill();
+  
   const shoeRight = new Graphics();
-  shoeRight.beginFill(0x000000);
+  shoeRight.beginFill(shoeColor);
   shoeRight.drawRect(1, 27, 6, 4);
   shoeRight.endFill();
-
-  // Name Tag
+  
+  // Shoe highlight
+  shoeRight.beginFill(0x333333);
+  shoeRight.drawRect(1, 27, 6, 1);
+  shoeRight.endFill();
+  
+  // Belt detail
+  body.beginFill(0x8b4513);
+  body.drawRect(-8, 13, 16, 2);
+  body.endFill();
+  
+  // Belt buckle
+  body.beginFill(0xffd700);
+  body.drawRect(-1, 13.5, 2, 1);
+  body.endFill();
+  
+  // Name Tag with better styling
   const nameTag = new Text({
     text: name,
     style: new TextStyle({
@@ -1667,15 +1749,1492 @@ const createOtherPlayer = (name, position) => {
   });
   nameTag.anchor.set(0.5);
   nameTag.y = -35;
-
-  // Add all parts
-  container.addChild(body, head, leftEye, rightEye, armLeft, armRight, legLeft, legRight, shoeLeft, shoeRight, nameTag);
-
-  // Position
+  
+  // Add all parts to container
+  container.addChild(body);
+  container.addChild(armLeft);
+  container.addChild(armRight);
+  container.addChild(legLeft);
+  container.addChild(legRight);
+  container.addChild(shoeLeft);
+  container.addChild(shoeRight);
+  container.addChild(nameTag);
+  
+  // Position the container
   container.x = position.x;
   container.y = position.y;
-
+  
+  // Animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  let stopTimeout= null;
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+  
+  // Store original positions for smooth transitions
+  const originalPositions = {
+    armLeft: { y: armLeft.y, rotation: armLeft.rotation },
+    armRight: { y: armRight.y, rotation: armRight.rotation },
+    legLeft: { y: legLeft.y },
+    legRight: { y: legRight.y },
+    body: { y: body.y }
+  };
+  
+  // Animation ticker function
+  let tickerFn = null;
+  
+  tickerFn = () => {
+    if (!container || !container.parent) return; // prevent stale access
+    
+    if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      // Leg animation (opposite swing)
+      legLeft.y = originalPositions.legLeft.y + legAngle;
+      legRight.y = originalPositions.legRight.y - legAngle;
+      
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = originalPositions.armLeft.y - armAngle * 0.7;
+      armRight.y = originalPositions.armRight.y + armAngle * 0.7;
+      
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      // Body bobbing
+      body.y = originalPositions.body.y + Math.sin(walkFrame * 2) * 0.3;
+      
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        container.scale.x = -1;
+      } else if (direction === "right") {
+        container.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / container.scale.x;
+      
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (originalPositions.legLeft.y - legLeft.y) * 0.1;
+      legRight.y += (originalPositions.legRight.y - legRight.y) * 0.1;
+      armLeft.y += (originalPositions.armLeft.y - armLeft.y) * 0.1;
+      armRight.y += (originalPositions.armRight.y - armRight.y) * 0.1;
+      armLeft.rotation += (originalPositions.armLeft.rotation - armLeft.rotation) * 0.1;
+      armRight.rotation += (originalPositions.armRight.rotation - armRight.rotation) * 0.1;
+      body.y += (originalPositions.body.y - body.y) * 0.1;
+    }
+  };
+  
+  // Add ticker for animations
+  Ticker.shared.add(tickerFn);
+  container._tickerFn = tickerFn;
+  
+  // Enhanced movement API
+container.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+  
+ container.stop = () => {
+    walking = false;
+    
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+  
+  // Update position method
+ container.updatePosition = (newPosition, isMoving, newDirection) => {
+    // Update position
+    container.x = newPosition.x;
+    container.y = newPosition.y;
+    
+    if (isMoving) {
+      container.walk(newDirection);
+    } else {
+      container.stop();
+    }
+    
+    // Backup: Auto-stop after 200ms of no updates
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+    }
+    
+    stopTimeout = setTimeout(() => {
+      container.stop();
+    }, 200);
+  };
+  
+  // Cleanup function
+  container.destroy = () => {
+    if (tickerFn) {
+      Ticker.shared.remove(tickerFn);
+    }
+    container.removeChildren();
+  };
+  
   return container;
+};
+
+const createOtherMalePlayer = (name, position) => {
+  const container = new Container();
+  
+  // Enhanced color palette for casual male (same as createMalePlayer)
+  const skinColor = 0xd4a574; // Slightly different skin tone
+  const skinShadow = 0xc19660;
+  const hoodieColor = 0x27ae60; // Green hoodie
+  const hoodieShadow = 0x229954;
+  const jeansColor = 0x34495e; // Dark blue jeans
+  const jeansShadow = 0x2c3e50;
+  const hairColor = 0x2c3e50; // Dark hair
+  const sneakerColor = 0xff6b6b; // Red sneakers
+  
+  // Create main body graphics
+  const body = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Player body (hoodie)
+  body.beginFill(hoodieColor);
+  body.drawRect(-9, -5, 18, 22);
+  body.endFill();
+  
+  // Hoodie shadow
+  body.beginFill(hoodieShadow);
+  body.drawRect(-9, 15, 18, 2);
+  body.endFill();
+  
+  // Hoodie pocket
+  body.beginFill(hoodieShadow);
+  body.drawRect(-6, 5, 12, 8);
+  body.endFill();
+  
+  // Hoodie strings
+  body.beginFill(0xffffff);
+  body.drawRect(-2, -3, 1, 8);
+  body.drawRect(1, -3, 1, 8);
+  body.endFill();
+  
+  // Head
+  body.beginFill(skinColor);
+  body.drawRect(-6, -18, 12, 12);
+  body.endFill();
+  
+  // Face shadow
+  body.beginFill(skinShadow);
+  body.drawRect(-6, -8, 12, 2);
+  body.endFill();
+  
+  // Messy hair style
+  body.beginFill(hairColor);
+  body.drawRect(-7, -19, 14, 7);
+  body.endFill();
+  
+  // Hair spikes/texture
+  body.beginFill(0x1a252f);
+  body.drawRect(-6, -18, 2, 3);
+  body.drawRect(-2, -19, 2, 3);
+  body.drawRect(2, -18, 2, 3);
+  body.drawRect(5, -17, 2, 2);
+  body.endFill();
+  
+  // Eyes with different expression
+  body.beginFill(0xffffff);
+  body.drawRect(-4, -15, 2, 2);
+  body.drawRect(2, -15, 2, 2);
+  body.endFill();
+  
+  // Eye pupils
+  body.beginFill(0x000000);
+  body.drawRect(-3.5, -14.5, 1, 1);
+  body.drawRect(2.5, -14.5, 1, 1);
+  body.endFill();
+  
+  // Nose
+  body.beginFill(skinShadow);
+  body.drawRect(-0.5, -12, 1, 1);
+  body.endFill();
+  
+  // Slight smile
+  body.beginFill(skinShadow);
+  body.drawRect(-1, -10, 3, 1);
+  body.endFill();
+  
+  // Arms in hoodie sleeves
+  armLeft.beginFill(hoodieColor);
+  armLeft.drawRect(-11, -2, 4, 14);
+  armLeft.endFill();
+  
+  // Sleeve cuffs
+  armLeft.beginFill(hoodieShadow);
+  armLeft.drawRect(-11, 10, 4, 2);
+  armLeft.endFill();
+  
+  // Hand showing
+  armLeft.beginFill(skinColor);
+  armLeft.drawRect(-10, 12, 2, 3);
+  armLeft.endFill();
+  
+  armRight.beginFill(hoodieColor);
+  armRight.drawRect(7, -2, 4, 14);
+  armRight.endFill();
+  
+  armRight.beginFill(hoodieShadow);
+  armRight.drawRect(7, 10, 4, 2);
+  armRight.endFill();
+  
+  armRight.beginFill(skinColor);
+  armRight.drawRect(8, 12, 2, 3);
+  armRight.endFill();
+  
+  // Jeans
+  legLeft.beginFill(jeansColor);
+  legLeft.drawRect(-7, 17, 6, 10);
+  legLeft.endFill();
+  
+  // Jeans shadow
+  legLeft.beginFill(jeansShadow);
+  legLeft.drawRect(-7, 25, 6, 2);
+  legLeft.endFill();
+  
+  // Jeans stitching
+  legLeft.beginFill(0x5d6d7e);
+  legLeft.drawRect(-6, 17, 1, 10);
+  legLeft.endFill();
+  
+  legRight.beginFill(jeansColor);
+  legRight.drawRect(1, 17, 6, 10);
+  legRight.endFill();
+  
+  legRight.beginFill(jeansShadow);
+  legRight.drawRect(1, 25, 6, 2);
+  legRight.endFill();
+  
+  legRight.beginFill(0x5d6d7e);
+  legRight.drawRect(5, 17, 1, 10);
+  legRight.endFill();
+  
+  // Sneakers
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(sneakerColor);
+  shoeLeft.drawRect(-8, 27, 7, 4);
+  shoeLeft.endFill();
+  
+  // Sneaker sole
+  shoeLeft.beginFill(0xffffff);
+  shoeLeft.drawRect(-8, 30, 7, 1);
+  shoeLeft.endFill();
+  
+  // Sneaker details
+  shoeLeft.beginFill(0xffffff);
+  shoeLeft.drawRect(-7, 28, 5, 1);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(sneakerColor);
+  shoeRight.drawRect(1, 27, 7, 4);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(0xffffff);
+  shoeRight.drawRect(1, 30, 7, 1);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(0xffffff);
+  shoeRight.drawRect(2, 28, 5, 1);
+  shoeRight.endFill();
+  
+  // Name Tag with better styling
+  const nameTag = new Text({
+    text: name,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  
+  // Add all parts to container
+  container.addChild(body);
+  container.addChild(armLeft);
+  container.addChild(armRight);
+  container.addChild(legLeft);
+  container.addChild(legRight);
+  container.addChild(shoeLeft);
+  container.addChild(shoeRight);
+  container.addChild(nameTag);
+  container.nameTag = nameTag;
+  container.nameText = nameTag; // For compatibility
+  container.playerName = name;
+  
+  // Position the container
+  container.x = position.x;
+  container.y = position.y;
+  
+  // Animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  let stopTimeout = null;
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+  
+  // Store original positions for smooth transitions
+  const originalPositions = {
+    armLeft: { y: armLeft.y, rotation: armLeft.rotation },
+    armRight: { y: armRight.y, rotation: armRight.rotation },
+    legLeft: { y: legLeft.y },
+    legRight: { y: legRight.y },
+    body: { y: body.y }
+  };
+  
+  // Animation ticker function
+  let tickerFn = null;
+  
+  tickerFn = () => {
+    if (!container || !container.parent) return; // prevent stale access
+    
+    if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      // Leg animation (opposite swing)
+      legLeft.y = originalPositions.legLeft.y + legAngle;
+      legRight.y = originalPositions.legRight.y - legAngle;
+      
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = originalPositions.armLeft.y - armAngle * 0.7;
+      armRight.y = originalPositions.armRight.y + armAngle * 0.7;
+      
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      // Body bobbing - affect all body parts except legs and shoes
+      const bodyBobOffset = Math.sin(walkFrame * 2) * 0.3;
+      body.y = originalPositions.body.y + bodyBobOffset;
+      
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        container.scale.x = -1;
+      } else if (direction === "right") {
+        container.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / container.scale.x;
+      
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (originalPositions.legLeft.y - legLeft.y) * 0.1;
+      legRight.y += (originalPositions.legRight.y - legRight.y) * 0.1;
+      armLeft.y += (originalPositions.armLeft.y - armLeft.y) * 0.1;
+      armRight.y += (originalPositions.armRight.y - armRight.y) * 0.1;
+      armLeft.rotation += (originalPositions.armLeft.rotation - armLeft.rotation) * 0.1;
+      armRight.rotation += (originalPositions.armRight.rotation - armRight.rotation) * 0.1;
+      body.y += (originalPositions.body.y - body.y) * 0.1;
+    }
+  };
+  
+  // Add ticker for animations
+  Ticker.shared.add(tickerFn);
+  container._tickerFn = tickerFn;
+  
+  // Enhanced movement API
+  container.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+  
+  container.stop = () => {
+    walking = false;
+    
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+  
+  // Update position method
+  container.updatePosition = (newPosition, isMoving, newDirection) => {
+    // Update position
+    container.x = newPosition.x;
+    container.y = newPosition.y;
+    
+    if (isMoving) {
+      container.walk(newDirection);
+    } else {
+      container.stop();
+    }
+    
+    // Backup: Auto-stop after 200ms of no updates
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+    }
+    
+    stopTimeout = setTimeout(() => {
+      container.stop();
+    }, 200);
+  };
+  
+  // Cleanup function
+  container.destroy = () => {
+    if (tickerFn) {
+      Ticker.shared.remove(tickerFn);
+    }
+    container.removeChildren();
+  };
+  
+  return container;
+};
+
+const createOtherFemalePlayer = (name, position) => {
+  const container = new Container();
+  
+  // Professional color palette for office girl (same as createGirlPlayer)
+  const skinColor = 0xf4c2a1;
+  const skinShadow = 0xe6b596;
+  const blouseColor = 0xffffff; // White blouse
+  const blouseShadow = 0xe8e8e8;
+  const suitColor = 0x2c3e50; // Navy blue suit
+  const suitShadow = 0x1a252f;
+  const hairColor = 0x4a4a4a; // Dark brown/black hair
+  const hairHighlight = 0x666666;
+  const shoeColor = 0x000000; // Black heels
+  const stockingColor = 0xf5deb3; // Nude stockings
+  
+  // Create main body graphics
+  const body = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Player body (white blouse)
+  body.beginFill(blouseColor);
+  body.drawRect(-8, -5, 16, 18);
+  body.endFill();
+  
+  // Blouse shadow/depth
+  body.beginFill(blouseShadow);
+  body.drawRect(-8, 11, 16, 2);
+  body.endFill();
+  
+  // Professional collar
+  body.beginFill(blouseShadow);
+  body.drawRect(-7, -4, 14, 3);
+  body.endFill();
+  
+  // Suit jacket/blazer
+  body.beginFill(suitColor);
+  body.drawRect(-9, -3, 18, 16);
+  body.endFill();
+  
+  // Jacket shadow
+  body.beginFill(suitShadow);
+  body.drawRect(-9, 11, 18, 2);
+  body.endFill();
+  
+  // Jacket lapels
+  body.beginFill(suitShadow);
+  body.drawRect(-8, -2, 6, 8);
+  body.drawRect(2, -2, 6, 8);
+  body.endFill();
+  
+  // Showing white blouse underneath
+  body.beginFill(blouseColor);
+  body.drawRect(-2, -2, 4, 8);
+  body.endFill();
+  
+  // Head with better shading
+  body.beginFill(skinColor);
+  body.drawRect(-6, -18, 12, 12);
+  body.endFill();
+  
+  // Face shadow
+  body.beginFill(skinShadow);
+  body.drawRect(-6, -8, 12, 2);
+  body.endFill();
+  
+  // Professional hair (neat bun/updo)
+  body.beginFill(hairColor);
+  body.drawRect(-7, -19, 14, 7);
+  body.endFill();
+  
+  // Hair bun at back
+  body.beginFill(hairColor);
+  body.drawRect(-3, -21, 6, 4);
+  body.endFill();
+  
+  // Hair highlights (subtle)
+  body.beginFill(hairHighlight);
+  body.drawRect(-6, -18, 3, 4);
+  body.endFill();
+  
+  // Side part
+  body.beginFill(hairHighlight);
+  body.drawRect(-1, -19, 1, 6);
+  body.endFill();
+  
+  // Eyes (professional makeup)
+  body.beginFill(0xffffff);
+  body.drawRect(-4, -15, 2, 2);
+  body.drawRect(2, -15, 2, 2);
+  body.endFill();
+  
+  // Eye pupils
+  body.beginFill(0x000000);
+  body.drawRect(-3.5, -14.5, 1, 1);
+  body.drawRect(2.5, -14.5, 1, 1);
+  body.endFill();
+  
+  // Subtle eyeliner
+  body.beginFill(0x000000);
+  body.drawRect(-4, -16, 2, 0.5);
+  body.drawRect(2, -16, 2, 0.5);
+  body.endFill();
+  
+  // Nose
+  body.beginFill(skinShadow);
+  body.drawRect(-0.5, -12, 1, 1);
+  body.endFill();
+  
+  // Professional lipstick (subtle)
+  body.beginFill(0xd63384);
+  body.drawRect(-1, -10, 2, 1);
+  body.endFill();
+  
+  // Professional pencil skirt
+  body.beginFill(suitColor);
+  body.drawRect(-7, 13, 14, 10);
+  body.endFill();
+  
+  // Skirt shadow
+  body.beginFill(suitShadow);
+  body.drawRect(-7, 21, 14, 2);
+  body.endFill();
+  
+  // Arms in suit jacket
+  armLeft.beginFill(suitColor);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+  
+  // Jacket cuffs
+  armLeft.beginFill(suitShadow);
+  armLeft.drawRect(-10, 8, 3, 2);
+  armLeft.endFill();
+  
+  // Hand showing
+  armLeft.beginFill(skinColor);
+  armLeft.drawRect(-9, 10, 2, 3);
+  armLeft.endFill();
+  
+  armRight.beginFill(suitColor);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+  
+  armRight.beginFill(suitShadow);
+  armRight.drawRect(7, 8, 3, 2);
+  armRight.endFill();
+  
+  armRight.beginFill(skinColor);
+  armRight.drawRect(7, 10, 2, 3);
+  armRight.endFill();
+  
+  // Legs with stockings
+  legLeft.beginFill(stockingColor);
+  legLeft.drawRect(-5, 23, 4, 6);
+  legLeft.endFill();
+  
+  legRight.beginFill(stockingColor);
+  legRight.drawRect(1, 23, 4, 6);
+  legRight.endFill();
+  
+  // Professional heels
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(shoeColor);
+  shoeLeft.drawRect(-6, 29, 5, 3);
+  shoeLeft.endFill();
+  
+  // Heel
+  shoeLeft.beginFill(shoeColor);
+  shoeLeft.drawRect(-3, 32, 2, 2);
+  shoeLeft.endFill();
+  
+  // Shoe highlight
+  shoeLeft.beginFill(0x333333);
+  shoeLeft.drawRect(-6, 29, 5, 1);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(shoeColor);
+  shoeRight.drawRect(1, 29, 5, 3);
+  shoeRight.endFill();
+  
+  // Heel
+  shoeRight.beginFill(shoeColor);
+  shoeRight.drawRect(2, 32, 2, 2);
+  shoeRight.endFill();
+  
+  // Shoe highlight
+  shoeRight.beginFill(0x333333);
+  shoeRight.drawRect(1, 29, 5, 1);
+  shoeRight.endFill();
+  
+  // Name Tag with better styling
+  const nameTag = new Text({
+    text: name,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  
+  // Add all parts to container
+  container.addChild(body);
+  container.addChild(armLeft);
+  container.addChild(armRight);
+  container.addChild(legLeft);
+  container.addChild(legRight);
+  container.addChild(shoeLeft);
+  container.addChild(shoeRight);
+  container.addChild(nameTag);
+  container.nameTag = nameTag;
+  container.nameText = nameTag; // For compatibility
+  container.playerName = name;
+  
+  // Position the container
+  container.x = position.x;
+  container.y = position.y;
+  
+  // Animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  let stopTimeout = null;
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+  
+  // Store original positions for smooth transitions
+  const originalPositions = {
+    armLeft: { y: armLeft.y, rotation: armLeft.rotation },
+    armRight: { y: armRight.y, rotation: armRight.rotation },
+    legLeft: { y: legLeft.y },
+    legRight: { y: legRight.y },
+    body: { y: body.y }
+  };
+  
+  // Animation ticker function
+  let tickerFn = null;
+  
+  tickerFn = () => {
+    if (!container || !container.parent) return; // prevent stale access
+    
+    if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      // Leg animation (opposite swing)
+      legLeft.y = originalPositions.legLeft.y + legAngle;
+      legRight.y = originalPositions.legRight.y - legAngle;
+      
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = originalPositions.armLeft.y - armAngle * 0.7;
+      armRight.y = originalPositions.armRight.y + armAngle * 0.7;
+      
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      // Body bobbing
+      const bodyBobOffset = Math.sin(walkFrame * 2) * 0.3;
+      body.y = originalPositions.body.y + bodyBobOffset;
+      
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        container.scale.x = -1;
+      } else if (direction === "right") {
+        container.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / container.scale.x;
+      
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (originalPositions.legLeft.y - legLeft.y) * 0.1;
+      legRight.y += (originalPositions.legRight.y - legRight.y) * 0.1;
+      armLeft.y += (originalPositions.armLeft.y - armLeft.y) * 0.1;
+      armRight.y += (originalPositions.armRight.y - armRight.y) * 0.1;
+      armLeft.rotation += (originalPositions.armLeft.rotation - armLeft.rotation) * 0.1;
+      armRight.rotation += (originalPositions.armRight.rotation - armRight.rotation) * 0.1;
+      body.y += (originalPositions.body.y - body.y) * 0.1;
+    }
+  };
+  
+  // Add ticker for animations
+  Ticker.shared.add(tickerFn);
+  container._tickerFn = tickerFn;
+  
+  // Enhanced movement API
+  container.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+  
+  container.stop = () => {
+    walking = false;
+    
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+  
+  // Update position method
+  container.updatePosition = (newPosition, isMoving, newDirection) => {
+    // Update position
+    container.x = newPosition.x;
+    container.y = newPosition.y;
+    
+    if (isMoving) {
+      container.walk(newDirection);
+    } else {
+      container.stop();
+    }
+    
+    // Backup: Auto-stop after 200ms of no updates
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+    }
+    
+    stopTimeout = setTimeout(() => {
+      container.stop();
+    }, 200);
+  };
+  
+  // Cleanup function
+  container.destroy = () => {
+    if (tickerFn) {
+      Ticker.shared.remove(tickerFn);
+    }
+    container.removeChildren();
+  };
+  
+  return container;
+};
+
+const createOtherSpideyPlayer = (name, position) => {
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+  
+  // Enhanced Spiderman color palette
+  const spidermanRed = 0xdc143c;
+  const spidermanRedShadow = 0xa01024;
+  const spidermanRedHighlight = 0xff3050;
+  const spidermanBlue = 0x1e40af;
+  const spidermanBlueShadow = 0x1e3a8a;
+  const spidermanBlueHighlight = 0x3b82f6;
+  const webColor = 0x000000;
+  const eyeColor = 0xffffff;
+  const eyeReflection = 0xe0e0e0;
+  const muscleShadow = 0x8b1538;
+  
+  // Create separate graphics objects for emblem and web patterns
+  const emblem = new Graphics();
+  const webPattern = new Graphics();
+  
+  // Main body (red suit with muscle definition)
+  player.beginFill(spidermanRed);
+  player.drawRect(-8, -5, 16, 18);
+  player.endFill();
+  
+  // Muscle definition on torso
+  player.beginFill(spidermanRedShadow);
+  player.drawRect(-6, -3, 2, 8);  // Left pec
+  player.drawRect(4, -3, 2, 8);   // Right pec
+  player.drawRect(-2, 2, 4, 6);   // Abs
+  player.endFill();
+  
+  // Body highlights
+  player.beginFill(spidermanRedHighlight);
+  player.drawRect(-7, -4, 1, 6);  // Left highlight
+  player.drawRect(6, -4, 1, 6);   // Right highlight
+  player.endFill();
+  
+  // Body shadow
+  player.beginFill(spidermanRedShadow);
+  player.drawRect(-8, 11, 16, 2);
+  player.endFill();
+  
+  // Enhanced spider emblem on chest
+  emblem.beginFill(webColor);
+  // Spider body (more detailed)
+  emblem.drawRect(-1, -3, 2, 8);
+  emblem.drawRect(-2, -1, 4, 2);
+  // Spider legs (more realistic)
+  emblem.drawRect(-5, -1, 3, 1);
+  emblem.drawRect(2, -1, 3, 1);
+  emblem.drawRect(-4, 1, 2, 1);
+  emblem.drawRect(2, 1, 2, 1);
+  emblem.drawRect(-3, 3, 1, 1);
+  emblem.drawRect(2, 3, 1, 1);
+  // Add spider head
+  emblem.drawRect(-1, -4, 2, 2);
+  emblem.endFill();
+  
+  // Enhanced web pattern on torso
+  webPattern.beginFill(webColor);
+  // Vertical web lines
+  for (let i = -6; i <= 6; i += 2) {
+    webPattern.drawRect(i, -4, 1, 16);
+  }
+  // Horizontal web lines
+  for (let i = -4; i <= 12; i += 2) {
+    webPattern.drawRect(-7, i, 14, 1);
+  }
+  // Diagonal web connections
+  for (let i = -6; i <= 4; i += 2) {
+    webPattern.drawRect(i, -3 + Math.abs(i), 1, 1);
+    webPattern.drawRect(i, 1 + Math.abs(i), 1, 1);
+  }
+  webPattern.endFill();
+  
+  // Head (full mask with better shape)
+  player.beginFill(spidermanRed);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+  
+  // Head muscle definition
+  player.beginFill(spidermanRedShadow);
+  player.drawRect(-5, -16, 2, 3);  // Left cheek
+  player.drawRect(3, -16, 2, 3);   // Right cheek
+  player.drawRect(-2, -12, 4, 2);  // Jaw line
+  player.endFill();
+  
+  // Head highlights
+  player.beginFill(spidermanRedHighlight);
+  player.drawRect(-5, -17, 1, 2);
+  player.drawRect(4, -17, 1, 2);
+  player.endFill();
+  
+  // Enhanced web pattern on head
+  player.beginFill(webColor);
+  // Radial web pattern from center
+  for (let i = -5; i <= 5; i += 2) {
+    player.drawRect(i, -18, 1, 12);
+  }
+  for (let i = -17; i <= -7; i += 2) {
+    player.drawRect(-6, i, 12, 1);
+  }
+  // Curved web lines around eyes
+  player.drawRect(-6, -15, 2, 1);
+  player.drawRect(-6, -14, 3, 1);
+  player.drawRect(3, -15, 3, 1);
+  player.drawRect(4, -14, 2, 1);
+  player.endFill();
+  
+  // Enhanced Spiderman eyes (larger and more expressive)
+  player.beginFill(eyeColor);
+  // Left eye (teardrop shape)
+  player.drawRect(-5, -16, 4, 5);
+  player.drawRect(-4, -17, 2, 1);
+  player.drawRect(-4, -11, 2, 1);
+  // Right eye
+  player.drawRect(1, -16, 4, 5);
+  player.drawRect(2, -17, 2, 1);
+  player.drawRect(2, -11, 2, 1);
+  player.endFill();
+  
+  // Eye reflections
+  player.beginFill(eyeReflection);
+  player.drawRect(-4, -15, 1, 1);
+  player.drawRect(2, -15, 1, 1);
+  player.endFill();
+  
+  // Eye outline (more detailed)
+  player.beginFill(webColor);
+  // Left eye outline
+  player.drawRect(-5, -17, 4, 1);
+  player.drawRect(-5, -11, 4, 1);
+  player.drawRect(-5, -16, 1, 5);
+  player.drawRect(-1, -16, 1, 5);
+  player.drawRect(-4, -17, 1, 1);
+  player.drawRect(-2, -17, 1, 1);
+  // Right eye outline
+  player.drawRect(1, -17, 4, 1);
+  player.drawRect(1, -11, 4, 1);
+  player.drawRect(1, -16, 1, 5);
+  player.drawRect(4, -16, 1, 5);
+  player.drawRect(2, -17, 1, 1);
+  player.drawRect(4, -17, 1, 1);
+  player.endFill();
+  
+  // Enhanced arms (red with better muscle definition)
+  armLeft.beginFill(spidermanRed);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+  
+  // Muscle definition on arms
+  armLeft.beginFill(spidermanRedShadow);
+  armLeft.drawRect(-9, 0, 1, 8);  // Bicep
+  armLeft.endFill();
+  
+  armLeft.beginFill(spidermanRedHighlight);
+  armLeft.drawRect(-10, 1, 1, 6);
+  armLeft.endFill();
+  
+  // Enhanced web pattern on arms
+  armLeft.beginFill(webColor);
+  armLeft.drawRect(-10, 0, 3, 1);
+  armLeft.drawRect(-10, 3, 3, 1);
+  armLeft.drawRect(-10, 6, 3, 1);
+  armLeft.drawRect(-9, -2, 1, 12);
+  // Diagonal connections
+  armLeft.drawRect(-10, 1, 1, 1);
+  armLeft.drawRect(-8, 2, 1, 1);
+  armLeft.drawRect(-10, 4, 1, 1);
+  armLeft.drawRect(-8, 5, 1, 1);
+  armLeft.endFill();
+  
+  // Enhanced hands
+  armLeft.beginFill(spidermanRed);
+  armLeft.drawRect(-9, 10, 2, 3);
+  armLeft.endFill();
+  
+  // Hand web pattern
+  armLeft.beginFill(webColor);
+  armLeft.drawRect(-9, 11, 2, 1);
+  armLeft.endFill();
+  
+  // Right arm (mirrored)
+  armRight.beginFill(spidermanRed);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+  
+  armRight.beginFill(spidermanRedShadow);
+  armRight.drawRect(8, 0, 1, 8);
+  armRight.endFill();
+  
+  armRight.beginFill(spidermanRedHighlight);
+  armRight.drawRect(9, 1, 1, 6);
+  armRight.endFill();
+  
+  armRight.beginFill(webColor);
+  armRight.drawRect(7, 0, 3, 1);
+  armRight.drawRect(7, 3, 3, 1);
+  armRight.drawRect(7, 6, 3, 1);
+  armRight.drawRect(8, -2, 1, 12);
+  armRight.drawRect(9, 1, 1, 1);
+  armRight.drawRect(7, 2, 1, 1);
+  armRight.drawRect(9, 4, 1, 1);
+  armRight.drawRect(7, 5, 1, 1);
+  armRight.endFill();
+  
+  armRight.beginFill(spidermanRed);
+  armRight.drawRect(7, 10, 2, 3);
+  armRight.endFill();
+  
+  armRight.beginFill(webColor);
+  armRight.drawRect(7, 11, 2, 1);
+  armRight.endFill();
+  
+  // Enhanced legs (blue suit with muscle definition)
+  legLeft.beginFill(spidermanBlue);
+  legLeft.drawRect(-5, 13, 4, 16);
+  legLeft.endFill();
+  
+  // Muscle definition on legs
+  legLeft.beginFill(spidermanBlueShadow);
+  legLeft.drawRect(-4, 15, 1, 12);  // Quad muscle
+  legLeft.drawRect(-2, 17, 1, 8);   // Inner muscle
+  legLeft.endFill();
+  
+  legLeft.beginFill(spidermanBlueHighlight);
+  legLeft.drawRect(-5, 16, 1, 10);
+  legLeft.endFill();
+  
+  // Enhanced web pattern on legs
+  legLeft.beginFill(webColor);
+  legLeft.drawRect(-5, 16, 4, 1);
+  legLeft.drawRect(-5, 20, 4, 1);
+  legLeft.drawRect(-5, 24, 4, 1);
+  legLeft.drawRect(-3, 13, 1, 16);
+  // Diagonal connections
+  legLeft.drawRect(-5, 17, 1, 1);
+  legLeft.drawRect(-2, 18, 1, 1);
+  legLeft.drawRect(-5, 21, 1, 1);
+  legLeft.drawRect(-2, 22, 1, 1);
+  legLeft.endFill();
+  
+  // Right leg (mirrored)
+  legRight.beginFill(spidermanBlue);
+  legRight.drawRect(1, 13, 4, 16);
+  legRight.endFill();
+  
+  legRight.beginFill(spidermanBlueShadow);
+  legRight.drawRect(3, 15, 1, 12);
+  legRight.drawRect(1, 17, 1, 8);
+  legRight.endFill();
+  
+  legRight.beginFill(spidermanBlueHighlight);
+  legRight.drawRect(4, 16, 1, 10);
+  legRight.endFill();
+  
+  legRight.beginFill(webColor);
+  legRight.drawRect(1, 16, 4, 1);
+  legRight.drawRect(1, 20, 4, 1);
+  legRight.drawRect(1, 24, 4, 1);
+  legRight.drawRect(2, 13, 1, 16);
+  legRight.drawRect(4, 17, 1, 1);
+  legRight.drawRect(1, 18, 1, 1);
+  legRight.drawRect(4, 21, 1, 1);
+  legRight.drawRect(1, 22, 1, 1);
+  legRight.endFill();
+  
+  // Enhanced boots
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(spidermanRed);
+  shoeLeft.drawRect(-6, 29, 5, 3);
+  shoeLeft.endFill();
+  
+  // Boot details
+  shoeLeft.beginFill(spidermanRedShadow);
+  shoeLeft.drawRect(-6, 30, 5, 1);
+  shoeLeft.endFill();
+  
+  shoeLeft.beginFill(webColor);
+  shoeLeft.drawRect(-5, 29, 1, 3);
+  shoeLeft.drawRect(-3, 29, 1, 3);
+  shoeLeft.endFill();
+  
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(spidermanRed);
+  shoeRight.drawRect(1, 29, 5, 3);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(spidermanRedShadow);
+  shoeRight.drawRect(1, 30, 5, 1);
+  shoeRight.endFill();
+  
+  shoeRight.beginFill(webColor);
+  shoeRight.drawRect(2, 29, 1, 3);
+  shoeRight.drawRect(4, 29, 1, 3);
+  shoeRight.endFill();
+  
+  // Add all child elements in correct order
+  player.addChild(webPattern);  // Web pattern first
+  player.addChild(emblem);      // Emblem on top
+  player.addChild(armLeft);
+  player.addChild(armRight);
+  player.addChild(legLeft);
+  player.addChild(legRight);
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+  
+  // Name tag
+  const nameTag = new Text({
+    text: name,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+  player.nameTag = nameTag;
+  player.nameText = nameTag; // For compatibility
+  player.playerName = name;
+  
+  // Position the player
+  player.x = position.x;
+  player.y = position.y;
+  
+  // Use the provided animation function
+  return setupPlayerAnimationForOtherPlayer(player, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, null, emblem, webPattern);
+};
+
+
+const createOtherBatmanPlayer = (name, position, gameState) => {
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+
+  // Batman color palette (same as createBatman)
+  const batmanGray = 0x4a5568;
+  const batmanGrayShadow = 0x2d3748;
+  const batmanBlack = 0x1a202c;
+  const batmanBlackShadow = 0x000000;
+  const batmanYellow = 0xffd700;
+  const batmanYellowShadow = 0xe6c200;
+  const batmanBlue = 0x2563eb;
+  const capeColor = 0x1a202c;
+
+  // Cape (behind character) - Ensure this is added first to be at the back
+  const cape = new Graphics();
+  cape.beginFill(capeColor);
+  cape.drawRect(-12, -8, 24, 25);
+  cape.endFill();
+
+  // Cape shadow
+  cape.beginFill(batmanBlackShadow);
+  cape.drawRect(-12, 15, 24, 2);
+  cape.endFill();
+
+  player.addChild(cape); // Add cape first
+
+  // Main body (gray suit)
+  player.beginFill(batmanGray);
+  player.drawRect(-8, -5, 16, 18);
+  player.endFill();
+
+  // Body shadow
+  player.beginFill(batmanGrayShadow);
+  player.drawRect(-8, 11, 16, 2);
+  player.endFill();
+
+  // Head with cowl (drawn after body)
+  player.beginFill(batmanGray);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+
+  // Batman cowl ears
+  player.beginFill(batmanGray);
+  player.drawRect(-4, -22, 2, 4);
+  player.drawRect(2, -22, 2, 4);
+  player.endFill();
+
+  // Cowl shadow
+  player.beginFill(batmanGrayShadow);
+  player.drawRect(-6, -8, 12, 2);
+  player.endFill();
+
+  // Batman eyes (white slits)
+  player.beginFill(0xffffff);
+  player.drawRect(-4, -15, 2, 1);
+  player.drawRect(2, -15, 2, 1);
+  player.endFill();
+
+  // Mouth (stern expression)
+  player.beginFill(batmanGrayShadow);
+  player.drawRect(-1, -10, 2, 1);
+  player.endFill();
+
+  // Create separate graphics objects for emblem and belt
+  const emblem = new Graphics();
+  const belt = new Graphics();
+
+  // Bat emblem on chest - separate object
+  emblem.beginFill(batmanYellow);
+  emblem.drawRect(-3, -2, 6, 4);
+  emblem.endFill();
+
+  // Bat symbol
+  emblem.beginFill(batmanBlack);
+  // Bat body
+  emblem.drawRect(-1, -1, 2, 2);
+  // Bat wings
+  emblem.drawRect(-3, 0, 2, 1);
+  emblem.drawRect(1, 0, 2, 1);
+  // Wing tips
+  emblem.drawRect(-4, 1, 1, 1);
+  emblem.drawRect(3, 1, 1, 1);
+  emblem.endFill();
+
+  // Utility belt - separate object
+  belt.beginFill(batmanYellow);
+  belt.drawRect(-8, 8, 16, 2);
+  belt.endFill();
+
+  // Belt pouches
+  belt.beginFill(batmanYellowShadow);
+  belt.drawRect(-6, 8, 2, 2);
+  belt.drawRect(-2, 8, 2, 2);
+  belt.drawRect(2, 8, 2, 2);
+  belt.endFill();
+
+  // Belt buckle
+  belt.beginFill(batmanYellowShadow);
+  belt.drawRect(-1, 8, 2, 2);
+  belt.endFill();
+
+  // Add emblem and belt to player
+  player.addChild(emblem);
+  player.addChild(belt);
+
+  // Arms (gray with black gloves)
+  armLeft.beginFill(batmanGray);
+  armLeft.drawRect(-10, -2, 3, 10);
+  armLeft.endFill();
+
+  // Black gloves
+  armLeft.beginFill(batmanBlack);
+  armLeft.drawRect(-10, 8, 3, 5);
+  armLeft.endFill();
+
+  armRight.beginFill(batmanGray);
+  armRight.drawRect(7, -2, 3, 10);
+  armRight.endFill();
+
+  armRight.beginFill(batmanBlack);
+  armRight.drawRect(7, 8, 3, 5);
+  armRight.endFill();
+
+  player.addChild(armLeft);
+  player.addChild(armRight);
+
+  // Legs (gray with black boots)
+  legLeft.beginFill(batmanGray);
+  legLeft.drawRect(-5, 13, 4, 12);
+  legLeft.endFill();
+
+  // Black boots
+  legLeft.beginFill(batmanBlack);
+  legLeft.drawRect(-5, 25, 4, 4);
+  legLeft.endFill();
+
+  legRight.beginFill(batmanGray);
+  legRight.drawRect(1, 13, 4, 12);
+  legRight.endFill();
+
+  legRight.beginFill(batmanBlack);
+  legRight.drawRect(1, 25, 4, 4);
+  legRight.endFill();
+
+  player.addChild(legLeft);
+  player.addChild(legRight);
+
+  // Boots
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(batmanBlack);
+  shoeLeft.drawRect(-6, 29, 5, 3);
+  shoeLeft.endFill();
+
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(batmanBlack);
+  shoeRight.drawRect(1, 29, 5, 3);
+  shoeRight.endFill();
+
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+
+  // Name tag
+  const nameTag = new Text({
+    text: name,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0xffffff,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+  player.nameTag = nameTag;
+  player.nameText = nameTag; // For compatibility
+  player.playerName = name;
+
+  // Set initial position
+  player.x = position.x;
+  player.y = position.y;
+
+  // Use the existing setupPlayerAnimation function but modify it to not add to gameState.camera
+  // and not set gameState.player (since this is for other players)
+  const animatedPlayer = setupPlayerAnimationForOtherPlayer(player, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, cape, emblem, belt);
+
+  return animatedPlayer;
+};
+
+// Modified setupPlayerAnimation for other players (doesn't interfere with main player)
+const setupPlayerAnimationForOtherPlayer = (player, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, cape = null, emblem = null, belt = null) => {
+  // Animation variables
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 4;
+  const armSwingAmount = 3;
+  const bodyBobAmount = 1;
+
+  let tickerFn = () => {
+    if (!player || !player.parent) return; // prevent stale access
+
+    if (walking) {
+      walkFrame += walkSpeed;
+      
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+      
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+      
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+      
+      armLeft.rotation = -armAngle * 0.1;
+      armRight.rotation = armAngle * 0.1;
+      
+      player.children.forEach(child => {
+        if (child !== legLeft && child !== legRight && 
+            child !== shoeLeft && child !== shoeRight && child !== cape &&
+            child !== emblem && child !== belt) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+      
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+      
+    } else {
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight &&
+          child !== nameTag &&
+          child !== cape &&
+          child !== emblem &&
+          child !== belt
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+    }
+  };
+  
+  Ticker.shared.add(tickerFn);
+  player._tickerFn = tickerFn;
+  
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 2;
+    
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+  
+  player.stop = () => {
+    walking = false;
+  };
+
+  // Add updatePosition method for network synchronization
+  player.updatePosition = (newPosition, isMoving, newDirection) => {
+    player.x = newPosition.x;
+    player.y = newPosition.y;
+    
+    if (isMoving) {
+      player.walk(newDirection);
+    } else {
+      player.stop();
+    }
+  };
+
+  // Add destroy method for cleanup
+  player.destroy = () => {
+    if (tickerFn) {
+      Ticker.shared.remove(tickerFn);
+    }
+    if (player.parent) {
+      player.parent.removeChild(player);
+    }
+  };
+  
+  player.children.forEach(child => {
+    child.originalY = child.y;
+  });
+  
+  return player;
 };
 
   const avatarMap = {
@@ -1684,6 +3243,14 @@ const createOtherPlayer = (name, position) => {
   Spiderman: createSpidey,
   Male: createMalePlayer,
   Female: createGirlPlayer
+};
+
+    const avatarOtherMap = {
+  default: createOtherPlayer,
+  Batman: createOtherBatmanPlayer,
+  Spiderman: createOtherSpideyPlayer,
+  Male: createOtherMalePlayer,
+  Female: createOtherFemalePlayer
 };
 const createFn = avatarMap[avatarType] || createPlayer;
 
@@ -1775,7 +3342,9 @@ const initGame = (app) => {
         position: {
           x: gameState.player.x,
           y: gameState.player.y
-        }
+        },
+        avatarKey: gameState.player.avatarKey,
+        spaceId: space._id,
       });
 console.log("🙋 Sending player-join", playerName, gameState.player.x, gameState.player.y);
 
@@ -1786,70 +3355,390 @@ console.log("🙋 Sending player-join", playerName, gameState.player.x, gameStat
 };
 
 const setupSocketListeners = (gameState) => {
-      // ✅ Remove any existing listeners first
-      socket.off("existing-players");
-      socket.off("player-joined");
-      socket.off("player-moved");
-      socket.off("player-left");
+  // ✅ Remove any existing listeners first
+  socket.off("existing-players");
+  socket.off("player-joined");
+  socket.off("player-moved");
+  socket.off("player-left");
+  socket.off("avatar-change");
+  socket.off("player-emote");
 
-      socket.on("existing-players", (players) => {
-        console.log("📥 Received existing players:", players);
-        console.log("🆔 My socket ID:", gameState.socketId);
-        
-        for (const id in players) {
-          if (id === gameState.socketId) {
-            console.log("⏭️ Skipping own player:", id);
-            continue;
-          }
-          
-          const data = players[id];
-          console.log("➕ Adding existing player:", id, data);
-          
-          const container = createOtherPlayer(data.name, data.position);
-          gameState.otherPlayers[id] = container;
-          gameState.camera.addChild(container);
-        }
+  socket.on("existing-players", (players) => {
+    console.log("📥 Received existing players:", players);
+    console.log("🆔 My socket ID:", gameState.socketId);
+
+    for (const id in players) {
+      if (id === gameState.socketId) {
+        console.log("⏭️ Skipping own player:", id);
+        continue;
+      }
+
+      const data = players[id];
+      console.log("➕ Adding existing player:", id, data);
+
+      // ✅ Create player with avatarKey if available
+      const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
+      gameState.otherPlayers[id] = container;
+      gameState.camera.addChild(container);
+    }
+  });
+
+  socket.on("player-joined", (data) => {
+    console.log("📥 New player joined:", data);
+
+    if (data.id === gameState.socketId) {
+      console.log("⏭️ Skipping own player join event");
+      return;
+    }
+
+    if (gameState.otherPlayers[data.id]) {
+      console.log("⏭️ Player already exists:", data.id);
+      return;
+    }
+
+    // ✅ Create player with avatarKey
+    const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
+    gameState.otherPlayers[data.id] = container;
+    gameState.camera.addChild(container);
+    console.log("➕ Added new player:", data.id);
+  });
+
+  // ✅ FIXED: Now handles name and avatarKey from server
+  socket.on("player-moved", ({ id, position, isMoving, direction, name, avatarKey }) => {
+    const gameState = gameStateRef.current;
+    const player = gameState.otherPlayers[id];
+
+    if (player && player.updatePosition) {
+      // Use enhanced updatePosition with movement state
+      player.updatePosition(position, isMoving, direction);
+      
+      // ✅ Update name and avatarKey if they've changed
+      if (name && player.nameText) {
+        player.nameText.text = name;
+      }
+      
+      // ✅ Store avatarKey for reference
+      if (avatarKey) {
+        player.avatarKey = avatarKey;
+      }
+    } else if (player) {
+      // Fallback
+      player.x = position.x;
+      player.y = position.y;
+
+      if (isMoving) {
+        player.walk(direction);
+      } else {
+        player.stop();
+      }
+      
+      // ✅ Update name and avatarKey here too
+      if (name && player.nameText) {
+        player.nameText.text = name;
+      }
+      if (avatarKey) {
+        player.avatarKey = avatarKey;
+      }
+    }
+  });
+
+  // ✅ FIXED: Simplified avatar change - just recreate the player
+  socket.on("avatar-change", (data) => {
+    const { playerId, avatarKey, position, name } = data;
+
+    // Don't update our own player
+    if (playerId === socket.id) return;
+
+    const gameState = gameStateRef.current;
+    if (!gameState) return;
+
+    const existingPlayer = gameState.otherPlayers[playerId];
+    if (!existingPlayer) return;
+
+    // ✅ Use position from server if available, otherwise use current position
+    const currentPosition = position || { x: existingPlayer.x, y: existingPlayer.y };
+    
+    // ✅ Use name from server if available, otherwise try to get from existing player
+    let currentName = name || "Unknown";
+    if (!name) {
+      if (existingPlayer.nameText?.text) {
+        currentName = existingPlayer.nameText.text;
+      } else if (existingPlayer.nameTag?.text) {
+        currentName = existingPlayer.nameTag.text;
+      } else if (existingPlayer.playerName) {
+        currentName = existingPlayer.playerName;
+      }
+    }
+    
+    const wasMoving = existingPlayer.isMoving || false;
+    const currentDirection = existingPlayer.direction || "down";
+
+    console.log(`🔄 Avatar change for ${currentName} (${playerId}) to ${avatarKey}`);
+    console.log(`📍 Using position:`, currentPosition);
+    console.log(`🏃 Was moving:`, wasMoving, `Direction:`, currentDirection);
+
+    // Remove old player
+    gameState.camera.removeChild(existingPlayer);
+    existingPlayer.destroy({ children: true });
+
+    // ✅ Create new avatar with preserved/updated state
+    const newOtherPlayer = createOtherPlayerWithAvatar(currentName, currentPosition, avatarKey);
+    
+    // ✅ Restore movement state
+    if (wasMoving) {
+      newOtherPlayer.walk(currentDirection);
+    }
+
+    // Store in game state
+    gameState.otherPlayers[playerId] = newOtherPlayer;
+    gameState.camera.addChild(newOtherPlayer);
+
+    console.log(`✅ Player ${currentName} changed avatar to: ${avatarKey}`);
+  });
+
+  socket.on("player-emote", ({ id, emoji }) => {
+    const gameState = gameStateRef.current;
+    const player = gameState.otherPlayers[id];
+    if (player) {
+      triggerEmoteOnOther(player, emoji);
+    }
+  });
+
+  socket.on("player-left", (id) => {
+    console.log("📤 Player left:", id);
+    const player = gameState.otherPlayers[id];
+    if (player) {
+      gameState.camera.removeChild(player);
+      player.destroy();
+      delete gameState.otherPlayers[id];
+    }
+  });
+};
+
+const createOtherPlayerWithAvatar = (name, position, avatarKey) => {
+  let container;
+  
+  if (avatarKey && avatarOtherMap[avatarKey]) {
+    // Create with specific avatar
+    const createFn = avatarOtherMap[avatarKey];
+    container = createFn(name, gameStateRef.current);
+  } else {
+    // Fallback to default createOtherPlayer
+    container = createOtherPlayer(name, position);
+  }
+  
+  // Set position
+  container.x = position.x;
+  container.y = position.y;
+  
+  // Store avatar key for future reference
+  container.avatarKey = avatarKey;
+  
+  return container;
+};
+
+const triggerEmoteOnOther = (player, emoji) => {
+  const world = gameStateRef.current?.world;
+  if (!player || !world) return;
+
+  // If an old emote bubble exists, destroy it
+  if (player.emoteBubble) {
+    world.removeChild(player.emoteBubble);
+    player.emoteBubble.destroy();
+  }
+  
+  // Create container for the entire emote bubble
+  const container = new Container();
+  container.x = player.x;
+  container.y = player.y - 60;
+  world.addChild(container);
+  
+  // Create bubble background
+  const bubble = new Graphics();
+  bubble.beginFill(0x000000, 0.8);
+  bubble.lineStyle(3, 0xffffff, 1);
+  bubble.drawRoundedRect(-35, -25, 70, 50, 15);
+  bubble.endFill();
+  
+  // Add subtle gradient effect
+  bubble.beginFill(0x333333, 0.3);
+  bubble.drawRoundedRect(-35, -25, 70, 25, 15);
+  bubble.endFill();
+  
+  // Create bubble tail
+  const tail = new Graphics();
+  tail.beginFill(0x000000, 0.8);
+  tail.lineStyle(3, 0xffffff, 1);
+  tail.moveTo(0, 20);
+  tail.lineTo(-8, 35);
+  tail.lineTo(8, 35);
+  tail.closePath();
+  tail.endFill();
+  
+  container.addChild(bubble);
+  container.addChild(tail);
+  console.log("🚀 Showing emoji:", emoji, typeof emoji);
+
+  
+  // Create emoji text
+  const style = new TextStyle({
+    fontSize: 28,
+    fill: "white",
+    fontWeight: "bold",
+    dropShadow: true,
+    dropShadowColor: "#000000",
+    dropShadowBlur: 4,
+    dropShadowAngle: Math.PI / 6,
+    dropShadowDistance: 2,
+  });
+  
+  const text = new Text(emoji, style);
+  text.anchor.set(0.5);
+  text.x = 0;
+  text.y = -5;
+  container.addChild(text);
+  
+  // Initial state
+  container.alpha = 0;
+  container.scale.set(0.3);
+  
+  player.emoteBubble = container;
+  
+  // Enhanced animation with easing
+  const startTime = Date.now();
+  const totalDuration = 3000;
+  const phaseInDuration = 400;
+  const phaseOutDuration = 500;
+  const holdDuration = totalDuration - phaseInDuration - phaseOutDuration;
+  
+  // Easing functions
+  const easeOutBack = (t) => {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  };
+  
+  const easeInCubic = (t) => t * t * t;
+  
+  const animate = () => {
+    if (!player.emoteBubble) return;
+    
+    const now = Date.now();
+    const elapsed = now - startTime;
+    
+    // Update position to follow player
+    const targetX = player.x;
+    const targetY = player.y - 60;
+    
+    // Smooth position interpolation
+    container.x += (targetX - container.x) * 0.15;
+    container.y += (targetY - container.y) * 0.15;
+    
+    if (elapsed < phaseInDuration) {
+      // Phase In: Bounce in effect
+      const progress = elapsed / phaseInDuration;
+      const easedProgress = easeOutBack(progress);
+      
+      container.alpha = progress;
+      container.scale.set(0.3 + (easedProgress * 0.7));
+      
+      // Subtle float animation
+      const floatOffset = Math.sin(elapsed * 0.01) * 2;
+      container.y = targetY + floatOffset;
+      
+    } else if (elapsed < phaseInDuration + holdDuration) {
+      // Hold Phase: Gentle floating
+      container.alpha = 1;
+      container.scale.set(1);
+      
+      const holdElapsed = elapsed - phaseInDuration;
+      const floatOffset = Math.sin(holdElapsed * 0.005) * 3;
+      const bobOffset = Math.sin(holdElapsed * 0.008) * 1.5;
+      
+      container.y = targetY + floatOffset;
+      container.x = targetX + bobOffset;
+      
+      // Subtle scale pulsing
+      const pulseScale = 1 + Math.sin(holdElapsed * 0.006) * 0.05;
+      container.scale.set(pulseScale);
+      
+    } else if (elapsed < totalDuration) {
+      // Phase Out: Fade and shrink
+      const fadeProgress = (elapsed - phaseInDuration - holdDuration) / phaseOutDuration;
+      const easedFade = easeInCubic(fadeProgress);
+      
+      container.alpha = 1 - easedFade;
+      container.scale.set(1 - (easedFade * 0.3));
+      
+      // Float up while fading
+      const floatUp = easedFade * 20;
+      container.y = targetY - floatUp;
+      
+    } else {
+      // Animation complete
+      world.removeChild(container);
+      container.destroy();
+      player.emoteBubble = null;
+      return;
+    }
+    
+    requestAnimationFrame(animate);
+  };
+  
+  requestAnimationFrame(animate);
+};
+
+const setupMovementEmission = (gameState) => {
+  let lastPosition = { x: gameState.player.x, y: gameState.player.y };
+  let lastEmitTime = 0;
+  let isCurrentlyMoving = false;
+  let currentDirection = "down";
+  
+  const emitMovementUpdate = () => {
+    const now = Date.now();
+    const currentPosition = { x: gameState.player.x, y: gameState.player.y };
+    
+    // Calculate distance moved
+    const distance = Math.sqrt(
+      Math.pow(currentPosition.x - lastPosition.x, 2) + 
+      Math.pow(currentPosition.y - lastPosition.y, 2)
+    );
+    
+    // Determine if player is moving
+    const isMoving = distance > 0.1;
+    
+    // Determine direction if moving
+    if (isMoving) {
+      const deltaX = currentPosition.x - lastPosition.x;
+      const deltaY = currentPosition.y - lastPosition.y;
+      
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        currentDirection = deltaX > 0 ? "right" : "left";
+      } else {
+        currentDirection = deltaY > 0 ? "down" : "up";
+      }
+    }
+    const stateChanged = isMoving !== isCurrentlyMoving;
+    const movedEnough = distance > 2;
+    const timeToUpdate = now - lastEmitTime > 100; // Every 100ms minimum
+    
+    if (stateChanged || movedEnough || (isMoving && timeToUpdate)) {
+      socket.emit("player-move", {
+        position: currentPosition,
+        isMoving: isMoving,
+        direction: currentDirection
       });
+      
+      lastPosition = { ...currentPosition };
+      lastEmitTime = now;
+      isCurrentlyMoving = isMoving;
+    }
+  };
+  
+  return emitMovementUpdate;
+};
 
-      socket.on("player-joined", (data) => {
-        console.log("📥 New player joined:", data);
-        
-        if (data.id === gameState.socketId) {
-          console.log("⏭️ Skipping own player join event");
-          return;
-        }
-        
-        if (gameState.otherPlayers[data.id]) {
-          console.log("⏭️ Player already exists:", data.id);
-          return;
-        }
-        
-        const container = createOtherPlayer(data.name, data.position);
-        gameState.otherPlayers[data.id] = container;
-        gameState.camera.addChild(container);
-        console.log("➕ Added new player:", data.id);
-      });
-
-      socket.on("player-moved", ({ id, position }) => {
-        const player = gameState.otherPlayers[id];
-        if (player) {
-          player.x = position.x;
-          player.y = position.y;
-        }
-      });
-
-      socket.on("player-left", (id) => {
-        console.log("📤 Player left:", id);
-        const player = gameState.otherPlayers[id];
-        if (player) {
-          gameState.camera.removeChild(player);
-          player.destroy();
-          delete gameState.otherPlayers[id];
-        }
-      });
-    };
-
-      const createWorldGrid = (gameState) => {
+const createWorldGrid = (gameState) => {
         const { camera, ROOM_GRID } = gameState;
         const { rows, cols, roomWidth, roomHeight } = ROOM_GRID;
 
@@ -1901,7 +3790,7 @@ const setupSocketListeners = (gameState) => {
             camera.addChild(room);
           }
         }       
-      };
+};
 
 
   const addWithCollider = (container, displayObject, bounds, colliders) => {
@@ -6944,54 +8833,6 @@ const createSittingNPC = (x, y, camera,colliders, gameState, npcName = "??") => 
   return npc;
 };
 
-      const createOtherPlayers = (gameState) => {
-        const playerPositions = [
-          { x: 800, y: 200, name: "Alice", color: 0xe74c3c },
-          { x: 200, y: 600, name: "Bob", color: 0x2ecc71 },
-          { x: 1200, y: 400, name: "Carol", color: 0x9b59b6 },
-          { x: 600, y: 800, name: "David", color: 0xf39c12 },
-        ];
-
-        playerPositions.forEach((pos) => {
-          const otherPlayer = new Graphics();
-
-          // Body
-          otherPlayer.circle(0, 5, 12);
-          otherPlayer.fill(pos.color);
-
-          // Head
-          otherPlayer.circle(0, -10, 8);
-          otherPlayer.fill(0xf39c12);
-
-          // Eyes
-          otherPlayer.circle(-3, -12, 2);
-          otherPlayer.circle(3, -12, 2);
-          otherPlayer.fill(0x000000);
-
-          // Name tag
-          const nameTag = new Text({
-            text: pos.name,
-            style: new TextStyle({
-              fontSize: 12,
-              fill: 0xffffff,
-              fontFamily: "Arial",
-              stroke: { color: 0x000000, width: 2 },
-            }),
-          });
-          nameTag.anchor.set(0.5);
-          nameTag.y = -30;
-          otherPlayer.addChild(nameTag);
-
-          otherPlayer.x = pos.x;
-          otherPlayer.y = pos.y;
-          otherPlayer.originalX = pos.x;
-          otherPlayer.originalY = pos.y;
-
-          gameState.camera.addChild(otherPlayer);
-          gameState.otherPlayers.push(otherPlayer);
-        });
-      };
-
       const setupInput = (gameState, app) => {
         const handleKeyDown = (e) => {
           gameState.keys[e.code] = true;
@@ -7015,12 +8856,17 @@ const createSittingNPC = (x, y, camera,colliders, gameState, npcName = "??") => 
       };
 
 const gameLoop = (gameState, app) => {
-  const speed = gameState.playerSpeed || 2; // fallback to 2 if not set
+  const speed = gameState.playerSpeed || 2;
   const { player, keys, camera, world, ROOM_GRID, colliders } = gameState;
   const ROOM_WIDTH = ROOM_GRID.cols * ROOM_GRID.roomWidth;
   const ROOM_HEIGHT = ROOM_GRID.rows * ROOM_GRID.roomHeight;
 
   if (!player) return;
+
+  // Initialize movement emitter only after player exists
+  if (!gameState.movementEmitter) {
+    gameState.movementEmitter = setupMovementEmission(gameState);
+  }
 
   // Store original position
   const originalX = player.x;
@@ -7046,7 +8892,7 @@ const gameLoop = (gameState, app) => {
     if (dx !== 0 && dy !== 0) {
       const testX = originalX + dx;
       const testY = originalY + dy;
-      if (!willCollide(testX, testY, colliders)||  gameState.wallHackEnabled) {
+      if (!willCollide(testX, testY, colliders) || gameState.wallHackEnabled) {
         newX = testX;
         newY = testY;
         moved = true;
@@ -7058,7 +8904,7 @@ const gameLoop = (gameState, app) => {
       // Try horizontal movement
       if (dx !== 0) {
         const testX = originalX + dx;
-        if (!willCollide(testX, originalY, colliders) ||  gameState.wallHackEnabled) {
+        if (!willCollide(testX, originalY, colliders) || gameState.wallHackEnabled) {
           newX = testX;
           moved = true;
         }
@@ -7067,7 +8913,7 @@ const gameLoop = (gameState, app) => {
       // Try vertical movement (independent of horizontal)
       if (dy !== 0) {
         const testY = originalY + dy;
-        if (!willCollide(originalX, testY, colliders)||  gameState.wallHackEnabled) {
+        if (!willCollide(originalX, testY, colliders) || gameState.wallHackEnabled) {
           newY = testY;
           moved = true;
         }
@@ -7075,7 +8921,7 @@ const gameLoop = (gameState, app) => {
 
       // If both individual movements work, try combining them
       if (moved && newX !== originalX && newY !== originalY) {
-        if (!willCollide(newX, newY, colliders) ||  gameState.wallHackEnabled) {
+        if (!willCollide(newX, newY, colliders) || gameState.wallHackEnabled) {
           // Combined movement is safe
         } else {
           // Combined movement would collide, choose primary direction
@@ -7092,11 +8938,6 @@ const gameLoop = (gameState, app) => {
     if (newX !== originalX || newY !== originalY) {
       player.x = newX;
       player.y = newY;
-      // 🔁 Emit updated position to other players
-      socket.emit("player-move", {
-        x: player.x,
-        y: player.y
-      });
 
       // Determine animation direction based on actual movement
       const actualDx = newX - originalX;
@@ -7114,8 +8955,13 @@ const gameLoop = (gameState, app) => {
     player.stop();
   }
 
+  // Emit movement updates every frame (after player position is updated)
+  if (gameState.movementEmitter) {
+    gameState.movementEmitter();
+  }
+
   // Clamp player to room bounds (with proper margins)
-  const margin = 30; // Safe margin from room edges
+  const margin = 30;
   player.x = Math.max(margin, Math.min(ROOM_WIDTH - margin, player.x));
   player.y = Math.max(margin, Math.min(ROOM_HEIGHT - margin, player.y));
 
@@ -7130,68 +8976,65 @@ const gameLoop = (gameState, app) => {
   world.x = Math.max(-(ROOM_WIDTH - app.screen.width), Math.min(0, world.x));
   world.y = Math.max(-(ROOM_HEIGHT - app.screen.height), Math.min(0, world.y));
 
-  // Idle animation for other players
-const lerp = (start, end, amt) => start + (end - start) * amt;
+  // Smooth interpolation for other players
+  const lerp = (start, end, amt) => start + (end - start) * amt;
 
-Object.values(gameState.otherPlayers).forEach((p) => {
-  if (p.targetX !== undefined && p.targetY !== undefined) {
-    p.x = lerp(p.x, p.targetX, 0.1); // smooth move
-    p.y = lerp(p.y, p.targetY, 0.1);
-  }
-});
-
-
-  // ─── Z-Key Elevator Interaction ───
-if (keys["KeyZ"] && !window.textBubbleActive) {
-  const px = player.x;
-  const py = player.y;
-
-  const INTERACT_MARGIN = 16;
-
-  const nearby = (window.interactables || []).find(obj => {
-    const b = obj.bounds;
-    return (
-      player.x + INTERACT_MARGIN > b.x &&
-      player.x - INTERACT_MARGIN < b.x + b.width &&
-      player.y + INTERACT_MARGIN > b.y &&
-      player.y - INTERACT_MARGIN < b.y + b.height
-    );
+  Object.values(gameState.otherPlayers).forEach((p) => {
+    if (p.targetX !== undefined && p.targetY !== undefined) {
+      p.x = lerp(p.x, p.targetX, 0.1);
+      p.y = lerp(p.y, p.targetY, 0.1);
+    }
   });
 
-  if (nearby) {
-    console.log("Nearby object:", nearby.label);
+  // ─── Z-Key Elevator Interaction ───
+  if (keys["KeyZ"] && !window.textBubbleActive) {
+    const px = player.x;
+    const py = player.y;
 
-    // Hide bubble
-    if (nearby.bubble && !nearby.bubble.destroyed) {
-      nearby.bubble.destroy({ children: true });
-      nearby.bubble = null;
-      window.textBubbleActive = false;
-    } else {
-      // Show bubble
-      const bubble = createTextBubble(
-        player.x,
-        player.y - 50,
-        nearby.message,
-        3000,
-        gameState.camera
+    const INTERACT_MARGIN = 16;
+
+    const nearby = (window.interactables || []).find(obj => {
+      const b = obj.bounds;
+      return (
+        player.x + INTERACT_MARGIN > b.x &&
+        player.x - INTERACT_MARGIN < b.x + b.width &&
+        player.y + INTERACT_MARGIN > b.y &&
+        player.y - INTERACT_MARGIN < b.y + b.height
       );
+    });
 
-      gameState.camera.addChild(bubble);
-      nearby.bubble = bubble;
-      window.textBubbleActive = true;
+    if (nearby) {
+      console.log("Nearby object:", nearby.label);
 
-      // Reset after duration
-      setTimeout(() => {
-        window.textBubbleActive = false;
+      // Hide bubble
+      if (nearby.bubble && !nearby.bubble.destroyed) {
+        nearby.bubble.destroy({ children: true });
         nearby.bubble = null;
-      }, 3000);
+        window.textBubbleActive = false;
+      } else {
+        // Show bubble
+        const bubble = createTextBubble(
+          player.x,
+          player.y - 50,
+          nearby.message,
+          3000,
+          gameState.camera
+        );
+
+        gameState.camera.addChild(bubble);
+        nearby.bubble = bubble;
+        window.textBubbleActive = true;
+
+        // Reset after duration
+        setTimeout(() => {
+          window.textBubbleActive = false;
+          nearby.bubble = null;
+        }, 3000);
+      }
+
+      keys["KeyZ"] = false;
     }
-
-    keys["KeyZ"] = false;
   }
-}
-
-
 };
 
 const createTextBubble = (x, y, text, duration = 3000, parent) => {
@@ -7437,7 +9280,8 @@ container.addChild(box);
   };
 
   if (loadingPage) return <LoadingScreen />;
-    const handleTeleportWithFade = async (loc) => {
+  
+const handleTeleportWithFade = async (loc) => {
   const gameState = gameStateRef.current;
   const { player, world, app, ROOM_GRID } = gameState;
   const ROOM_WIDTH = ROOM_GRID.cols * ROOM_GRID.roomWidth;
@@ -7460,6 +9304,21 @@ container.addChild(box);
 
   world.x = Math.max(-(ROOM_WIDTH - app.screen.width), Math.min(0, world.x));
   world.y = Math.max(-(ROOM_HEIGHT - app.screen.height), Math.min(0, world.y));
+
+  // ✅ FIXED: Notify other players about the position change
+  if (socket && socket.connected) {
+    // First emit the movement to update server state
+    socket.emit("player-move", {
+      position: { x: player.x, y: player.y },
+      isMoving: false,
+      direction: player.direction || "down"
+    });
+    
+    // Add a small delay to ensure the server has updated the position
+    await new Promise((res) => setTimeout(res, 100));
+    
+    console.log(`📡 Sent teleport position update: ${player.x}, ${player.y}`);
+  }
 
   // Fade in
   setFadeOpacity(0);
@@ -7516,6 +9375,7 @@ const triggerEmote = (emoji) => {
   
   container.addChild(bubble);
   container.addChild(tail);
+
   
   // Create emoji text
   const style = new TextStyle({
@@ -7623,6 +9483,10 @@ const triggerEmote = (emoji) => {
   };
   
   requestAnimationFrame(animate);
+  socket.emit("player-emote", { 
+  id: socket.id,
+  emoji,
+});
 };
 
 const changeAvatar = (avatarKey) => {
@@ -7650,6 +9514,13 @@ if (gameState.player) {
   // 4. Restore previous position
   newPlayer.x = previousX;
   newPlayer.y = previousY;
+
+   socket.emit("avatar-change", {
+    avatarKey: avatarKey,
+    x: newPlayer.x,
+    y: newPlayer.y,
+    playerName: playerName
+  });
 };
 
 

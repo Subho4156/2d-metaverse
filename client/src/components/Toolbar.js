@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { updateSpace } from "../api";
 
 const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, changeSpeed, wallHackEnabled,
@@ -15,7 +15,10 @@ const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, c
   const [openemote, setOpenEmote] = useState(false);
   const [selectedEmote, setSelectedEmote] = useState(null);
   const [hoveredEmote, setHoveredEmote] = useState(null);
-    const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+
+const lastEmoteTimeRef = useRef(0);
+  const EMOTE_COOLDOWN_MS = 3000; 
 
 
   const avatarOptions = [
@@ -75,11 +78,19 @@ const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, c
   ];
 
   const handleEmoteSelect = (emote) => {
+    const now = Date.now();
+
+  if (now - lastEmoteTimeRef.current < EMOTE_COOLDOWN_MS) {
+    console.log("⏳ Emote on cooldown...");
+    return;
+  }
+
     setSelectedEmote(emote);
     triggerEmote(emote.emoji);
     setTimeout(() => {
        setOpenEmote(false);
     }, 600);
+        lastEmoteTimeRef.current = now;
   };
 
 
@@ -129,7 +140,6 @@ const handleSave = async (type, value) => {
       setWallhackwindowOpen(false);
     }, 800);
   };
-
 
 
   const EditableField = ({
