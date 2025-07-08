@@ -8,6 +8,7 @@ import MetaverseMinimap from "../components/Minimap";
 import LeftToolbar from "../components/Toolbar";
 import { io } from "socket.io-client";
 
+
 const MetaverseWorld = () => {
   const [showFade, setShowFade] = useState(false);
   const [speed, setSpeed] = useState(2);
@@ -23,6 +24,9 @@ const MetaverseWorld = () => {
   const canvasRef = useRef(null);
   const appRef = useRef(null);
   const [avatarType, setAvatarType] = useState("null");
+  const [showBackWarning, setShowBackWarning] = useState(false);
+  const [onlinePlayers, setOnlinePlayers] = useState([]);
+
 
 
   const gameStateRef = useRef({
@@ -50,6 +54,30 @@ const PLAYER_BOUNDS = {
   width: 16,
   height: 45
 };
+
+useEffect(() => {
+  const blockBackNavigation = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+
+  const handlePopState = (e) => {
+    // Prevent going back, show warning instead
+    blockBackNavigation();
+    setShowBackWarning(true);
+
+    // Auto hide after 3 seconds
+    setTimeout(() => setShowBackWarning(false), 3000);
+  };
+
+  blockBackNavigation(); // push once when entering
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, []);
+
+
 
 const createGirlPlayer = (gameState, playerName = "You") => {
   const player = new Graphics();
@@ -3354,6 +3382,7 @@ console.log("🙋 Sending player-join", playerName, gameState.player.x, gameStat
   app.ticker.add(() => gameLoop(gameState, app));
 };
 
+
 const setupSocketListeners = (gameState) => {
   // ✅ Remove any existing listeners first
   socket.off("existing-players");
@@ -3366,6 +3395,7 @@ const setupSocketListeners = (gameState) => {
   socket.on("existing-players", (players) => {
     console.log("📥 Received existing players:", players);
     console.log("🆔 My socket ID:", gameState.socketId);
+      const updated = [];
 
     for (const id in players) {
       if (id === gameState.socketId) {
@@ -3380,7 +3410,9 @@ const setupSocketListeners = (gameState) => {
       const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
       gameState.otherPlayers[id] = container;
       gameState.camera.addChild(container);
+      updated.push(data.name);
     }
+     setOnlinePlayers([playerName, ...updated]);
   });
 
   socket.on("player-joined", (data) => {
@@ -3401,6 +3433,7 @@ const setupSocketListeners = (gameState) => {
     gameState.otherPlayers[data.id] = container;
     gameState.camera.addChild(container);
     console.log("➕ Added new player:", data.id);
+     setOnlinePlayers(prev => [...prev, data.name]);
   });
 
   // ✅ FIXED: Now handles name and avatarKey from server
@@ -3453,7 +3486,10 @@ const setupSocketListeners = (gameState) => {
     if (!gameState) return;
 
     const existingPlayer = gameState.otherPlayers[playerId];
-    if (!existingPlayer) return;
+    if (!existingPlayer) {
+      console.log("⏭️ Player not found:", playerId);
+      return;
+    }
 
     // ✅ Use position from server if available, otherwise use current position
     const currentPosition = position || { x: existingPlayer.x, y: existingPlayer.y };
@@ -3497,6 +3533,7 @@ const setupSocketListeners = (gameState) => {
   });
 
   socket.on("player-emote", ({ id, emoji }) => {
+    console.log("player-emote", id, emoji);
     const gameState = gameStateRef.current;
     const player = gameState.otherPlayers[id];
     if (player) {
@@ -3510,10 +3547,13 @@ const setupSocketListeners = (gameState) => {
     if (player) {
       gameState.camera.removeChild(player);
       player.destroy();
+      const name = player.playerName || "Unknown";
       delete gameState.otherPlayers[id];
+      setOnlinePlayers(prev => prev.filter(n => n !== name));
     }
   });
 };
+
 
 const createOtherPlayerWithAvatar = (name, position, avatarKey) => {
   let container;
@@ -3538,6 +3578,7 @@ const createOtherPlayerWithAvatar = (name, position, avatarKey) => {
 };
 
 const triggerEmoteOnOther = (player, emoji) => {
+  console.log("triggerEmoteOnOther", player, emoji);
   const world = gameStateRef.current?.world;
   if (!player || !world) return;
 
@@ -3719,10 +3760,15 @@ const setupMovementEmission = (gameState) => {
       }
     }
     const stateChanged = isMoving !== isCurrentlyMoving;
-    const movedEnough = distance > 2;
+    const movedEnough = distance > 2 || gameState.wallHackEnabled || gameState.playerSpeed > 2;
     const timeToUpdate = now - lastEmitTime > 100; // Every 100ms minimum
     
-    if (stateChanged || movedEnough || (isMoving && timeToUpdate)) {
+    if (
+  stateChanged ||
+  movedEnough ||
+  (isMoving && timeToUpdate) ||
+  ((gameState.wallHackEnabled || gameState.playerSpeed > 2) && now - lastEmitTime > 1000)
+) {
       socket.emit("player-move", {
         position: currentPosition,
         isMoving: isMoving,
@@ -9280,7 +9326,7 @@ container.addChild(box);
   };
 
   if (loadingPage) return <LoadingScreen />;
-  
+
 const handleTeleportWithFade = async (loc) => {
   const gameState = gameStateRef.current;
   const { player, world, app, ROOM_GRID } = gameState;
@@ -9483,6 +9529,7 @@ const triggerEmote = (emoji) => {
   };
   
   requestAnimationFrame(animate);
+
   socket.emit("player-emote", { 
   id: socket.id,
   emoji,
@@ -9534,6 +9581,26 @@ return (
       background: "#1a1a2e",
     }}
   >
+    {showBackWarning && (
+      <div
+        style={{
+          position: "absolute",
+          top: "50px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          backgroundColor: "#f87171",
+          color: "white",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          fontWeight: "bold",
+          zIndex: 1000,
+          boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+        }}
+      >
+        🚫 Please use the "Leave" button to exit the space.
+      </div>
+    )}
+
     {/* Game Canvas - Centered */}
     <div
       ref={canvasRef}
@@ -9552,6 +9619,48 @@ return (
         fontFamily: "Arial, sans-serif",
       }}
     ></div>
+    {/* Leave Button (Top Center) */}
+    <div
+      style={{
+        position: "absolute",
+        top: "0px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 101,
+        pointerEvents: "auto",
+      }}
+    >
+      <button
+        onClick={() => {
+          setShowFade(true);
+          setFadeOpacity(1);
+          setTimeout(() => {
+            window.location.href = "/home"; 
+          }, 500);
+        }}
+        style={{
+          fontFamily: "'Pixelify Sans', cursive",
+          fontWeight: "normal",
+          imageRendering: "pixelated",
+          textRendering: "geometricPrecision",
+          background: "#E74C3C",
+          color: "white",
+          border: "none",
+          padding: "10px 18px",
+          fontSize: "13px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          borderBottomLeftRadius: "10px",
+          borderBottomRightRadius: "10px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          transition: "background 0.3s",
+        }}
+        onMouseEnter={(e) => (e.target.style.background = "#C0392B")}
+        onMouseLeave={(e) => (e.target.style.background = "#E74C3C")}
+      >
+        Leave Space
+      </button>
+    </div>
     {showFade && (
       <div
         style={{
@@ -9608,7 +9717,7 @@ return (
             Metaverse X ( v1.0.0 )
           </div>
           <div style={{ fontSize: "12px", opacity: 0.8 }}>
-            Use WASD to move • Press Enter to chat • Press Z to interact
+            Use WASD to move • Press Z to interact
           </div>
         </div>
       </div>
@@ -9624,90 +9733,6 @@ return (
         triggerEmote={triggerEmote}
         changeAvatar={changeAvatar}
       />
-
-      {/* Chat Panel */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          left: "20px",
-          width: "350px",
-          pointerEvents: "auto",
-        }}
-      >
-        {/* Messages */}
-        {messages.length > 0 && (
-          <div
-            style={{
-              background: "rgba(0,0,0,0.8)",
-              borderRadius: "8px 8px 0 0",
-              padding: "12px",
-              marginBottom: "2px",
-              maxHeight: "200px",
-              overflowY: "auto",
-            }}
-          >
-            {messages.slice(-5).map((msg) => (
-              <div
-                key={msg.id}
-                style={{
-                  color: "white",
-                  fontSize: "12px",
-                  marginBottom: "6px",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                <span style={{ color: "#3498DB", fontWeight: "bold" }}>
-                  {msg.player}
-                </span>
-                <span
-                  style={{
-                    color: "#BDC3C7",
-                    fontSize: "10px",
-                    marginLeft: "8px",
-                  }}
-                >
-                  {msg.timestamp}
-                </span>
-                <div style={{ marginTop: "2px" }}>{msg.message}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Chat Input */}
-        {chatOpen && (
-          <div
-            style={{
-              background: "rgba(0,0,0,0.9)",
-              borderRadius: messages.length > 0 ? "0 0 8px 8px" : "8px",
-              padding: "12px",
-            }}
-          >
-            <input
-              type="text"
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleChatSubmit(e);
-                }
-              }}
-              placeholder="Type your message..."
-              autoFocus
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: "none",
-                borderRadius: "4px",
-                fontSize: "14px",
-                outline: "none",
-                fontFamily: "Arial, sans-serif",
-              }}
-            />
-          </div>
-        )}
-      </div>
 
       {/* Mini Map */}
       <MetaverseMinimap gameStateRef={gameStateRef} />
@@ -9732,9 +9757,10 @@ return (
             marginBottom: "8px",
           }}
         >
-          👥 Online Players (5)
+          👥 Online Players ({onlinePlayers.length})
         </div>
-        {[playerName, "Alice", "Bob", "Carol", "David"].map((name, index) => (
+        {onlinePlayers.map((name, index) => (
+
           <div
             key={name}
             style={{

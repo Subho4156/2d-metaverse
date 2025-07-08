@@ -34,7 +34,6 @@ mongoose
     const players = {}; // socket.id => { name, position, spaceId, avatarKey }
 
     io.on("connection", (socket) => {
-      console.log("🟢 New client connected:", socket.id);
 
       // 🧩 Join space/room
       socket.on("player-join", (data) => {

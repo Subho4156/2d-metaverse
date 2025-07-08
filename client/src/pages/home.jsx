@@ -7,6 +7,7 @@ import { FaArrowRight } from "react-icons/fa";
 import SpaceCard from "../components/SpaceCard";
 import LoadingScreen from "../components/LoadingScreen";
 import CreateSpace from "../components/CreateSpace"; 
+import JoinSpace from "../components/JoinSpace"; // New component import
 import { useNavigate } from 'react-router-dom';
 
 const App = () => {
@@ -15,9 +16,22 @@ const App = () => {
     const { user, loading } = useUser();
     const [showConfirm, setShowConfirm] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showJoinModal, setShowJoinModal] = useState(false); // New state for join modal
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
     const [spaces, setSpaces] = useState([]);
+
+
+useEffect(() => {
+  const url = new URL(window.location.href);
+  const refresh = url.searchParams.get("refresh");
+
+  if (refresh === "true") {
+    // 👇 Remove the param and reload again to clean up the URL
+    window.location.replace("/home");
+  }
+}, []);
+
 
       const handleCreate = async () => {
         if (!name.trim()) return;
@@ -49,6 +63,10 @@ const App = () => {
 
   const handleEnterSpace = (space) => {
     navigate(`/space/${space._id}`);
+  };
+
+  const handleJoinSpace = (spaceId) => {
+    navigate(`/space/${spaceId}`);
   };
 
      useEffect(() => {
@@ -89,6 +107,21 @@ const App = () => {
             <h1 className="header-title">MetaVerse X</h1>
           </div>
           <div className="header-user-info">
+           <button
+              onClick={() => setShowJoinModal(true)} // Open join modal
+              className="join-space-button-up" style={{backgroundColor: "#6366f1"}}
+            >
+              <span
+                style={{
+                  marginRight: "6px",
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                +
+              </span>
+              Join Space
+            </button>
             <button
               onClick={() => {
                 setSelectedSpace(null); // reset to indicate we're creating a new space
@@ -147,6 +180,8 @@ const App = () => {
             </div>
           </div>
         )}
+        
+        {/* Create Space Modal */}
         {showModal && (
           <CreateSpace
             mode={selectedSpace ? "view" : "create"}
@@ -158,6 +193,14 @@ const App = () => {
             handleCreate={handleCreate}
             setShowModal={setShowModal}
             onEnterSpace={handleEnterSpace}
+          />
+        )}
+
+        {/* Join Space Modal */}
+        {showJoinModal && (
+          <JoinSpace
+            setShowJoinModal={setShowJoinModal}
+            onJoinSpace={handleJoinSpace}
           />
         )}
 
