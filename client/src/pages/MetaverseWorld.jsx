@@ -15,7 +15,6 @@ import MetaverseMinimap from "../components/Minimap";
 import LeftToolbar from "../components/Toolbar";
 import { io } from "socket.io-client";
 
-
 const MetaverseWorld = () => {
   const [showFade, setShowFade] = useState(false);
   const [speed, setSpeed] = useState(2);
@@ -31,7 +30,9 @@ const MetaverseWorld = () => {
   const canvasRef = useRef(null);
   const appRef = useRef(null);
   const [avatarType, setAvatarType] = useState("null");
-
+  const [showBackWarning, setShowBackWarning] = useState(false);
+  const [onlinePlayers, setOnlinePlayers] = useState([]);
+  const [showToolbar, setShowToolbar] = useState(true);
 
   const gameStateRef = useRef({
     colliders: [],
@@ -52,12 +53,12 @@ const MetaverseWorld = () => {
     chatBubbles: [],
   });
 
-const PLAYER_BOUNDS = {
-  offsetX: -8,
-  offsetY: -12,
-  width: 16,
-  height: 45
-};
+  const PLAYER_BOUNDS = {
+    offsetX: -8,
+    offsetY: -12,
+    width: 16,
+    height: 45,
+  };
 
   const createGirlPlayer = (gameState, playerName = "You") => {
     const player = new Graphics();
@@ -3449,9 +3450,9 @@ const PLAYER_BOUNDS = {
 
         setupInput(gameState, app);
 
-  // app.ticker drives the game loop
-  app.ticker.add(() => gameLoop(gameState, app));
-};
+        // app.ticker drives the game loop
+        app.ticker.add(() => gameLoop(gameState, app));
+      };
 
       const setupSocketListeners = (gameState) => {
         // ✅ Remove any existing listeners first
@@ -3462,9 +3463,10 @@ const PLAYER_BOUNDS = {
         socket.off("avatar-change");
         socket.off("player-emote");
 
-  socket.on("existing-players", (players) => {
-    console.log("📥 Received existing players:", players);
-    console.log("🆔 My socket ID:", gameState.socketId);
+        socket.on("existing-players", (players) => {
+          console.log("📥 Received existing players:", players);
+          console.log("🆔 My socket ID:", gameState.socketId);
+          // const updated = [];
 
           for (const id in players) {
             if (id === gameState.socketId) {
@@ -3475,12 +3477,18 @@ const PLAYER_BOUNDS = {
             const data = players[id];
             console.log("➕ Adding existing player:", id, data);
 
-      // ✅ Create player with avatarKey if available
-      const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
-      gameState.otherPlayers[id] = container;
-      gameState.camera.addChild(container);
-    }
-  });
+            // ✅ Create player with avatarKey if available
+            const container = createOtherPlayerWithAvatar(
+              data.name,
+              data.position,
+              data.avatarKey
+            );
+            gameState.otherPlayers[id] = container;
+            gameState.camera.addChild(container);
+            // updated.push(data.name);
+          }
+          // setOnlinePlayers([playerName, ...updated]);
+        });
 
         socket.on("player-joined", (data) => {
           console.log("📥 New player joined:", data);
@@ -3495,12 +3503,17 @@ const PLAYER_BOUNDS = {
             return;
           }
 
-    // ✅ Create player with avatarKey
-    const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
-    gameState.otherPlayers[data.id] = container;
-    gameState.camera.addChild(container);
-    console.log("➕ Added new player:", data.id);
-  });
+          // ✅ Create player with avatarKey
+          const container = createOtherPlayerWithAvatar(
+            data.name,
+            data.position,
+            data.avatarKey
+          );
+          gameState.otherPlayers[data.id] = container;
+          gameState.camera.addChild(container);
+          // setOnlinePlayers(prev => [...prev, data.name]);
+          console.log("➕ Added new player:", data.id);
+        });
 
         // ✅ FIXED: Now handles name and avatarKey from server
         socket.on(
@@ -3554,8 +3567,8 @@ const PLAYER_BOUNDS = {
           const gameState = gameStateRef.current;
           if (!gameState) return;
 
-    const existingPlayer = gameState.otherPlayers[playerId];
-    if (!existingPlayer) return;
+          const existingPlayer = gameState.otherPlayers[playerId];
+          if (!existingPlayer) return;
 
           // ✅ Use position from server if available, otherwise use current position
           const currentPosition = position || {
@@ -3614,24 +3627,26 @@ const PLAYER_BOUNDS = {
           );
         });
 
-  socket.on("player-emote", ({ id, emoji }) => {
-    const gameState = gameStateRef.current;
-    const player = gameState.otherPlayers[id];
-    if (player) {
-      triggerEmoteOnOther(player, emoji);
-    }
-  });
+        socket.on("player-emote", ({ id, emoji }) => {
+          const gameState = gameStateRef.current;
+          const player = gameState.otherPlayers[id];
+          if (player) {
+            triggerEmoteOnOther(player, emoji);
+          }
+        });
 
-  socket.on("player-left", (id) => {
-    console.log("📤 Player left:", id);
-    const player = gameState.otherPlayers[id];
-    if (player) {
-      gameState.camera.removeChild(player);
-      player.destroy();
-      delete gameState.otherPlayers[id];
-    }
-  });
-};
+        socket.on("player-left", (id) => {
+          console.log("📤 Player left:", id);
+          const player = gameState.otherPlayers[id];
+          if (player) {
+            gameState.camera.removeChild(player);
+            player.destroy();
+            // const name = player.playerName || "Unknown";
+            delete gameState.otherPlayers[id];
+            // setOnlinePlayers(prev => prev.filter(n => n !== name));
+          }
+        });
+      };
 
       const createOtherPlayerWithAvatar = (name, position, avatarKey) => {
         let container;
@@ -3655,9 +3670,9 @@ const PLAYER_BOUNDS = {
         return container;
       };
 
-const triggerEmoteOnOther = (player, emoji) => {
-  const world = gameStateRef.current?.world;
-  if (!player || !world) return;
+      const triggerEmoteOnOther = (player, emoji) => {
+        const world = gameStateRef.current?.world;
+        if (!player || !world) return;
 
         // If an old emote bubble exists, destroy it
         if (player.emoteBubble) {
@@ -3803,55 +3818,58 @@ const triggerEmoteOnOther = (player, emoji) => {
         requestAnimationFrame(animate);
       };
 
-const setupMovementEmission = (gameState) => {
-  let lastPosition = { x: gameState.player.x, y: gameState.player.y };
-  let lastEmitTime = 0;
-  let isCurrentlyMoving = false;
-  let currentDirection = "down";
-  
-  const emitMovementUpdate = () => {
-    const now = Date.now();
-    const currentPosition = { x: gameState.player.x, y: gameState.player.y };
-    
-    // Calculate distance moved
-    const distance = Math.sqrt(
-      Math.pow(currentPosition.x - lastPosition.x, 2) + 
-      Math.pow(currentPosition.y - lastPosition.y, 2)
-    );
-    
-    // Determine if player is moving
-    const isMoving = distance > 0.1;
-    
-    // Determine direction if moving
-    if (isMoving) {
-      const deltaX = currentPosition.x - lastPosition.x;
-      const deltaY = currentPosition.y - lastPosition.y;
-      
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        currentDirection = deltaX > 0 ? "right" : "left";
-      } else {
-        currentDirection = deltaY > 0 ? "down" : "up";
-      }
-    }
-    const stateChanged = isMoving !== isCurrentlyMoving;
-    const movedEnough = distance > 2;
-    const timeToUpdate = now - lastEmitTime > 100; // Every 100ms minimum
-    
-    if (stateChanged || movedEnough || (isMoving && timeToUpdate)) {
-      socket.emit("player-move", {
-        position: currentPosition,
-        isMoving: isMoving,
-        direction: currentDirection
-      });
-      
-      lastPosition = { ...currentPosition };
-      lastEmitTime = now;
-      isCurrentlyMoving = isMoving;
-    }
-  };
-  
-  return emitMovementUpdate;
-};
+      const setupMovementEmission = (gameState) => {
+        let lastPosition = { x: gameState.player.x, y: gameState.player.y };
+        let lastEmitTime = 0;
+        let isCurrentlyMoving = false;
+        let currentDirection = "down";
+
+        const emitMovementUpdate = () => {
+          const now = Date.now();
+          const currentPosition = {
+            x: gameState.player.x,
+            y: gameState.player.y,
+          };
+
+          // Calculate distance moved
+          const distance = Math.sqrt(
+            Math.pow(currentPosition.x - lastPosition.x, 2) +
+              Math.pow(currentPosition.y - lastPosition.y, 2)
+          );
+
+          // Determine if player is moving
+          const isMoving = distance > 0.1;
+
+          // Determine direction if moving
+          if (isMoving) {
+            const deltaX = currentPosition.x - lastPosition.x;
+            const deltaY = currentPosition.y - lastPosition.y;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+              currentDirection = deltaX > 0 ? "right" : "left";
+            } else {
+              currentDirection = deltaY > 0 ? "down" : "up";
+            }
+          }
+          const stateChanged = isMoving !== isCurrentlyMoving;
+          const movedEnough = distance > 2;
+          const timeToUpdate = now - lastEmitTime > 100; // Every 100ms minimum
+
+          if (stateChanged || movedEnough || (isMoving && timeToUpdate)) {
+            socket.emit("player-move", {
+              position: currentPosition,
+              isMoving: isMoving,
+              direction: currentDirection,
+            });
+
+            lastPosition = { ...currentPosition };
+            lastEmitTime = now;
+            isCurrentlyMoving = isMoving;
+          }
+        };
+
+        return emitMovementUpdate;
+      };
 
       const createWorldGrid = (gameState) => {
         const { camera, ROOM_GRID } = gameState;
@@ -9983,12 +10001,12 @@ const setupMovementEmission = (gameState) => {
   };
 
   if (loadingPage) return <LoadingScreen />;
-  
-const handleTeleportWithFade = async (loc) => {
-  const gameState = gameStateRef.current;
-  const { player, world, app, ROOM_GRID } = gameState;
-  const ROOM_WIDTH = ROOM_GRID.cols * ROOM_GRID.roomWidth;
-  const ROOM_HEIGHT = ROOM_GRID.rows * ROOM_GRID.roomHeight;
+
+  const handleTeleportWithFade = async (loc) => {
+    const gameState = gameStateRef.current;
+    const { player, world, app, ROOM_GRID } = gameState;
+    const ROOM_WIDTH = ROOM_GRID.cols * ROOM_GRID.roomWidth;
+    const ROOM_HEIGHT = ROOM_GRID.rows * ROOM_GRID.roomHeight;
 
     setShowFade(true);
     setFadeOpacity(0);
@@ -10039,161 +10057,158 @@ const handleTeleportWithFade = async (loc) => {
     }
   };
 
-const triggerEmote = (emoji) => {
-  const player = gameStateRef.current?.player;
-  const world = gameStateRef.current?.world;
-  
-  if (!player || !world) return;
-  
-  // If an old emote bubble exists, destroy it
-  if (player.emoteBubble) {
-    world.removeChild(player.emoteBubble);
-    player.emoteBubble.destroy();
-  }
-  
-  // Create container for the entire emote bubble
-  const container = new Container();
-  container.x = player.x;
-  container.y = player.y - 60;
-  world.addChild(container);
-  
-  // Create bubble background
-  const bubble = new Graphics();
-  bubble.beginFill(0x000000, 0.8);
-  bubble.lineStyle(3, 0xffffff, 1);
-  bubble.drawRoundedRect(-35, -25, 70, 50, 15);
-  bubble.endFill();
-  
-  // Add subtle gradient effect
-  bubble.beginFill(0x333333, 0.3);
-  bubble.drawRoundedRect(-35, -25, 70, 25, 15);
-  bubble.endFill();
-  
-  // Create bubble tail
-  const tail = new Graphics();
-  tail.beginFill(0x000000, 0.8);
-  tail.lineStyle(3, 0xffffff, 1);
-  tail.moveTo(0, 20);
-  tail.lineTo(-8, 35);
-  tail.lineTo(8, 35);
-  tail.closePath();
-  tail.endFill();
-  
-  container.addChild(bubble);
-  container.addChild(tail);
+  const triggerEmote = (emoji) => {
+    const player = gameStateRef.current?.player;
+    const world = gameStateRef.current?.world;
 
-  
-  // Create emoji text
-  const style = new TextStyle({
-    fontSize: 28,
-    fill: "white",
-    fontWeight: "bold",
-    dropShadow: true,
-    dropShadowColor: "#000000",
-    dropShadowBlur: 4,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowDistance: 2,
-  });
-  
-  const text = new Text(emoji, style);
-  text.anchor.set(0.5);
-  text.x = 0;
-  text.y = -5;
-  container.addChild(text);
-  
-  // Initial state
-  container.alpha = 0;
-  container.scale.set(0.3);
-  
-  player.emoteBubble = container;
-  
-  // Enhanced animation with easing
-  const startTime = Date.now();
-  const totalDuration = 3000;
-  const phaseInDuration = 400;
-  const phaseOutDuration = 500;
-  const holdDuration = totalDuration - phaseInDuration - phaseOutDuration;
-  
-  // Easing functions
-  const easeOutBack = (t) => {
-    const c1 = 1.70158;
-    const c3 = c1 + 1;
-    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-  };
-  
-  const easeInCubic = (t) => t * t * t;
-  
-  const animate = () => {
-    if (!player.emoteBubble) return;
-    
-    const now = Date.now();
-    const elapsed = now - startTime;
-    
-    // Update position to follow player
-    const targetX = player.x;
-    const targetY = player.y - 60;
-    
-    // Smooth position interpolation
-    container.x += (targetX - container.x) * 0.15;
-    container.y += (targetY - container.y) * 0.15;
-    
-    if (elapsed < phaseInDuration) {
-      // Phase In: Bounce in effect
-      const progress = elapsed / phaseInDuration;
-      const easedProgress = easeOutBack(progress);
-      
-      container.alpha = progress;
-      container.scale.set(0.3 + (easedProgress * 0.7));
-      
-      // Subtle float animation
-      const floatOffset = Math.sin(elapsed * 0.01) * 2;
-      container.y = targetY + floatOffset;
-      
-    } else if (elapsed < phaseInDuration + holdDuration) {
-      // Hold Phase: Gentle floating
-      container.alpha = 1;
-      container.scale.set(1);
-      
-      const holdElapsed = elapsed - phaseInDuration;
-      const floatOffset = Math.sin(holdElapsed * 0.005) * 3;
-      const bobOffset = Math.sin(holdElapsed * 0.008) * 1.5;
-      
-      container.y = targetY + floatOffset;
-      container.x = targetX + bobOffset;
-      
-      // Subtle scale pulsing
-      const pulseScale = 1 + Math.sin(holdElapsed * 0.006) * 0.05;
-      container.scale.set(pulseScale);
-      
-    } else if (elapsed < totalDuration) {
-      // Phase Out: Fade and shrink
-      const fadeProgress = (elapsed - phaseInDuration - holdDuration) / phaseOutDuration;
-      const easedFade = easeInCubic(fadeProgress);
-      
-      container.alpha = 1 - easedFade;
-      container.scale.set(1 - (easedFade * 0.3));
-      
-      // Float up while fading
-      const floatUp = easedFade * 20;
-      container.y = targetY - floatUp;
-      
-    } else {
-      // Animation complete
-      world.removeChild(container);
-      container.destroy();
-      player.emoteBubble = null;
-      return;
+    if (!player || !world) return;
+
+    // If an old emote bubble exists, destroy it
+    if (player.emoteBubble) {
+      world.removeChild(player.emoteBubble);
+      player.emoteBubble.destroy();
     }
-    
+
+    // Create container for the entire emote bubble
+    const container = new Container();
+    container.x = player.x;
+    container.y = player.y - 60;
+    world.addChild(container);
+
+    // Create bubble background
+    const bubble = new Graphics();
+    bubble.beginFill(0x000000, 0.8);
+    bubble.lineStyle(3, 0xffffff, 1);
+    bubble.drawRoundedRect(-35, -25, 70, 50, 15);
+    bubble.endFill();
+
+    // Add subtle gradient effect
+    bubble.beginFill(0x333333, 0.3);
+    bubble.drawRoundedRect(-35, -25, 70, 25, 15);
+    bubble.endFill();
+
+    // Create bubble tail
+    const tail = new Graphics();
+    tail.beginFill(0x000000, 0.8);
+    tail.lineStyle(3, 0xffffff, 1);
+    tail.moveTo(0, 20);
+    tail.lineTo(-8, 35);
+    tail.lineTo(8, 35);
+    tail.closePath();
+    tail.endFill();
+
+    container.addChild(bubble);
+    container.addChild(tail);
+
+    // Create emoji text
+    const style = new TextStyle({
+      fontSize: 28,
+      fill: "white",
+      fontWeight: "bold",
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 2,
+    });
+
+    const text = new Text(emoji, style);
+    text.anchor.set(0.5);
+    text.x = 0;
+    text.y = -5;
+    container.addChild(text);
+
+    // Initial state
+    container.alpha = 0;
+    container.scale.set(0.3);
+
+    player.emoteBubble = container;
+
+    // Enhanced animation with easing
+    const startTime = Date.now();
+    const totalDuration = 3000;
+    const phaseInDuration = 400;
+    const phaseOutDuration = 500;
+    const holdDuration = totalDuration - phaseInDuration - phaseOutDuration;
+
+    // Easing functions
+    const easeOutBack = (t) => {
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
+
+    const easeInCubic = (t) => t * t * t;
+
+    const animate = () => {
+      if (!player.emoteBubble) return;
+
+      const now = Date.now();
+      const elapsed = now - startTime;
+
+      // Update position to follow player
+      const targetX = player.x;
+      const targetY = player.y - 60;
+
+      // Smooth position interpolation
+      container.x += (targetX - container.x) * 0.15;
+      container.y += (targetY - container.y) * 0.15;
+
+      if (elapsed < phaseInDuration) {
+        // Phase In: Bounce in effect
+        const progress = elapsed / phaseInDuration;
+        const easedProgress = easeOutBack(progress);
+
+        container.alpha = progress;
+        container.scale.set(0.3 + easedProgress * 0.7);
+
+        // Subtle float animation
+        const floatOffset = Math.sin(elapsed * 0.01) * 2;
+        container.y = targetY + floatOffset;
+      } else if (elapsed < phaseInDuration + holdDuration) {
+        // Hold Phase: Gentle floating
+        container.alpha = 1;
+        container.scale.set(1);
+
+        const holdElapsed = elapsed - phaseInDuration;
+        const floatOffset = Math.sin(holdElapsed * 0.005) * 3;
+        const bobOffset = Math.sin(holdElapsed * 0.008) * 1.5;
+
+        container.y = targetY + floatOffset;
+        container.x = targetX + bobOffset;
+
+        // Subtle scale pulsing
+        const pulseScale = 1 + Math.sin(holdElapsed * 0.006) * 0.05;
+        container.scale.set(pulseScale);
+      } else if (elapsed < totalDuration) {
+        // Phase Out: Fade and shrink
+        const fadeProgress =
+          (elapsed - phaseInDuration - holdDuration) / phaseOutDuration;
+        const easedFade = easeInCubic(fadeProgress);
+
+        container.alpha = 1 - easedFade;
+        container.scale.set(1 - easedFade * 0.3);
+
+        // Float up while fading
+        const floatUp = easedFade * 20;
+        container.y = targetY - floatUp;
+      } else {
+        // Animation complete
+        world.removeChild(container);
+        container.destroy();
+        player.emoteBubble = null;
+        return;
+      }
+
+      requestAnimationFrame(animate);
+    };
+
     requestAnimationFrame(animate);
+    socket.emit("player-emote", {
+      id: socket.id,
+      emoji,
+    });
   };
-  
-  requestAnimationFrame(animate);
-  socket.emit("player-emote", { 
-  id: socket.id,
-  emoji,
-});
-};
 
   const changeAvatar = (avatarKey) => {
     const gameState = gameStateRef.current;
@@ -10228,51 +10243,111 @@ const triggerEmote = (emoji) => {
     });
   };
 
-return (
-  <div
-    style={{
-      position: "relative",
-      width: "100vw",
-      height: "100vh",
-      overflow: "hidden",
-      background: "#1a1a2e",
-    }}
-  >
-    {/* Game Canvas - Centered */}
+  return (
     <div
-      ref={canvasRef}
       style={{
-        width: "70%",
-        height: "80%",
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#BDC3C7",
-        fontSize: "18px",
-        fontFamily: "Arial, sans-serif",
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#1a1a2e",
       }}
-    ></div>
-    {showFade && (
+    >
+      {showBackWarning && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#f87171",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            zIndex: 1000,
+            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+          }}
+        >
+          🚫 Please use the "Leave" button to exit the space.
+        </div>
+      )}
+      {/* Game Canvas - Centered */}
+      <div
+        ref={canvasRef}
+        style={{
+          width: "70%",
+          height: "80%",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#BDC3C7",
+          fontSize: "18px",
+          fontFamily: "Arial, sans-serif",
+        }}
+      ></div>
+      {/* Leave Button (Top Center) */}
       <div
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "black",
-          opacity: fadeOpacity,
-          transition: "opacity 0.4s ease",
-          zIndex: 999,
-          pointerEvents: "none",
+          top: "0px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 101,
+          pointerEvents: "auto",
         }}
-      />
-    )}
-
+      >
+        <button
+          onClick={() => {
+            setShowFade(true);
+            setFadeOpacity(1);
+            setTimeout(() => {
+              window.location.href = "/home";
+            }, 500);
+          }}
+          style={{
+            fontFamily: "'Pixelify Sans', cursive",
+            fontWeight: "normal",
+            imageRendering: "pixelated",
+            textRendering: "geometricPrecision",
+            background: "#E74C3C",
+            color: "white",
+            border: "none",
+            padding: "10px 18px",
+            fontSize: "13px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            borderBottomLeftRadius: "10px",
+            borderBottomRightRadius: "10px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            transition: "background 0.3s",
+          }}
+          onMouseEnter={(e) => (e.target.style.background = "#C0392B")}
+          onMouseLeave={(e) => (e.target.style.background = "#E74C3C")}
+        >
+          Leave Space
+        </button>
+      </div>
+      {showFade && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "black",
+            opacity: fadeOpacity,
+            transition: "opacity 0.4s ease",
+            zIndex: 999,
+            pointerEvents: "none",
+          }}
+        />
+      )}
       {/* UI Overlay */}
       <div
         style={{
@@ -10291,133 +10366,99 @@ return (
         style={{
           position: "absolute",
           top: "20px",
-          left: "10px",
-          right: "20px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          left: "20px",
           pointerEvents: "auto",
         }}
       >
-        <div
+        <button
+          onClick={() => setShowToolbar(!showToolbar)}
           style={{
-            background: "rgba(0,0,0,0.8)",
+            background: showToolbar ? "#e74c3c" : "#27ae60",
             color: "white",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            fontSize: "14px",
+            border: "2px solid rgba(255,255,255,0.3)",
+            padding: "8px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: "bold",
             fontFamily: "Arial, sans-serif",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+            transition: "all 0.2s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+          onMouseOver={(e) => {
+            e.target.style.transform = "scale(1.05)";
+            e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.6)";
+          }}
+          onMouseOut={(e) => {
+            e.target.style.transform = "scale(1)";
+            e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
           }}
         >
-          <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
-            Metaverse X ( v1.0.0 )
-          </div>
-          <div style={{ fontSize: "12px", opacity: 0.8 }}>
-            Use WASD to move • Press Enter to chat • Press Z to interact
-          </div>
-        </div>
+          <span style={{ fontSize: "14px" }}>
+            {showToolbar ? "✕" : "☰"}
+          </span>
+          {showToolbar ? "Hide" : "Show"}
+        </button>
       </div>
-
-      <LeftToolbar
-        space={space}
-        playerName={playerName}
-        gameStateRef={gameStateRef}
-        onTeleport={handleTeleportWithFade}
-        changeSpeed={changeSpeed}
-        wallHackEnabled={wallHackEnabled}
-        setWallHackEnabled={setWallHackEnabled}
-        triggerEmote={triggerEmote}
-        changeAvatar={changeAvatar}
-      />
-
-      {/* Chat Panel */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          left: "20px",
-          width: "350px",
-          pointerEvents: "auto",
-        }}
-      >
-        {/* Messages */}
-        {messages.length > 0 && (
+      
+        {/* Top Bar */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%", // Vertically center
+            right: "10px", // Stick to right
+            transform: "translateY(-50%)", // True vertical centering
+            display: "flex",
+            justifyContent: "flex-end", // Align content to right
+            alignItems: "center",
+            pointerEvents: "auto",
+          }}
+        >
           <div
             style={{
               background: "rgba(0,0,0,0.8)",
-              borderRadius: "8px 8px 0 0",
-              padding: "12px",
-              marginBottom: "2px",
-              maxHeight: "200px",
-              overflowY: "auto",
+              color: "white",
+              padding: "20px 12px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              fontFamily: "Arial, sans-serif",
+              width: "220px", // ⬅️ Smaller width
+              height: "160px", // ⬆️ Greater height
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
             }}
           >
-            {messages.slice(-5).map((msg) => (
-              <div
-                key={msg.id}
-                style={{
-                  color: "white",
-                  fontSize: "12px",
-                  marginBottom: "6px",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                <span style={{ color: "#3498DB", fontWeight: "bold" }}>
-                  {msg.player}
-                </span>
-                <span
-                  style={{
-                    color: "#BDC3C7",
-                    fontSize: "10px",
-                    marginLeft: "8px",
-                  }}
-                >
-                  {msg.timestamp}
-                </span>
-                <div style={{ marginTop: "2px" }}>{msg.message}</div>
-              </div>
-            ))}
+            <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
+              Metaverse X ( v1.0.0 )
+            </div>
+            <div style={{ fontSize: "12px", opacity: 0.8 }}>
+              Use WASD to move • Press Z to interact
+            </div>
           </div>
-        )}
+        </div>
 
-        {/* Chat Input */}
-        {chatOpen && (
-          <div
-            style={{
-              background: "rgba(0,0,0,0.9)",
-              borderRadius: messages.length > 0 ? "0 0 8px 8px" : "8px",
-              padding: "12px",
-            }}
-          >
-            <input
-              type="text"
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleChatSubmit(e);
-                }
-              }}
-              placeholder="Type your message..."
-              autoFocus
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: "none",
-                borderRadius: "4px",
-                fontSize: "14px",
-                outline: "none",
-                fontFamily: "Arial, sans-serif",
-              }}
-            />
-          </div>
-        )}
-      </div>
+        {showToolbar && (
+        <LeftToolbar
+          space={space}
+          playerName={playerName}
+          gameStateRef={gameStateRef}
+          onTeleport={handleTeleportWithFade}
+          changeSpeed={changeSpeed}
+          wallHackEnabled={wallHackEnabled}
+          setWallHackEnabled={setWallHackEnabled}
+          triggerEmote={triggerEmote}
+          changeAvatar={changeAvatar}
+        />
+      )}
 
         {/* Mini Map */}
         <MetaverseMinimap gameStateRef={gameStateRef} />
 
-      {/* Player List */}
+        {/* Player List
       <div
         style={{
           position: "absolute",
@@ -10437,9 +10478,10 @@ return (
             marginBottom: "8px",
           }}
         >
-          👥 Online Players (5)
+          👥 Online Players ({onlinePlayers.length})
         </div>
-        {[playerName, "Alice", "Bob", "Carol", "David"].map((name, index) => (
+        {onlinePlayers.map((name, index) => (
+
           <div
             key={name}
             style={{
@@ -10462,10 +10504,11 @@ return (
             {name} {index === 0 && "(You)"}
           </div>
         ))}
+      </div> */}
       </div>
+        
     </div>
-  </div>
-);
-};  
+  );
+};
 
 export default MetaverseWorld;
