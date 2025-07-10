@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getSpaceById } from "../api";
 import { getUser } from "../api"; 
@@ -25,9 +25,9 @@ const MetaverseWorld = () => {
   const appRef = useRef(null);
   const [avatarType, setAvatarType] = useState("null");
   const [showBackWarning, setShowBackWarning] = useState(false);
-  const [onlinePlayers, setOnlinePlayers] = useState([]);
+  const [onlinePlayers, setOnlinePlayers] = useState([playerName]);
 
-
+  
 
   const gameStateRef = useRef({
     colliders: [],
@@ -2948,7 +2948,6 @@ const createOtherSpideyPlayer = (name, position) => {
   return setupPlayerAnimationForOtherPlayer(player, legLeft, legRight, armLeft, armRight, shoeLeft, shoeRight, nameTag, null, emblem, webPattern);
 };
 
-
 const createOtherBatmanPlayer = (name, position, gameState) => {
   const player = new Graphics();
   const legLeft = new Graphics();
@@ -3362,7 +3361,7 @@ const initGame = (app) => {
   createWorldGrid(gameState);
   populateRooms(gameState); 
   createFn(gameState, playerName);
- setupSocketListeners(gameState);
+  setupSocketListeners(gameState);
 
       // ✅ Now emit player-join after everything is ready
       socket.emit("player-join", {
@@ -3383,6 +3382,7 @@ console.log("🙋 Sending player-join", playerName, gameState.player.x, gameStat
 };
 
 
+
 const setupSocketListeners = (gameState) => {
   // ✅ Remove any existing listeners first
   socket.off("existing-players");
@@ -3393,9 +3393,9 @@ const setupSocketListeners = (gameState) => {
   socket.off("player-emote");
 
   socket.on("existing-players", (players) => {
+    console.log("🚨 existing-players triggered at:", Date.now());
     console.log("📥 Received existing players:", players);
     console.log("🆔 My socket ID:", gameState.socketId);
-      const updated = [];
 
     for (const id in players) {
       if (id === gameState.socketId) {
@@ -3404,15 +3404,36 @@ const setupSocketListeners = (gameState) => {
       }
 
       const data = players[id];
-      console.log("➕ Adding existing player:", id, data);
+      console.log("➕ Processing existing player:", id, data);
 
-      // ✅ Create player with avatarKey if available
-      const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
-      gameState.otherPlayers[id] = container;
-      gameState.camera.addChild(container);
-      updated.push(data.name);
+      // ✅ CRITICAL FIX: Only create if player doesn't exist
+      if (!gameState.otherPlayers[id]) {
+        console.log("🆕 Creating new player:", id);
+        const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
+        container.avatarKey = data.avatarKey; // ✅ Ensure it's stored
+        gameState.otherPlayers[id] = container;
+        gameState.camera.addChild(container);
+      } else {
+        console.log("♻️ Player already exists, preserving:", id);
+        // ✅ Optionally sync position/data without recreating
+        const existingPlayer = gameState.otherPlayers[id];
+        if (existingPlayer) {
+          // Update position if needed
+          existingPlayer.x = data.position.x;
+          existingPlayer.y = data.position.y;
+          
+          // Update name if changed
+          if (data.name && existingPlayer.nameText) {
+            existingPlayer.nameText.text = data.name;
+          }
+          
+          // Store avatarKey for reference
+          if (data.avatarKey) {
+            existingPlayer.avatarKey = data.avatarKey;
+          }
+        }
+      }
     }
-     setOnlinePlayers([playerName, ...updated]);
   });
 
   socket.on("player-joined", (data) => {
@@ -3428,12 +3449,11 @@ const setupSocketListeners = (gameState) => {
       return;
     }
 
-    // ✅ Create player with avatarKey
+    // ✅ Create visual player
     const container = createOtherPlayerWithAvatar(data.name, data.position, data.avatarKey);
     gameState.otherPlayers[data.id] = container;
     gameState.camera.addChild(container);
     console.log("➕ Added new player:", data.id);
-     setOnlinePlayers(prev => [...prev, data.name]);
   });
 
   // ✅ FIXED: Now handles name and avatarKey from server
@@ -3547,9 +3567,8 @@ const setupSocketListeners = (gameState) => {
     if (player) {
       gameState.camera.removeChild(player);
       player.destroy();
-      const name = player.playerName || "Unknown";
+      const name = player.playerName || player.nameText?.text || "Unknown";
       delete gameState.otherPlayers[id];
-      setOnlinePlayers(prev => prev.filter(n => n !== name));
     }
   });
 };
@@ -3570,6 +3589,8 @@ const createOtherPlayerWithAvatar = (name, position, avatarKey) => {
   // Set position
   container.x = position.x;
   container.y = position.y;
+
+  container.playerName = name;
   
   // Store avatar key for future reference
   container.avatarKey = avatarKey;
@@ -6643,17 +6664,6 @@ const createOfficeCat = (x, y) => {
     const pinkColor = 0xf8c8dc; // Inner ears and nose
     const blackColor = 0x2c3e50; // Eyes and details
 
-    // --- Core Principles for PixiJS Graphics ---
-    // 1. All drawing commands (`drawCircle`, `drawEllipse`, `lineTo`, etc.) are relative
-    //    to the Graphics object's own local coordinate system (its 0,0).
-    // 2. To position a drawn shape, you should set the `x` and `y` properties
-    //    of the Graphics object itself, *after* drawing.
-    // 3. Clear and redraw: If you modify a Graphics object's drawing, you generally need
-    //    to `clear()` it and redraw everything. For static shapes like these,
-    //    drawing them once is enough.
-    // 4. Order of addition: Children added later are rendered on top of earlier children.
-
-    // Body (main oval, more realistic proportions)
     const body = new Graphics();
     body.beginFill(mainColor);
     body.drawEllipse(0, 0, 28, 16); // Draw relative to its own (0,0)
@@ -9759,7 +9769,7 @@ return (
         >
           👥 Online Players ({onlinePlayers.length})
         </div>
-        {onlinePlayers.map((name, index) => (
+         {onlinePlayers.map((name, index) => (
 
           <div
             key={name}
