@@ -2,13 +2,14 @@ const Space = require("../models/Space");
 
 exports.createSpace = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, mapKey } = req.body;
     const creator = req.userId; 
 
     const space = new Space({
       name,
       description,
       creator,
+      mapKey: mapKey || "office",
       users: [creator]
     });
 

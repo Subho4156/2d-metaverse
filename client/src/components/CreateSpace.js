@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./CreateSpace.css";
 import { FaArrowRight } from "react-icons/fa";
 
@@ -11,9 +11,33 @@ const CreateSpace = ({
   setDesc,
   handleCreate,
   setShowModal,
-  onEnterSpace // new function for "Enter"
+  onEnterSpace 
 }) => {
   const isViewMode = mode === "view";
+
+  const mapOptions = [
+    {
+      id: "office",
+      name: "Office Space",
+      image: "/maps/map_office.png", 
+      description: "A modern office for day to day work"
+    },
+    {
+      id: "spacestation",
+      name: "Space-Station",
+      image: "space_map.jpg",
+      description: "Futuristic neon-lit metropolis"
+    }
+  ];
+
+   const [selectedMap, setSelectedMap] = useState(isViewMode ? space.mapKey || mapOptions[0].id : mapOptions[0].id);
+
+
+  const handleMapSelect = (mapId) => {
+    if (!isViewMode) {
+      setSelectedMap(mapId);
+    }
+  };
 
   return (
     <div className="modal-overlay">
@@ -43,15 +67,57 @@ const CreateSpace = ({
             disabled={isViewMode}
           />
 
+            <div className="map-selection">
+            <h3 className="map-title">{isViewMode ? "Your World" : "Choose Your World"}</h3>
+            <div className={`map-options ${isViewMode ? 'view-mode' : ''}`}>
+              {mapOptions
+                .filter(map => isViewMode ? map.id === selectedMap : true)
+                .map((map) => (
+                <div
+                  key={map.id}
+                  className={`map-option ${selectedMap === map.id ? 'selected' : ''} ${isViewMode ? 'disabled' : ''}`}
+                  onClick={() => handleMapSelect(map.id)}
+                >
+                  <div className="map-image-container">
+                    <img src={map.image} alt={map.name} className="map-image" />
+                    <div className="map-overlay">
+                      <div className="map-name">{map.name}</div>
+                      <div className="map-description">{map.description}</div>
+                    </div>
+                  </div>
+                  {selectedMap === map.id && (
+                    <div className="selected-indicator">
+                      <div className="selected-dot"></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="modal-buttons">
             {isViewMode ? (
-              <button onClick={() => onEnterSpace(space)} className="create-btn">
-                <img src="icon4.gif" alt="Enter Icon" className="logout-icon-1" />
+              <button
+                onClick={() => onEnterSpace(space)}
+                className="create-btn"
+              >
+                <img
+                  src="icon4.gif"
+                  alt="Enter Icon"
+                  className="logout-icon-1"
+                />
                 Enter
               </button>
             ) : (
-              <button onClick={handleCreate} className="create-btn">
-                <img src="icon5.gif" alt="Boom Icon" className="logout-icon-1" />
+              <button
+                onClick={() => handleCreate({ selectedMap })}
+                className="create-btn"
+              >
+                <img
+                  src="icon5.gif"
+                  alt="Boom Icon"
+                  className="logout-icon-1"
+                />
                 Boom
               </button>
             )}

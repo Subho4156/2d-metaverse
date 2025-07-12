@@ -33,10 +33,10 @@ useEffect(() => {
 }, []);
 
 
-      const handleCreate = async () => {
+      const handleCreate = async ({selectedMap}) => {
         if (!name.trim()) return;
         try {
-          const res = await createSpace({ name, description: desc });
+          const res = await createSpace({ name, description: desc, mapKey: selectedMap});
           setSpaces((prev) => [...prev, res.data.space]);
           setShowModal(false);
           setName("");

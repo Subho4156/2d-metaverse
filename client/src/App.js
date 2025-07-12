@@ -5,7 +5,7 @@ import Login from "./auth/Login";
 import SignUp from "./auth/SignUp";
 import Home from "./pages/home";
 import ProtectedRoute from "./components/protectedRoute";
-import MetaverseWorld from "./pages/MetaverseWorld";
+import MetaverseRouter from "./pages/MetaverseRouter";
 
 function App() {
   return (
@@ -21,12 +21,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/space/:id" element={
-          <ProtectedRoute>
-            <MetaverseWorld />
-          </ProtectedRoute>
-        } 
-          />
+        <Route
+          path="/space/:id"
+          element={
+            <ProtectedRoute>
+              <MetaverseRouter />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -22,10 +22,10 @@ const lastEmoteTimeRef = useRef(0);
 
 
   const avatarOptions = [
-  { src: "/assets/avatar5.png", label: "Spiderman", width: 50, height: 60 },
-  { src: "/assets/avatar4.png", label: "Batman", width: 30, height: 55 },
-  { src: "/assets/avatar2.png", label: "Male", width: 35, height: 55 },
-  { src: "/assets/avatar3.png", label: "Female", width: 35, height: 55 },
+  { src: "/assets/avatar5.png", label: "Spiderman", width: 40, height: 50 },
+  { src: "/assets/avatar4.png", label: "Batman", width: 20, height: 45 },
+  { src: "/assets/avatar2.png", label: "Male", width: 25, height: 45 },
+  { src: "/assets/avatar3.png", label: "Female", width: 25, height: 45 },
 ];
 
   const teleportLocations = [
@@ -306,6 +306,7 @@ const handleSave = async (type, value) => {
         top: "54%",
         transform: "translateY(-50%)",
         width: "300px",
+        height: "fit-content",
         background:
           "linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%)",
         backdropFilter: "blur(25px)",
@@ -323,7 +324,7 @@ const handleSave = async (type, value) => {
       <div
         style={{
           background: "linear-gradient(90deg, #3b82f6 0%, #4f46e5 100%)",
-          padding: "18px 25px",
+          padding: "13px 20px",
           borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
           display: "flex",
           alignItems: "center",
@@ -346,15 +347,15 @@ const handleSave = async (type, value) => {
       </div>
 
       {/* Content */}
-      <div style={{ padding: "25px" }}>
+      <div style={{ padding: "15px" }}>
         {/* Space Name Section */}
-        <div style={{ marginBottom: "25px" }}>
+        <div style={{ marginBottom: "20px" }}>
           <div
             style={{
               ...pixelFont,
               fontSize: "13px",
               color: "#94a3b8",
-              marginBottom: "10px",
+              marginBottom: "5px",
               textTransform: "uppercase",
               letterSpacing: "0.8px",
             }}
@@ -382,13 +383,13 @@ const handleSave = async (type, value) => {
         </div>
 
         {/* Space Description Section */}
-        <div style={{ marginBottom: "25px" }}>
+        <div style={{ marginBottom: "20px" }}>
           <div
             style={{
               ...pixelFont,
               fontSize: "13px",
               color: "#94a3b8",
-              marginBottom: "10px",
+              marginBottom: "5px",
               textTransform: "uppercase",
               letterSpacing: "0.8px",
             }}
@@ -420,7 +421,7 @@ const handleSave = async (type, value) => {
             ...pixelFont,
             fontSize: "13px",
             color: "#94a3b8",
-            marginBottom: "10px",
+            marginBottom: "5px",
             textTransform: "uppercase",
             letterSpacing: "0.8px",
           }}
@@ -435,7 +436,7 @@ const handleSave = async (type, value) => {
             ...pixelFont,
             width: "48%",
             height: "fit-content",
-            padding: "15px",
+            padding: "10px",
             backgroundColor: "rgb(223, 223, 223)",
             borderLeft: "3px solid white",
             borderTop: "3px solid white",
@@ -447,7 +448,7 @@ const handleSave = async (type, value) => {
             outline: "2px solid black",
             cursor: "pointer",
             transition: "all 0.2s ease",
-            marginBottom: "15px",
+            marginBottom: "10px",
             marginRight: "9px",
           }}
           onMouseEnter={(e) => {
@@ -543,7 +544,7 @@ const handleSave = async (type, value) => {
             ...pixelFont,
             width: "48%",
             height: "fit-content",
-            padding: "15px",
+            padding: "10px",
             backgroundColor: "rgb(223, 223, 223)",
             borderLeft: "3px solid white",
             borderTop: "3px solid white",
@@ -831,7 +832,7 @@ const handleSave = async (type, value) => {
             ...pixelFont,
             width: "48%",
             height: "fit-content",
-            padding: "15px",
+            padding: "10px",
             backgroundColor: "rgb(223, 223, 223)",
             borderLeft: "3px solid white",
             borderTop: "3px solid white",
@@ -1155,7 +1156,7 @@ const handleSave = async (type, value) => {
             ...pixelFont,
             width: "48%",
             height: "fit-content",
-            padding: "15px",
+            padding: "10px",
             backgroundColor: "rgb(223, 223, 223)",
             borderLeft: "3px solid white",
             borderTop: "3px solid white",
@@ -1438,8 +1439,8 @@ const handleSave = async (type, value) => {
 <div style={{ maxWidth: "600px", margin: "0 auto" }}>
       <div
         style={{
-          marginTop: "30px",
-          marginBottom: "20px",
+          marginTop: "20px",
+          marginBottom: "10px",
         }}
       >
         <div
@@ -1447,7 +1448,7 @@ const handleSave = async (type, value) => {
             ...pixelFont,
             fontSize: "13px",
             color: "#94a3b8",
-            marginBottom: "12px",
+            marginBottom: "9px",
             textTransform: "uppercase",
             letterSpacing: "0.8px",
             background: "linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%)",
@@ -1553,7 +1554,7 @@ const handleSave = async (type, value) => {
   <button
     onClick={() => changeavatar("default")}
     style={{
-      padding: "8px 16px",
+      padding: "6px 13px",
       backgroundColor: "#1e293b",
       color: "#fff",
       fontSize: "13px",
