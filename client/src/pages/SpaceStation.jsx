@@ -519,10 +519,10 @@ const createSpaceStationGrid = (gameState) => {
     ],
     // Row 1: Main corridors and facilities
     [
-      { type: 'corridor', width: 200, height: 500, name: 'Main Corridor A' },
+      { type: 'secret_room', width: 200, height: 500, name: 'Hidden Room' },
       { type: 'med_bay', width: 500, height: 500, name: 'Medical Bay' },
       { type: 'lab', width: 450, height: 500, name: 'Research Lab' },
-      { type: 'corridor', width: 450, height: 500, name: 'Corridor A' },
+      { type: 'corridor2', width: 450, height: 500, name: 'Corridor A' },
     ],
     // Row 2: Engineering and storage
     [
@@ -532,10 +532,10 @@ const createSpaceStationGrid = (gameState) => {
     ],
     // Row 3: Living quarters
     [
-      { type: 'quarters', width: 300, height: 350, name: 'Crew Quarters A' },
-      { type: 'quarters', width: 400, height: 350, name: 'Crew Quarters B' },
-      { type: 'cafeteria', width: 500, height: 350, name: 'Mess Hall' },
-      { type: 'recreation', width: 400, height: 350, name: 'Recreation' }
+      { type: 'quarters', width: 350, height: 350, name: 'Crew Quarters A' },
+      { type: 'quarters', width: 350, height: 350, name: 'Crew Quarters B' },
+      { type: 'cafeteria', width: 450, height: 350, name: 'Mess Hall' },
+      { type: 'recreation', width: 450, height: 350, name: 'Recreation' }
     ]
   ];
 
@@ -563,7 +563,7 @@ gameState.worldHeight = trueWorldHeight;
   "1,3": { top: true, bottom: true, left: true, right: false, airlockOffsets:{left: -20, top: -20, bottom: 110} },
   "2,0": { top: false, bottom: false, left: false, right: true, airlockOffsets: {right: -40} },
   "2,1": { top: false, bottom: false, left: true, right: true, airlockOffsets: { left: -40, right: -40 } },
-  "2,2": { top: true, bottom: true, left: true, right: false, airlockOffsets:{ left: -40, top: 160, bottom: 60} },
+  "2,2": { top: true, bottom: true, left: true, right: false, airlockOffsets:{ left: -40, top: 160, bottom: 35} },
   "3,0": { top: false, bottom: false, left: false, right: true, airlockOffsets: {right: -40} },
   "3,1": { top: false, bottom: false, left: true, right: true, airlockOffsets: { left: -40, right: -40 } },
   "3,2": { top: false, bottom: false, left: true, right: true, airlockOffsets: { left: -40, right: -40 } },
@@ -9722,6 +9722,2290 @@ function createWarningSystem(x, y) {
     return warningContainer;
 }
 
+function createSpaceBunk(x, y) {
+    // Create main bunk container
+    const bunkContainer = new Container();
+    bunkContainer.x = x;
+    bunkContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main bunk frame structure
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-80, -40, 160, 80, 8);
+    graphics.endFill();
+    
+    // Inner frame
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-75, -35, 150, 70, 6);
+    graphics.endFill();
+    
+    // Mattress/sleeping surface
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-70, -30, 140, 25, 4);
+    graphics.endFill();
+    
+    // Mattress padding lines
+    graphics.lineStyle(1, 0x004488, 0.5);
+    for (let i = 1; i < 7; i++) {
+        graphics.moveTo(-70 + i * 20, -30);
+        graphics.lineTo(-70 + i * 20, -5);
+    }
+    
+    // Pillow area
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0088cc);
+    graphics.drawRoundedRect(-70, -30, 35, 25, 4);
+    graphics.endFill();
+    
+    // Pillow surface detail
+    graphics.beginFill(0x0066cc);
+    graphics.drawRoundedRect(-67, -27, 29, 19, 3);
+    graphics.endFill();
+    
+    // Control panel at head of bunk
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-78, -25, 12, 40, 4);
+    graphics.endFill();
+    
+    // Environmental controls
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-76, -22, 8, 3, 1);
+    graphics.drawRoundedRect(-76, -17, 8, 3, 1);
+    graphics.drawRoundedRect(-76, -12, 8, 3, 1);
+    graphics.endFill();
+    
+    // Control indicators
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-72, -20, 1);
+    graphics.drawCircle(-72, -10, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    graphics.drawCircle(-72, -15, 1);
+    graphics.endFill();
+    
+    // Temperature display
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-76, -7, 8, 6, 2);
+    graphics.endFill();
+    
+    // Digital readout simulation
+    graphics.beginFill(0x00ff88);
+    graphics.drawRect(-75, -5, 1, 2);
+    graphics.drawRect(-73, -5, 1, 2);
+    graphics.drawRect(-71, -5, 1, 2);
+    graphics.drawRect(-69, -5, 1, 2);
+    graphics.endFill();
+    
+    // Storage compartment underneath
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-70, 0, 140, 30, 6);
+    graphics.endFill();
+    
+    // Storage compartment door
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-68, 2, 65, 26, 4);
+    graphics.endFill();
+    
+    // Door handle
+    graphics.beginFill(0x666666);
+    graphics.lineStyle(1, 0x888888);
+    graphics.drawRoundedRect(-10, 13, 8, 4, 2);
+    graphics.endFill();
+    
+    // Ventilation grilles
+    graphics.lineStyle(1, 0x555555);
+    for (let i = 0; i < 8; i++) {
+        graphics.moveTo(5 + i * 8, 5);
+        graphics.lineTo(5 + i * 8, 25);
+    }
+    
+    // Privacy screen mount
+    graphics.beginFill(0x444444);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(72, -35, 6, 70, 3);
+    graphics.endFill();
+    
+    // Privacy screen (retracted)
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(74, -33, 2, 20, 1);
+    graphics.endFill();
+    
+    // Structural supports
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-78, 35, 6, 10, 3);
+    graphics.drawRoundedRect(-25, 35, 6, 10, 3);
+    graphics.drawRoundedRect(25, 35, 6, 10, 3);
+    graphics.drawRoundedRect(72, 35, 6, 10, 3);
+    graphics.endFill();
+    
+    // Safety rail
+    graphics.beginFill(0x444444);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(68, -5, 3, 35, 1);
+    graphics.endFill();
+    
+    // Emergency release
+    graphics.beginFill(0xff0000);
+    graphics.lineStyle(1, 0x333333);
+    graphics.drawCircle(-72, 8, 3);
+    graphics.endFill();
+    
+    graphics.beginFill(0xffffff);
+    graphics.drawCircle(-72, 8, 1);
+    graphics.endFill();
+    
+    // Status indicators
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-72, 25, 2);
+    graphics.endFill();
+    
+    // Add graphics to container
+    bunkContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    bunkContainer.addChild(animatedElements);
+    
+    // Animation for status lights
+    let animationTime = 0;
+    
+    const animateBunk = () => {
+        animationTime += 0.05;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate breathing indicator
+        const breathAlpha = 0.3 + Math.sin(animationTime) * 0.2;
+        animatedElements.beginFill(0x00ffff, breathAlpha);
+        animatedElements.drawCircle(0, -15, 2);
+        animatedElements.endFill();
+        
+        // Animate temperature display
+        const tempFlicker = Math.sin(animationTime * 8) > 0.8 ? 0.8 : 0.6;
+        animatedElements.beginFill(0x00ff88, tempFlicker);
+        animatedElements.drawRect(-75, -5, 1, 2);
+        animatedElements.drawRect(-73, -5, 1, 2);
+        animatedElements.drawRect(-71, -5, 1, 2);
+        animatedElements.drawRect(-69, -5, 1, 2);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateBunk);
+    };
+    
+    // Start animation
+    animateBunk();
+    
+    // Provide external animate method
+    bunkContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return bunkContainer;
+}
+
+function createPersonalLocker(x, y) {
+    // Create main locker container
+    const lockerContainer = new Container();
+    lockerContainer.x = x;
+    lockerContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main locker frame
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-30, -60, 60, 120, 8);
+    graphics.endFill();
+    
+    // Inner frame
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-27, -57, 54, 114, 6);
+    graphics.endFill();
+    
+    // Door frame
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-25, -55, 50, 110, 4);
+    graphics.endFill();
+    
+    // Door surface
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-23, -53, 46, 106, 3);
+    graphics.endFill();
+    
+    // Door panels
+    graphics.beginFill(0x404040);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-21, -51, 42, 25, 2);
+    graphics.drawRoundedRect(-21, -23, 42, 25, 2);
+    graphics.drawRoundedRect(-21, 5, 42, 25, 2);
+    graphics.drawRoundedRect(-21, 33, 42, 18, 2);
+    graphics.endFill();
+    
+    // Identification panel
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-19, -49, 38, 8, 2);
+    graphics.endFill();
+    
+    // ID display
+    graphics.beginFill(0x00ff88);
+    graphics.drawRect(-17, -47, 1, 4);
+    graphics.drawRect(-15, -47, 1, 4);
+    graphics.drawRect(-13, -47, 1, 4);
+    graphics.drawRect(-11, -47, 1, 4);
+    graphics.drawRect(-9, -47, 1, 4);
+    graphics.drawRect(-7, -47, 1, 4);
+    graphics.drawRect(-5, -47, 1, 4);
+    graphics.drawRect(-3, -47, 1, 4);
+    graphics.endFill();
+    
+    // Access control panel
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(15, -20, 12, 40, 4);
+    graphics.endFill();
+    
+    // Biometric scanner
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(17, -18, 8, 12, 2);
+    graphics.endFill();
+    
+    // Scanner surface
+    graphics.beginFill(0x004488);
+    graphics.drawRoundedRect(18, -17, 6, 10, 1);
+    graphics.endFill();
+    
+    // Number pad
+    const keypadButtons = [
+        {x: 18, y: -2, num: '1'},
+        {x: 21, y: -2, num: '2'},
+        {x: 24, y: -2, num: '3'},
+        {x: 18, y: 2, num: '4'},
+        {x: 21, y: 2, num: '5'},
+        {x: 24, y: 2, num: '6'},
+        {x: 18, y: 6, num: '7'},
+        {x: 21, y: 6, num: '8'},
+        {x: 24, y: 6, num: '9'},
+        {x: 21, y: 10, num: '0'}
+    ];
+    
+    keypadButtons.forEach(btn => {
+        graphics.beginFill(0x333333);
+        graphics.lineStyle(1, 0x666666);
+        graphics.drawRoundedRect(btn.x - 1, btn.y - 1, 2, 2, 0.5);
+        graphics.endFill();
+    });
+    
+    // Security status indicators
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(21, 15, 1.5);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    graphics.drawCircle(18, 15, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0x0066ff);
+    graphics.drawCircle(24, 15, 1);
+    graphics.endFill();
+    
+    // Door handle/latch
+    graphics.beginFill(0x666666);
+    graphics.lineStyle(1, 0x888888);
+    graphics.drawRoundedRect(-15, 35, 12, 6, 3);
+    graphics.endFill();
+    
+    // Latch mechanism
+    graphics.beginFill(0x444444);
+    graphics.drawRoundedRect(-13, 37, 8, 2, 1);
+    graphics.endFill();
+    
+    // Ventilation system
+    graphics.lineStyle(1, 0x555555);
+    for (let i = 0; i < 12; i++) {
+        graphics.moveTo(-19 + i * 3, 45);
+        graphics.lineTo(-19 + i * 3, 49);
+    }
+    
+    // Internal organization indicators
+    graphics.beginFill(0x002200);
+    graphics.lineStyle(1, 0x00cc44);
+    graphics.drawRoundedRect(-19, -21, 8, 4, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0x220000);
+    graphics.lineStyle(1, 0xcc4400);
+    graphics.drawRoundedRect(-19, 7, 8, 4, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0x000022);
+    graphics.lineStyle(1, 0x4400cc);
+    graphics.drawRoundedRect(-19, 35, 8, 4, 1);
+    graphics.endFill();
+    
+    // Status readouts
+    graphics.beginFill(0x00ff66);
+    for (let i = 0; i < 3; i++) {
+        graphics.drawRect(-17 + i * 2, -19, 1, 2);
+    }
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    for (let i = 0; i < 3; i++) {
+        graphics.drawRect(-17 + i * 2, 9, 1, 2);
+    }
+    graphics.endFill();
+    
+    graphics.beginFill(0x6600ff);
+    for (let i = 0; i < 3; i++) {
+        graphics.drawRect(-17 + i * 2, 37, 1, 2);
+    }
+    graphics.endFill();
+    
+    // Power connection
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(27, 50, 4, 3, 1);
+    graphics.endFill();
+    
+    // Power indicator
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(29, 46, 1.5);
+    graphics.endFill();
+    
+    // Mounting brackets
+    graphics.beginFill(0x444444);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-32, -45, 4, 8, 2);
+    graphics.drawRoundedRect(-32, -5, 4, 8, 2);
+    graphics.drawRoundedRect(-32, 35, 4, 8, 2);
+    graphics.drawRoundedRect(28, -45, 4, 8, 2);
+    graphics.drawRoundedRect(28, -5, 4, 8, 2);
+    graphics.drawRoundedRect(28, 35, 4, 8, 2);
+    graphics.endFill();
+    
+    // Emergency override
+    graphics.beginFill(0xff0000);
+    graphics.lineStyle(1, 0x333333);
+    graphics.drawCircle(21, -35, 2);
+    graphics.endFill();
+    
+    graphics.beginFill(0xffffff);
+    graphics.drawCircle(21, -35, 0.8);
+    graphics.endFill();
+    
+    // Add graphics to container
+    lockerContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    lockerContainer.addChild(animatedElements);
+    
+    // Animation for security systems
+    let animationTime = 0;
+    
+    const animateLocker = () => {
+        animationTime += 0.06;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate biometric scanner
+        const scanAlpha = 0.4 + Math.sin(animationTime * 2) * 0.3;
+        animatedElements.beginFill(0x00ccff, scanAlpha);
+        animatedElements.drawRoundedRect(18, -17, 6, 10, 1);
+        animatedElements.endFill();
+        
+        // Animate security scanning line
+        const scanLine = (animationTime * 15) % 10;
+        animatedElements.lineStyle(1, 0x00ffff, 0.6);
+        animatedElements.moveTo(18, -17 + scanLine);
+        animatedElements.lineTo(24, -17 + scanLine);
+        
+        // Animate ID display flicker
+        const idFlicker = Math.sin(animationTime * 6) > 0.7 ? 0.9 : 0.6;
+        animatedElements.beginFill(0x00ff88, idFlicker);
+        animatedElements.drawRect(-17, -47, 1, 4);
+        animatedElements.drawRect(-15, -47, 1, 4);
+        animatedElements.drawRect(-13, -47, 1, 4);
+        animatedElements.drawRect(-11, -47, 1, 4);
+        animatedElements.drawRect(-9, -47, 1, 4);
+        animatedElements.drawRect(-7, -47, 1, 4);
+        animatedElements.drawRect(-5, -47, 1, 4);
+        animatedElements.drawRect(-3, -47, 1, 4);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateLocker);
+    };
+    
+    // Start animation
+    animateLocker();
+    
+    // Provide external animate method
+    lockerContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return lockerContainer;
+}
+
+function createRecTerminal(x, y) {
+    // Create main terminal container
+    const terminalContainer = new Container();
+    terminalContainer.x = x;
+    terminalContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main terminal base/housing
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-50, -10, 100, 50, 8);
+    graphics.endFill();
+    
+    // Base surface
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-47, -7, 94, 44, 6);
+    graphics.endFill();
+    
+    // Monitor/display unit
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(3, 0x333333);
+    graphics.drawRoundedRect(-45, -55, 90, 45, 10);
+    graphics.endFill();
+    
+    // Screen bezel
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x444444);
+    graphics.drawRoundedRect(-42, -52, 84, 39, 8);
+    graphics.endFill();
+    
+    // Main display screen
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-40, -50, 80, 35, 6);
+    graphics.endFill();
+    
+    // Active screen area
+    graphics.beginFill(0x001122);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-38, -48, 76, 31, 4);
+    graphics.endFill();
+    
+    // Entertainment content simulation
+    graphics.beginFill(0x003366);
+    graphics.drawRoundedRect(-36, -46, 25, 20, 2);
+    graphics.endFill();
+    
+    graphics.beginFill(0x004488);
+    graphics.drawRoundedRect(-34, -44, 21, 16, 1);
+    graphics.endFill();
+    
+    // Media player interface
+    graphics.beginFill(0x330033);
+    graphics.lineStyle(1, 0x660066);
+    graphics.drawRoundedRect(-8, -46, 44, 8, 2);
+    graphics.endFill();
+    
+    // Progress bar
+    graphics.beginFill(0x666666);
+    graphics.drawRoundedRect(-6, -44, 40, 2, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0x00ff88);
+    graphics.drawRoundedRect(-6, -44, 25, 2, 1);
+    graphics.endFill();
+    
+    // Media controls
+    const mediaButtons = [
+        {x: -6, y: -40, color: 0x0066ff, symbol: '◀◀'},
+        {x: 2, y: -40, color: 0x00ff00, symbol: '▶'},
+        {x: 10, y: -40, color: 0x0066ff, symbol: '▶▶'},
+        {x: 18, y: -40, color: 0xff6600, symbol: '⏸'},
+        {x: 26, y: -40, color: 0xff0000, symbol: '⏹'}
+    ];
+    
+    mediaButtons.forEach(btn => {
+        graphics.beginFill(btn.color);
+        graphics.lineStyle(1, 0x333333);
+        graphics.drawRoundedRect(btn.x - 2, btn.y - 2, 4, 4, 1);
+        graphics.endFill();
+    });
+    
+    // Game/app selection menu
+    graphics.beginFill(0x002200);
+    graphics.lineStyle(1, 0x00cc44);
+    graphics.drawRoundedRect(-36, -35, 72, 16, 3);
+    graphics.endFill();
+    
+    // Menu items
+    const menuItems = [
+        {x: -32, y: -32, color: 0x00ff66, type: 'game'},
+        {x: -20, y: -32, color: 0x66ff00, type: 'game'},
+        {x: -8, y: -32, color: 0xff6600, type: 'media'},
+        {x: 4, y: -32, color: 0x0066ff, type: 'comm'},
+        {x: 16, y: -32, color: 0xff00ff, type: 'news'},
+        {x: 28, y: -32, color: 0x00ffff, type: 'edu'}
+    ];
+    
+    menuItems.forEach(item => {
+        graphics.beginFill(item.color);
+        graphics.drawRoundedRect(item.x - 2, item.y - 2, 4, 4, 1);
+        graphics.endFill();
+    });
+    
+    // Status bar
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-36, -22, 72, 4, 2);
+    graphics.endFill();
+    
+    // Status indicators
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-32, -20, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    graphics.drawCircle(-28, -20, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0x0066ff);
+    graphics.drawCircle(-24, -20, 1);
+    graphics.endFill();
+    
+    // Time/date display
+    graphics.beginFill(0x00ff88);
+    graphics.drawRect(25, -21, 1, 2);
+    graphics.drawRect(27, -21, 1, 2);
+    graphics.drawRect(29, -21, 1, 2);
+    graphics.drawRect(31, -21, 1, 2);
+    graphics.drawRect(33, -21, 1, 2);
+    graphics.endFill();
+    
+    // Monitor stand/arm
+    graphics.beginFill(0x444444);
+    graphics.lineStyle(2, 0x666666);
+    graphics.drawRoundedRect(-8, -12, 16, 8, 4);
+    graphics.endFill();
+    
+    // Adjustment mechanism
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawCircle(0, -8, 3);
+    graphics.endFill();
+    
+    // Keyboard/input panel
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x444444);
+    graphics.drawRoundedRect(-45, 5, 60, 25, 4);
+    graphics.endFill();
+    
+    // Key layout simulation
+    const keyRows = [
+        {y: 8, keys: 12, width: 50},
+        {y: 12, keys: 11, width: 48},
+        {y: 16, keys: 10, width: 46},
+        {y: 20, keys: 8, width: 40}
+    ];
+    
+    keyRows.forEach(row => {
+        graphics.beginFill(0x404040);
+        graphics.lineStyle(1, 0x555555);
+        for (let i = 0; i < row.keys; i++) {
+            const keyX = -row.width/2 + (i * row.width/row.keys) + 2;
+            graphics.drawRoundedRect(keyX, row.y, 3, 3, 0.5);
+        }
+        graphics.endFill();
+    });
+    
+    // Special function keys
+    graphics.beginFill(0x0066cc);
+    graphics.lineStyle(1, 0x333333);
+    graphics.drawRoundedRect(-43, 24, 6, 4, 1);
+    graphics.drawRoundedRect(-35, 24, 6, 4, 1);
+    graphics.drawRoundedRect(-27, 24, 6, 4, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0x00ff00);
+    graphics.drawRoundedRect(-19, 24, 6, 4, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    graphics.drawRoundedRect(-11, 24, 6, 4, 1);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff0000);
+    graphics.drawRoundedRect(-3, 24, 6, 4, 1);
+    graphics.endFill();
+    
+    // Trackpad/mouse area
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x333333);
+    graphics.drawRoundedRect(8, 8, 20, 15, 3);
+    graphics.endFill();
+    
+    // Trackpad surface
+    graphics.beginFill(0x2a2a2a);
+    graphics.drawRoundedRect(10, 10, 16, 11, 2);
+    graphics.endFill();
+    
+    // Mouse buttons
+    graphics.beginFill(0x404040);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(10, 23, 7, 4, 1);
+    graphics.drawRoundedRect(19, 23, 7, 4, 1);
+    graphics.endFill();
+    
+    // Audio/speaker grilles
+    graphics.lineStyle(1, 0x555555);
+    for (let i = 0; i < 6; i++) {
+        graphics.moveTo(-45 + i * 3, -8);
+        graphics.lineTo(-45 + i * 3, -4);
+    }
+    for (let i = 0; i < 6; i++) {
+        graphics.moveTo(27 + i * 3, -8);
+        graphics.lineTo(27 + i * 3, -4);
+    }
+    
+    // Volume controls
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawCircle(-40, 0, 2);
+    graphics.drawCircle(40, 0, 2);
+    graphics.endFill();
+    
+    // Volume indicators
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-40, 0, 1);
+    graphics.drawCircle(40, 0, 1);
+    graphics.endFill();
+    
+    // Data ports
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-50, 15, 3, 2, 1);
+    graphics.drawRoundedRect(-50, 18, 3, 2, 1);
+    graphics.drawRoundedRect(-50, 21, 3, 2, 1);
+    graphics.endFill();
+    
+    // Power indicator
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-40, 32, 2);
+    graphics.endFill();
+    
+    // Privacy shield (deployable)
+    graphics.beginFill(0x404040);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(42, -55, 6, 45, 3);
+    graphics.endFill();
+    
+    // Shield in retracted position
+    graphics.beginFill(0x333333);
+    graphics.drawRoundedRect(44, -53, 2, 15, 1);
+    graphics.endFill();
+    
+    // Mounting brackets
+    graphics.beginFill(0x444444);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-52, -30, 4, 8, 2);
+    graphics.drawRoundedRect(-52, 10, 4, 8, 2);
+    graphics.drawRoundedRect(48, -30, 4, 8, 2);
+    graphics.drawRoundedRect(48, 10, 4, 8, 2);
+    graphics.endFill();
+    
+    // Add graphics to container
+    terminalContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    terminalContainer.addChild(animatedElements);
+    
+    // Animation for screen activity and interface
+    let animationTime = 0;
+    
+    const animateTerminal = () => {
+        animationTime += 0.07;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate screen scan lines
+        const scanLine1 = (animationTime * 30) % 76;
+        const scanLine2 = (animationTime * 20 + 20) % 76;
+        animatedElements.lineStyle(1, 0x004488, 0.3);
+        animatedElements.moveTo(-38 + scanLine1, -48);
+        animatedElements.lineTo(-38 + scanLine1, -17);
+        animatedElements.lineStyle(1, 0x004488, 0.2);
+        animatedElements.moveTo(-38 + scanLine2, -48);
+        animatedElements.lineTo(-38 + scanLine2, -17);
+        
+        // Animate media player progress
+        const progressWidth = 15 + Math.sin(animationTime * 0.3) * 10;
+        animatedElements.beginFill(0x00ff88);
+        animatedElements.drawRoundedRect(-6, -44, progressWidth, 2, 1);
+        animatedElements.endFill();
+        
+        // Animate active menu item
+        const activeItem = Math.floor(animationTime * 0.5) % 6;
+        const activeX = -32 + activeItem * 12;
+        animatedElements.beginFill(0xffffff, 0.4);
+        animatedElements.drawRoundedRect(activeX - 3, -33, 6, 6, 2);
+        animatedElements.endFill();
+        
+        // Animate status indicators
+        const statusPulse = 0.5 + Math.sin(animationTime * 3) * 0.3;
+        animatedElements.beginFill(0x00ff00, statusPulse);
+        animatedElements.drawCircle(-32, -20, 1);
+        animatedElements.endFill();
+        
+        // Animate time display
+        const timeFlicker = Math.sin(animationTime * 4) > 0.5 ? 0.9 : 0.7;
+        animatedElements.beginFill(0x00ff88, timeFlicker);
+        animatedElements.drawRect(25, -21, 1, 2);
+        animatedElements.drawRect(27, -21, 1, 2);
+        animatedElements.drawRect(29, -21, 1, 2);
+        animatedElements.drawRect(31, -21, 1, 2);
+        animatedElements.drawRect(33, -21, 1, 2);
+        animatedElements.endFill();
+        
+        // Animate entertainment content
+        const contentPulse = 0.3 + Math.sin(animationTime * 1.5) * 0.2;
+        animatedElements.beginFill(0x0066cc, contentPulse);
+        animatedElements.drawRoundedRect(-34, -44, 21, 16, 1);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateTerminal);
+    };
+    
+    // Start animation
+    animateTerminal();
+    
+    // Provide external animate method
+    terminalContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return terminalContainer;
+}
+
+function createDiningTable(x, y) {
+    // Create main table container
+    const tableContainer = new Container();
+    tableContainer.x = x;
+    tableContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main table base/pedestal
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-15, -10, 30, 60, 8);
+    graphics.endFill();
+    
+    // Base inner detail
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-12, -5, 24, 50, 6);
+    graphics.endFill();
+    
+    // Table surface (hexagonal futuristic shape)
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.moveTo(-60, -20);
+    graphics.lineTo(-30, -35);
+    graphics.lineTo(30, -35);
+    graphics.lineTo(60, -20);
+    graphics.lineTo(60, 20);
+    graphics.lineTo(30, 35);
+    graphics.lineTo(-30, 35);
+    graphics.lineTo(-60, 20);
+    graphics.lineTo(-60, -20);
+    graphics.endFill();
+    
+    // Table surface inner panel
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.moveTo(-55, -15);
+    graphics.lineTo(-27, -28);
+    graphics.lineTo(27, -28);
+    graphics.lineTo(55, -15);
+    graphics.lineTo(55, 15);
+    graphics.lineTo(27, 28);
+    graphics.lineTo(-27, 28);
+    graphics.lineTo(-55, 15);
+    graphics.lineTo(-55, -15);
+    graphics.endFill();
+    
+    // Central holographic display area
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x004488);
+    graphics.drawCircle(0, 0, 25);
+    graphics.endFill();
+    
+    // Holographic projector ring
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawCircle(0, 0, 20);
+    graphics.endFill();
+    
+    // Interface panels around edge
+    const panelPositions = [
+        [-40, -10], [40, -10], [0, -25], [0, 25], [-40, 10], [40, 10]
+    ];
+    
+    panelPositions.forEach(pos => {
+        graphics.beginFill(0x2a2a2a);
+        graphics.lineStyle(1, 0x555555);
+        graphics.drawRoundedRect(pos[0] - 8, pos[1] - 3, 16, 6, 2);
+        graphics.endFill();
+        
+        // Panel indicators
+        graphics.beginFill(0x00ff00);
+        graphics.drawCircle(pos[0] - 5, pos[1], 1);
+        graphics.endFill();
+        
+        graphics.beginFill(0xff6600);
+        graphics.drawCircle(pos[0] + 5, pos[1], 1);
+        graphics.endFill();
+    });
+    
+    // Power conduits in base
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-8, 5, 16, 3, 1);
+    graphics.drawRoundedRect(-8, 15, 16, 3, 1);
+    graphics.drawRoundedRect(-8, 25, 16, 3, 1);
+    graphics.endFill();
+    
+    // Base stabilizers
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-20, 45, 10, 8, 3);
+    graphics.drawRoundedRect(10, 45, 10, 8, 3);
+    graphics.endFill();
+    
+    // Add graphics to container
+    tableContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    tableContainer.addChild(animatedElements);
+    
+    // Animation for holographic display
+    let animationTime = 0;
+    
+    const animateTable = () => {
+        animationTime += 0.03;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate holographic ring
+        const holoAlpha = 0.3 + Math.sin(animationTime * 2) * 0.2;
+        animatedElements.beginFill(0x00ffff, holoAlpha);
+        animatedElements.drawCircle(0, 0, 18);
+        animatedElements.endFill();
+        
+        // Animate power conduits
+        const powerAlpha = 0.5 + Math.sin(animationTime * 3) * 0.3;
+        animatedElements.beginFill(0x0088cc, powerAlpha);
+        animatedElements.drawRoundedRect(-8, 5, 16, 3, 1);
+        animatedElements.drawRoundedRect(-8, 15, 16, 3, 1);
+        animatedElements.drawRoundedRect(-8, 25, 16, 3, 1);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateTable);
+    };
+    
+    // Start animation
+    animateTable();
+    
+    // Provide external animate method
+    tableContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return tableContainer;
+}
+
+function createFoodReplicator(x, y) {
+    // Create main replicator container
+    const replicatorContainer = new Container();
+    replicatorContainer.x = x;
+    replicatorContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main replicator housing
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-50, -60, 100, 120, 12);
+    graphics.endFill();
+    
+    // Inner housing
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-45, -55, 90, 110, 10);
+    graphics.endFill();
+    
+    // Replication chamber (upper section)
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(2, 0x004488);
+    graphics.drawRoundedRect(-40, -50, 80, 40, 8);
+    graphics.endFill();
+    
+    // Chamber viewing window
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-35, -45, 70, 30, 6);
+    graphics.endFill();
+    
+    // Energy matrix grid inside chamber
+    graphics.lineStyle(1, 0x0088cc, 0.6);
+    for (let i = 1; i < 8; i++) {
+        graphics.moveTo(-35 + i * 10, -45);
+        graphics.lineTo(-35 + i * 10, -15);
+    }
+    for (let i = 1; i < 4; i++) {
+        graphics.moveTo(-35, -45 + i * 10);
+        graphics.lineTo(35, -45 + i * 10);
+    }
+    
+    // Control interface panel
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-40, -5, 80, 25, 8);
+    graphics.endFill();
+    
+    // Main display screen
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-35, -2, 35, 19, 4);
+    graphics.endFill();
+    
+    // Display readout
+    graphics.beginFill(0x00ff88);
+    graphics.drawRect(-33, 3, 2, 3);
+    graphics.drawRect(-29, 3, 2, 3);
+    graphics.drawRect(-25, 3, 2, 3);
+    graphics.drawRect(-21, 3, 2, 3);
+    graphics.drawRect(-17, 3, 2, 3);
+    graphics.drawRect(-13, 3, 2, 3);
+    graphics.drawRect(-9, 3, 2, 3);
+    graphics.drawRect(-5, 3, 2, 3);
+    graphics.endFill();
+    
+    // Control buttons
+    const buttonPositions = [
+        [5, -1], [15, -1], [25, -1],
+        [5, 7], [15, 7], [25, 7],
+        [5, 15], [15, 15], [25, 15]
+    ];
+    
+    buttonPositions.forEach((pos, index) => {
+        graphics.beginFill(0x333333);
+        graphics.lineStyle(1, 0x666666);
+        graphics.drawRoundedRect(pos[0], pos[1], 8, 5, 2);
+        graphics.endFill();
+        
+        // Button indicators
+        const colors = [0x00ff00, 0xff6600, 0x0066cc];
+        graphics.beginFill(colors[index % 3]);
+        graphics.drawCircle(pos[0] + 4, pos[1] + 2.5, 1);
+        graphics.endFill();
+    });
+    
+    // Output tray
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-35, 25, 70, 15, 6);
+    graphics.endFill();
+    
+    // Tray inner surface
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-32, 27, 64, 11, 4);
+    graphics.endFill();
+    
+    // Material feed lines
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-43, -30, 3, 50, 1);
+    graphics.drawRoundedRect(40, -30, 3, 50, 1);
+    graphics.endFill();
+    
+    // Energy couplings
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawCircle(-41, -35, 4);
+    graphics.drawCircle(-41, -10, 4);
+    graphics.drawCircle(-41, 15, 4);
+    graphics.drawCircle(41, -35, 4);
+    graphics.drawCircle(41, -10, 4);
+    graphics.drawCircle(41, 15, 4);
+    graphics.endFill();
+    
+    // Coupling inner details
+    graphics.beginFill(0x004488);
+    graphics.drawCircle(-41, -35, 2);
+    graphics.drawCircle(-41, -10, 2);
+    graphics.drawCircle(-41, 15, 2);
+    graphics.drawCircle(41, -35, 2);
+    graphics.drawCircle(41, -10, 2);
+    graphics.drawCircle(41, 15, 2);
+    graphics.endFill();
+    
+    // Base stabilizers
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-45, 55, 15, 8, 3);
+    graphics.drawRoundedRect(30, 55, 15, 8, 3);
+    graphics.endFill();
+    
+    // Emergency shutdown
+    graphics.beginFill(0xff0000);
+    graphics.lineStyle(1, 0x333333);
+    graphics.drawCircle(35, 5, 4);
+    graphics.endFill();
+    
+    graphics.beginFill(0xffffff);
+    graphics.drawCircle(35, 5, 2);
+    graphics.endFill();
+    
+    // Add graphics to container
+    replicatorContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    replicatorContainer.addChild(animatedElements);
+    
+    // Animation for replication process
+    let animationTime = 0;
+    
+    const animateReplicator = () => {
+        animationTime += 0.04;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate energy matrix
+        const matrixAlpha = 0.2 + Math.sin(animationTime * 4) * 0.15;
+        animatedElements.beginFill(0x00ffff, matrixAlpha);
+        animatedElements.drawRoundedRect(-35, -45, 70, 30, 6);
+        animatedElements.endFill();
+        
+        // Animate material feed lines
+        const feedAlpha = 0.4 + Math.sin(animationTime * 3) * 0.3;
+        animatedElements.beginFill(0x0088cc, feedAlpha);
+        animatedElements.drawRoundedRect(-43, -30, 3, 50, 1);
+        animatedElements.drawRoundedRect(40, -30, 3, 50, 1);
+        animatedElements.endFill();
+        
+        // Animate display flicker
+        const displayFlicker = Math.sin(animationTime * 10) > 0.7 ? 0.9 : 0.7;
+        animatedElements.beginFill(0x00ff88, displayFlicker);
+        animatedElements.drawRect(-33, 3, 2, 3);
+        animatedElements.drawRect(-29, 3, 2, 3);
+        animatedElements.drawRect(-25, 3, 2, 3);
+        animatedElements.drawRect(-21, 3, 2, 3);
+        animatedElements.drawRect(-17, 3, 2, 3);
+        animatedElements.drawRect(-13, 3, 2, 3);
+        animatedElements.drawRect(-9, 3, 2, 3);
+        animatedElements.drawRect(-5, 3, 2, 3);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateReplicator);
+    };
+    
+    // Start animation
+    animateReplicator();
+    
+    // Provide external animate method
+    replicatorContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return replicatorContainer;
+}
+
+function createBeverageDispenser(x, y) {
+    // Create main dispenser container
+    const dispenserContainer = new Container();
+    dispenserContainer.x = x;
+    dispenserContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main dispenser housing
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-30, -70, 60, 140, 10);
+    graphics.endFill();
+    
+    // Inner housing
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-25, -65, 50, 130, 8);
+    graphics.endFill();
+    
+    // Upper fluid reservoir section
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(2, 0x004488);
+    graphics.drawRoundedRect(-20, -60, 40, 45, 6);
+    graphics.endFill();
+    
+    // Reservoir viewing windows
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-17, -55, 12, 35, 4);
+    graphics.drawRoundedRect(5, -55, 12, 35, 4);
+    graphics.endFill();
+    
+    // Fluid level indicators
+    graphics.beginFill(0x0088cc, 0.7);
+    graphics.drawRoundedRect(-15, -45, 8, 15, 2); // First reservoir
+    graphics.drawRoundedRect(7, -50, 8, 25, 2);  // Second reservoir
+    graphics.endFill();
+    
+    // Reservoir separation divider
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-2, -57, 4, 39, 2);
+    graphics.endFill();
+    
+    // Selection interface panel
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-20, -10, 40, 30, 6);
+    graphics.endFill();
+    
+    // Selection buttons (3x2 grid)
+    const selectionButtons = [
+        [-12, -5], [0, -5], [12, -5],
+        [-12, 8], [0, 8], [12, 8]
+    ];
+    
+    const buttonLabels = [
+        0x00ff00, 0xff6600, 0x0066cc,  // Top row: green, orange, blue
+        0xff0066, 0xffff00, 0x00ffff   // Bottom row: pink, yellow, cyan
+    ];
+    
+    selectionButtons.forEach((pos, index) => {
+        graphics.beginFill(0x333333);
+        graphics.lineStyle(1, 0x666666);
+        graphics.drawRoundedRect(pos[0] - 4, pos[1] - 3, 8, 6, 2);
+        graphics.endFill();
+        
+        // Button indicator light
+        graphics.beginFill(buttonLabels[index]);
+        graphics.drawCircle(pos[0], pos[1], 1.5);
+        graphics.endFill();
+    });
+    
+    // Dispensing mechanism
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-15, 25, 30, 20, 6);
+    graphics.endFill();
+    
+    // Dispenser nozzle
+    graphics.beginFill(0x444444);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-3, 45, 6, 8, 3);
+    graphics.endFill();
+    
+    // Nozzle opening
+    graphics.beginFill(0x0d0d0d);
+    graphics.drawRoundedRect(-2, 50, 4, 3, 1);
+    graphics.endFill();
+    
+    // Cup platform
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x444444);
+    graphics.drawRoundedRect(-12, 55, 24, 8, 4);
+    graphics.endFill();
+    
+    // Platform surface
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x333333);
+    graphics.drawRoundedRect(-10, 57, 20, 4, 2);
+    graphics.endFill();
+    
+    // Side fluid conduits
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-27, -50, 3, 80, 1);
+    graphics.drawRoundedRect(24, -50, 3, 80, 1);
+    graphics.endFill();
+    
+    // Conduit connection points
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawCircle(-25, -45, 3);
+    graphics.drawCircle(-25, -25, 3);
+    graphics.drawCircle(-25, -5, 3);
+    graphics.drawCircle(-25, 15, 3);
+    graphics.drawCircle(25, -45, 3);
+    graphics.drawCircle(25, -25, 3);
+    graphics.drawCircle(25, -5, 3);
+    graphics.drawCircle(25, 15, 3);
+    graphics.endFill();
+    
+    // Connection inner details
+    graphics.beginFill(0x004488);
+    graphics.drawCircle(-25, -45, 1.5);
+    graphics.drawCircle(-25, -25, 1.5);
+    graphics.drawCircle(-25, -5, 1.5);
+    graphics.drawCircle(-25, 15, 1.5);
+    graphics.drawCircle(25, -45, 1.5);
+    graphics.drawCircle(25, -25, 1.5);
+    graphics.drawCircle(25, -5, 1.5);
+    graphics.drawCircle(25, 15, 1.5);
+    graphics.endFill();
+    
+    // Temperature control indicator
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-18, 30, 12, 6, 2);
+    graphics.endFill();
+    
+    // Temperature display
+    graphics.beginFill(0x00ff88);
+    graphics.drawRect(-16, 32, 1, 2);
+    graphics.drawRect(-14, 32, 1, 2);
+    graphics.drawRect(-12, 32, 1, 2);
+    graphics.drawRect(-10, 32, 1, 2);
+    graphics.drawRect(-8, 32, 1, 2);
+    graphics.endFill();
+    
+    // Heating/cooling indicators
+    graphics.beginFill(0xff6600);
+    graphics.drawCircle(10, 32, 2);
+    graphics.endFill();
+    
+    graphics.beginFill(0x00ffff);
+    graphics.drawCircle(10, 37, 2);
+    graphics.endFill();
+    
+    // Status indicator
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(0, 35, 2);
+    graphics.endFill();
+    
+    // Base stabilizers
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-27, 65, 12, 8, 3);
+    graphics.drawRoundedRect(15, 65, 12, 8, 3);
+    graphics.endFill();
+    
+    // Add graphics to container
+    dispenserContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    dispenserContainer.addChild(animatedElements);
+    
+    // Animation for fluid flow and indicators
+    let animationTime = 0;
+    
+    const animateDispenser = () => {
+        animationTime += 0.05;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate fluid levels with subtle movement
+        const fluidWave = Math.sin(animationTime * 2) * 2;
+        animatedElements.beginFill(0x00aaff, 0.8);
+        animatedElements.drawRoundedRect(-15, -45 + fluidWave, 8, 15, 2);
+        animatedElements.endFill();
+        
+        animatedElements.beginFill(0xff6600, 0.8);
+        animatedElements.drawRoundedRect(7, -50 + fluidWave * 0.5, 8, 25, 2);
+        animatedElements.endFill();
+        
+        // Animate fluid conduits
+        const conduitAlpha = 0.4 + Math.sin(animationTime * 3) * 0.2;
+        animatedElements.beginFill(0x0088cc, conduitAlpha);
+        animatedElements.drawRoundedRect(-27, -50, 3, 80, 1);
+        animatedElements.drawRoundedRect(24, -50, 3, 80, 1);
+        animatedElements.endFill();
+        
+        // Animate temperature display
+        const tempFlicker = Math.sin(animationTime * 8) > 0.8 ? 0.9 : 0.7;
+        animatedElements.beginFill(0x00ff88, tempFlicker);
+        animatedElements.drawRect(-16, 32, 1, 2);
+        animatedElements.drawRect(-14, 32, 1, 2);
+        animatedElements.drawRect(-12, 32, 1, 2);
+        animatedElements.drawRect(-10, 32, 1, 2);
+        animatedElements.drawRect(-8, 32, 1, 2);
+        animatedElements.endFill();
+        
+        // Animate status indicator pulse
+        const statusPulse = 0.5 + Math.sin(animationTime * 1.5) * 0.3;
+        animatedElements.beginFill(0x00ff00, statusPulse);
+        animatedElements.drawCircle(0, 35, 2);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateDispenser);
+    };
+    
+    // Start animation
+    animateDispenser();
+    
+    // Provide external animate method
+    dispenserContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return dispenserContainer;
+}
+
+function createExerciseEquipment(x, y) {
+    // Create main equipment container
+    const equipmentContainer = new Container();
+    equipmentContainer.x = x;
+    equipmentContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main support base
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-25, 40, 50, 20, 8);
+    graphics.endFill();
+    
+    // Base inner detail
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-22, 42, 44, 16, 6);
+    graphics.endFill();
+    
+    // Main support column
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-8, -40, 16, 80, 4);
+    graphics.endFill();
+    
+    // Support column inner detail
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-6, -38, 12, 76, 3);
+    graphics.endFill();
+    
+    // Main exercise platform/display
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-40, -50, 80, 25, 6);
+    graphics.endFill();
+    
+    // Platform inner panel
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-37, -47, 74, 19, 4);
+    graphics.endFill();
+    
+    // Central display screen
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x004488);
+    graphics.drawRoundedRect(-30, -45, 60, 15, 3);
+    graphics.endFill();
+    
+    // Screen inner glow
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-28, -43, 56, 11, 2);
+    graphics.endFill();
+    
+    // Exercise arm/resistance mechanism
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-45, -35, 15, 8, 3);
+    graphics.drawRoundedRect(30, -35, 15, 8, 3);
+    graphics.endFill();
+    
+    // Resistance coils
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawCircle(-37, -31, 6);
+    graphics.drawCircle(37, -31, 6);
+    graphics.endFill();
+    
+    // Control interface panels
+    const controlPositions = [
+        [-20, -40], [20, -40], [-15, -35], [15, -35]
+    ];
+    
+    controlPositions.forEach(pos => {
+        graphics.beginFill(0x2a2a2a);
+        graphics.lineStyle(1, 0x555555);
+        graphics.drawRoundedRect(pos[0] - 4, pos[1] - 2, 8, 4, 1);
+        graphics.endFill();
+        
+        // Control indicators
+        graphics.beginFill(0x00ff00);
+        graphics.drawCircle(pos[0] - 2, pos[1], 0.5);
+        graphics.endFill();
+        
+        graphics.beginFill(0xff6600);
+        graphics.drawCircle(pos[0] + 2, pos[1], 0.5);
+        graphics.endFill();
+    });
+    
+    // Power conduits in column
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-6, -20, 12, 2, 1);
+    graphics.drawRoundedRect(-6, -10, 12, 2, 1);
+    graphics.drawRoundedRect(-6, 0, 12, 2, 1);
+    graphics.drawRoundedRect(-6, 10, 12, 2, 1);
+    graphics.endFill();
+    
+    // Base stabilizers
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-35, 55, 12, 6, 2);
+    graphics.drawRoundedRect(23, 55, 12, 6, 2);
+    graphics.endFill();
+    
+    // Add graphics to container
+    equipmentContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    equipmentContainer.addChild(animatedElements);
+    
+    // Animation for display and power
+    let animationTime = 0;
+    
+    const animateEquipment = () => {
+        animationTime += 0.02;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate display screen
+        const screenAlpha = 0.4 + Math.sin(animationTime * 1.5) * 0.2;
+        animatedElements.beginFill(0x00ccff, screenAlpha);
+        animatedElements.drawRoundedRect(-28, -43, 56, 11, 2);
+        animatedElements.endFill();
+        
+        // Animate power conduits
+        const powerAlpha = 0.6 + Math.sin(animationTime * 2.5) * 0.3;
+        animatedElements.beginFill(0x0088cc, powerAlpha);
+        animatedElements.drawRoundedRect(-6, -20, 12, 2, 1);
+        animatedElements.drawRoundedRect(-6, -10, 12, 2, 1);
+        animatedElements.drawRoundedRect(-6, 0, 12, 2, 1);
+        animatedElements.drawRoundedRect(-6, 10, 12, 2, 1);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateEquipment);
+    };
+    
+    // Start animation
+    animateEquipment();
+    
+    // Provide external animate method
+    equipmentContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return equipmentContainer;
+}
+
+function createGameTable(x, y) {
+    // Create main table container
+    const tableContainer = new Container();
+    tableContainer.x = x;
+    tableContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main table base/pedestal
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-18, -15, 36, 70, 8);
+    graphics.endFill();
+    
+    // Base inner detail
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-15, -10, 30, 60, 6);
+    graphics.endFill();
+    
+    // Table surface (rounded rectangle for gaming)
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-70, -40, 140, 80, 12);
+    graphics.endFill();
+    
+    // Table surface inner panel
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-65, -35, 130, 70, 8);
+    graphics.endFill();
+    
+    // Central gaming display area
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(1, 0x004488);
+    graphics.drawRoundedRect(-50, -25, 100, 50, 6);
+    graphics.endFill();
+    
+    // Gaming display inner screen
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-47, -22, 94, 44, 4);
+    graphics.endFill();
+    
+    // Player control zones (4 corners)
+    const playerZones = [
+        [-55, -30], [55, -30], [-55, 30], [55, 30]
+    ];
+    
+    playerZones.forEach((pos, index) => {
+        // Control panel
+        graphics.beginFill(0x2a2a2a);
+        graphics.lineStyle(1, 0x555555);
+        graphics.drawRoundedRect(pos[0] - 12, pos[1] - 8, 24, 16, 4);
+        graphics.endFill();
+        
+        // Inner control surface
+        graphics.beginFill(0x1a1a1a);
+        graphics.lineStyle(1, 0x444444);
+        graphics.drawRoundedRect(pos[0] - 10, pos[1] - 6, 20, 12, 3);
+        graphics.endFill();
+        
+        // Player indicators
+        const colors = [0x00ff00, 0xff0000, 0x0099ff, 0xffff00];
+        graphics.beginFill(colors[index]);
+        graphics.drawCircle(pos[0], pos[1], 2);
+        graphics.endFill();
+        
+        // Control buttons
+        graphics.beginFill(0x333333);
+        graphics.drawCircle(pos[0] - 6, pos[1], 1.5);
+        graphics.drawCircle(pos[0] + 6, pos[1], 1.5);
+        graphics.endFill();
+    });
+    
+    // Side interface panels
+    const sidePositions = [
+        [-60, 0], [60, 0], [0, -32], [0, 32]
+    ];
+    
+    sidePositions.forEach(pos => {
+        graphics.beginFill(0x2a2a2a);
+        graphics.lineStyle(1, 0x555555);
+        graphics.drawRoundedRect(pos[0] - 6, pos[1] - 2, 12, 4, 2);
+        graphics.endFill();
+        
+        // Status indicators
+        graphics.beginFill(0x00ff00);
+        graphics.drawCircle(pos[0] - 3, pos[1], 0.8);
+        graphics.endFill();
+        
+        graphics.beginFill(0xff6600);
+        graphics.drawCircle(pos[0] + 3, pos[1], 0.8);
+        graphics.endFill();
+    });
+    
+    // Power conduits in base
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-12, 0, 24, 3, 1);
+    graphics.drawRoundedRect(-12, 10, 24, 3, 1);
+    graphics.drawRoundedRect(-12, 20, 24, 3, 1);
+    graphics.drawRoundedRect(-12, 30, 24, 3, 1);
+    graphics.endFill();
+    
+    // Base stabilizers
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-25, 50, 12, 8, 3);
+    graphics.drawRoundedRect(13, 50, 12, 8, 3);
+    graphics.endFill();
+    
+    // Add graphics to container
+    tableContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    tableContainer.addChild(animatedElements);
+    
+    // Animation for gaming display and effects
+    let animationTime = 0;
+    
+    const animateTable = () => {
+        animationTime += 0.025;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate main gaming display
+        const displayAlpha = 0.3 + Math.sin(animationTime * 1.8) * 0.15;
+        animatedElements.beginFill(0x00ffcc, displayAlpha);
+        animatedElements.drawRoundedRect(-47, -22, 94, 44, 4);
+        animatedElements.endFill();
+        
+        // Animate power conduits
+        const powerAlpha = 0.5 + Math.sin(animationTime * 2.2) * 0.25;
+        animatedElements.beginFill(0x0088cc, powerAlpha);
+        animatedElements.drawRoundedRect(-12, 0, 24, 3, 1);
+        animatedElements.drawRoundedRect(-12, 10, 24, 3, 1);
+        animatedElements.drawRoundedRect(-12, 20, 24, 3, 1);
+        animatedElements.drawRoundedRect(-12, 30, 24, 3, 1);
+        animatedElements.endFill();
+        
+        // Animate player zone highlights (subtle pulse)
+        const playerZones = [
+            [-55, -30], [55, -30], [-55, 30], [55, 30]
+        ];
+        const zoneAlpha = 0.1 + Math.sin(animationTime * 1.5) * 0.08;
+        
+        playerZones.forEach(pos => {
+            animatedElements.beginFill(0x004488, zoneAlpha);
+            animatedElements.drawRoundedRect(pos[0] - 10, pos[1] - 6, 20, 12, 3);
+            animatedElements.endFill();
+        });
+        
+        requestAnimationFrame(animateTable);
+    };
+    
+    // Start animation
+    animateTable();
+    
+    // Provide external animate method
+    tableContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return tableContainer;
+}
+
+function createEntertainmentConsole(x, y) {
+    // Create main console container
+    const consoleContainer = new Container();
+    consoleContainer.x = x;
+    consoleContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main console base
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(3, 0x444444);
+    graphics.drawRoundedRect(-80, 20, 160, 40, 8);
+    graphics.endFill();
+    
+    // Base inner detail
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-77, 23, 154, 34, 6);
+    graphics.endFill();
+    
+    // Main display screen (large central screen)
+    graphics.beginFill(0x0d0d0d);
+    graphics.lineStyle(2, 0x004488);
+    graphics.drawRoundedRect(-70, -45, 140, 60, 8);
+    graphics.endFill();
+    
+    // Screen inner display
+    graphics.beginFill(0x003366);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-67, -42, 134, 54, 6);
+    graphics.endFill();
+    
+    // Screen bezel details
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-70, -45, 140, 8, 4);
+    graphics.drawRoundedRect(-70, 7, 140, 8, 4);
+    graphics.endFill();
+    
+    // Side speaker grilles
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-75, -35, 8, 40, 3);
+    graphics.drawRoundedRect(67, -35, 8, 40, 3);
+    graphics.endFill();
+    
+    // Speaker grille lines
+    for (let i = -30; i <= 0; i += 5) {
+        graphics.beginFill(0x1a1a1a);
+        graphics.drawRoundedRect(-73, i, 4, 2, 1);
+        graphics.drawRoundedRect(69, i, 4, 2, 1);
+        graphics.endFill();
+    }
+    
+    // Central control panel
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-50, 25, 100, 25, 6);
+    graphics.endFill();
+    
+    // Control panel inner surface
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-47, 28, 94, 19, 4);
+    graphics.endFill();
+    
+    // Control interface elements
+    const controlPositions = [
+        [-35, 37], [-15, 37], [5, 37], [25, 37],
+        [-25, 32], [0, 32], [25, 32]
+    ];
+    
+    controlPositions.forEach((pos, index) => {
+        graphics.beginFill(0x2a2a2a);
+        graphics.lineStyle(1, 0x555555);
+        graphics.drawRoundedRect(pos[0] - 4, pos[1] - 2, 8, 4, 2);
+        graphics.endFill();
+        
+        // Control indicators
+        const colors = [0x00ff00, 0xff0000, 0x0099ff, 0xffff00, 0xff6600, 0x9900ff, 0x00ffff];
+        graphics.beginFill(colors[index % colors.length]);
+        graphics.drawCircle(pos[0], pos[1], 1);
+        graphics.endFill();
+    });
+    
+    // Volume/equalizer bars
+    const eqPositions = [-40, -25, -10, 5, 20, 35];
+    eqPositions.forEach((xPos, index) => {
+        const height = 8 + (index % 3) * 4;
+        graphics.beginFill(0x004488);
+        graphics.lineStyle(1, 0x0066cc);
+        graphics.drawRoundedRect(xPos, 45 - height, 6, height, 1);
+        graphics.endFill();
+    });
+    
+    // Side status panels
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(1, 0x555555);
+    graphics.drawRoundedRect(-90, -10, 15, 20, 3);
+    graphics.drawRoundedRect(75, -10, 15, 20, 3);
+    graphics.endFill();
+    
+    // Status indicators
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-82, -5, 1.5);
+    graphics.drawCircle(83, -5, 1.5);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    graphics.drawCircle(-82, 5, 1.5);
+    graphics.drawCircle(83, 5, 1.5);
+    graphics.endFill();
+    
+    // Power conduits in base
+    graphics.beginFill(0x004488);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-60, 30, 120, 3, 1);
+    graphics.drawRoundedRect(-60, 40, 120, 3, 1);
+    graphics.endFill();
+    
+    // Base support legs
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-85, 55, 15, 8, 3);
+    graphics.drawRoundedRect(-25, 55, 15, 8, 3);
+    graphics.drawRoundedRect(10, 55, 15, 8, 3);
+    graphics.drawRoundedRect(70, 55, 15, 8, 3);
+    graphics.endFill();
+    
+    // Add graphics to container
+    consoleContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    consoleContainer.addChild(animatedElements);
+    
+    // Animation for display and effects
+    let animationTime = 0;
+    
+    const animateConsole = () => {
+        animationTime += 0.03;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate main display screen
+        const screenAlpha = 0.4 + Math.sin(animationTime * 1.2) * 0.2;
+        animatedElements.beginFill(0x00aaff, screenAlpha);
+        animatedElements.drawRoundedRect(-67, -42, 134, 54, 6);
+        animatedElements.endFill();
+        
+        // Animate power conduits
+        const powerAlpha = 0.6 + Math.sin(animationTime * 2.8) * 0.3;
+        animatedElements.beginFill(0x0088cc, powerAlpha);
+        animatedElements.drawRoundedRect(-60, 30, 120, 3, 1);
+        animatedElements.drawRoundedRect(-60, 40, 120, 3, 1);
+        animatedElements.endFill();
+        
+        // Animate equalizer bars
+        const eqPositions = [-40, -25, -10, 5, 20, 35];
+        eqPositions.forEach((xPos, index) => {
+            const baseHeight = 8 + (index % 3) * 4;
+            const animatedHeight = baseHeight + Math.sin(animationTime * 3 + index) * 6;
+            const eqAlpha = 0.5 + Math.sin(animationTime * 2 + index * 0.5) * 0.3;
+            
+            animatedElements.beginFill(0x0099ff, eqAlpha);
+            animatedElements.drawRoundedRect(xPos, 45 - animatedHeight, 6, animatedHeight, 1);
+            animatedElements.endFill();
+        });
+        
+        // Animate speaker grilles (subtle pulse)
+        const speakerAlpha = 0.2 + Math.sin(animationTime * 1.5) * 0.1;
+        animatedElements.beginFill(0x004488, speakerAlpha);
+        animatedElements.drawRoundedRect(-75, -35, 8, 40, 3);
+        animatedElements.drawRoundedRect(67, -35, 8, 40, 3);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateConsole);
+    };
+    
+    // Start animation
+    animateConsole();
+    
+    // Provide external animate method
+    consoleContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return consoleContainer;
+}
+
+function createSpaceship(x, y) {
+    // Create main spaceship container
+    const spaceshipContainer = new Container();
+    spaceshipContainer.x = x;
+    spaceshipContainer.y = y;
+    
+    // Create graphics object for drawing
+    const graphics = new Graphics();
+    
+    // Main hull - elongated vertical design
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(3, 0x333333);
+    graphics.drawRoundedRect(-60, -200, 120, 400, 15);
+    graphics.endFill();
+    
+    // Primary hull structure
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x444444);
+    graphics.drawRoundedRect(-55, -195, 110, 390, 12);
+    graphics.endFill();
+    
+    // Command section (top)
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-45, -190, 90, 80, 10);
+    graphics.endFill();
+    
+    // Bridge viewport
+    graphics.beginFill(0x001122);
+    graphics.lineStyle(2, 0x0066cc);
+    graphics.drawRoundedRect(-40, -185, 80, 30, 8);
+    graphics.endFill();
+    
+    // Bridge window frame
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-37, -182, 74, 24, 6);
+    graphics.endFill();
+    
+    // Bridge interior glow
+    graphics.beginFill(0x004466);
+    graphics.drawRoundedRect(-35, -180, 70, 20, 4);
+    graphics.endFill();
+    
+    // Navigation lights
+    graphics.beginFill(0x00ff00);
+    graphics.drawCircle(-50, -170, 3);
+    graphics.drawCircle(50, -170, 3);
+    graphics.endFill();
+    
+    graphics.beginFill(0xff0000);
+    graphics.drawCircle(-50, -160, 2);
+    graphics.drawCircle(50, -160, 2);
+    graphics.endFill();
+    
+    // Central command hub
+    graphics.beginFill(0x002244);
+    graphics.lineStyle(2, 0x0088cc);
+    graphics.drawCircle(0, -165, 8);
+    graphics.endFill();
+    
+    // Hub core
+    graphics.beginFill(0x0066cc);
+    graphics.drawCircle(0, -165, 4);
+    graphics.endFill();
+    
+    // Communication arrays
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(2, 0x333333);
+    graphics.drawRoundedRect(-25, -210, 50, 15, 4);
+    graphics.endFill();
+    
+    // Array elements
+    graphics.beginFill(0x0066cc);
+    for (let i = 0; i < 8; i++) {
+        graphics.drawCircle(-20 + i * 5, -202, 1);
+    }
+    graphics.endFill();
+    
+    // Upper hull sections
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(1, 0x444444);
+    graphics.drawRoundedRect(-50, -140, 100, 60, 8);
+    graphics.endFill();
+    
+    // Sensor arrays
+    graphics.beginFill(0x001100);
+    graphics.lineStyle(1, 0x00cc44);
+    graphics.drawRoundedRect(-45, -135, 20, 15, 3);
+    graphics.endFill();
+    
+    graphics.beginFill(0x110000);
+    graphics.lineStyle(1, 0xcc4400);
+    graphics.drawRoundedRect(-20, -135, 20, 15, 3);
+    graphics.endFill();
+    
+    graphics.beginFill(0x000011);
+    graphics.lineStyle(1, 0x4400cc);
+    graphics.drawRoundedRect(5, -135, 20, 15, 3);
+    graphics.endFill();
+    
+    graphics.beginFill(0x110011);
+    graphics.lineStyle(1, 0xcc44cc);
+    graphics.drawRoundedRect(30, -135, 20, 15, 3);
+    graphics.endFill();
+    
+    // Sensor readouts
+    graphics.beginFill(0x00ff66);
+    for (let i = 0; i < 6; i++) {
+        const height = 1 + Math.sin(i * 0.8) * 2 + 1.5;
+        graphics.drawRect(-43 + i * 2.5, -125 - height, 2, height);
+    }
+    graphics.endFill();
+    
+    graphics.beginFill(0xff6600);
+    for (let i = 0; i < 6; i++) {
+        const height = 1 + Math.cos(i * 0.6) * 2 + 1.5;
+        graphics.drawRect(-18 + i * 2.5, -125 - height, 2, height);
+    }
+    graphics.endFill();
+    
+    graphics.beginFill(0x6600ff);
+    for (let i = 0; i < 6; i++) {
+        const height = 1 + Math.sin(i * 0.4 + 1) * 2 + 1.5;
+        graphics.drawRect(7 + i * 2.5, -125 - height, 2, height);
+    }
+    graphics.endFill();
+    
+    graphics.beginFill(0xff66cc);
+    for (let i = 0; i < 6; i++) {
+        const height = 1 + Math.cos(i * 0.3 + 2) * 2 + 1.5;
+        graphics.drawRect(32 + i * 2.5, -125 - height, 2, height);
+    }
+    graphics.endFill();
+    
+    // Main engineering section
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(3, 0x333333);
+    graphics.drawRoundedRect(-55, -75, 110, 150, 10);
+    graphics.endFill();
+    
+    // Engineering core
+    graphics.beginFill(0x002244);
+    graphics.lineStyle(2, 0x0088cc);
+    graphics.drawRoundedRect(-35, -60, 70, 120, 8);
+    graphics.endFill();
+    
+    // Core containment field
+    graphics.beginFill(0x004466);
+    graphics.lineStyle(1, 0x0066cc);
+    graphics.drawRoundedRect(-30, -55, 60, 110, 6);
+    graphics.endFill();
+    
+    // Warp core
+    graphics.beginFill(0x0066cc);
+    graphics.drawRoundedRect(-20, -50, 40, 100, 4);
+    graphics.endFill();
+    
+    // Core segments
+    graphics.lineStyle(1, 0x00ccff);
+    for (let i = 0; i < 10; i++) {
+        graphics.moveTo(-20, -45 + i * 10);
+        graphics.lineTo(20, -45 + i * 10);
+    }
+    
+    // Power conduits
+    graphics.lineStyle(2, 0x00ff88);
+    graphics.moveTo(-25, -50);
+    graphics.lineTo(-25, 50);
+    graphics.moveTo(25, -50);
+    graphics.lineTo(25, 50);
+    
+    // Side system panels
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x444444);
+    graphics.drawRoundedRect(-65, -60, 15, 120, 6);
+    graphics.drawRoundedRect(50, -60, 15, 120, 6);
+    graphics.endFill();
+    
+    // Control interfaces
+    const controlButtons = [
+        {x: -57, y: -50, color: 0x00ff00},
+        {x: -57, y: -40, color: 0xff0000},
+        {x: -57, y: -30, color: 0x0066ff},
+        {x: -57, y: -20, color: 0xff6600},
+        {x: -57, y: -10, color: 0x00ffff},
+        {x: -57, y: 0, color: 0xff00ff},
+        {x: -57, y: 10, color: 0x66ff00},
+        {x: -57, y: 20, color: 0xffff00},
+        {x: -57, y: 30, color: 0x00ff00},
+        {x: -57, y: 40, color: 0xff0000},
+        {x: 57, y: -50, color: 0x0066ff},
+        {x: 57, y: -40, color: 0xff6600},
+        {x: 57, y: -30, color: 0x00ffff},
+        {x: 57, y: -20, color: 0xff00ff},
+        {x: 57, y: -10, color: 0x66ff00},
+        {x: 57, y: 0, color: 0xffff00},
+        {x: 57, y: 10, color: 0x00ff00},
+        {x: 57, y: 20, color: 0xff0000},
+        {x: 57, y: 30, color: 0x0066ff},
+        {x: 57, y: 40, color: 0xff6600}
+    ];
+    
+    controlButtons.forEach(btn => {
+        graphics.beginFill(btn.color);
+        graphics.lineStyle(1, 0x333333);
+        graphics.drawCircle(btn.x, btn.y, 2);
+        graphics.endFill();
+    });
+    
+    // Lower hull section
+    graphics.beginFill(0x2a2a2a);
+    graphics.lineStyle(2, 0x444444);
+    graphics.drawRoundedRect(-50, 80, 100, 115, 8);
+    graphics.endFill();
+    
+    // Propulsion systems
+    graphics.beginFill(0x1a1a1a);
+    graphics.lineStyle(3, 0x333333);
+    graphics.drawRoundedRect(-40, 90, 80, 95, 6);
+    graphics.endFill();
+    
+    // Engine housing
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(2, 0x555555);
+    graphics.drawRoundedRect(-35, 95, 70, 85, 5);
+    graphics.endFill();
+    
+    // Thruster arrays
+    graphics.beginFill(0x002244);
+    graphics.lineStyle(2, 0x0088cc);
+    graphics.drawRoundedRect(-30, 150, 25, 25, 4);
+    graphics.drawRoundedRect(5, 150, 25, 25, 4);
+    graphics.endFill();
+    
+    // Thruster cores
+    graphics.beginFill(0x0066cc);
+    graphics.drawCircle(-17, 162, 8);
+    graphics.drawCircle(17, 162, 8);
+    graphics.endFill();
+    
+    // Thruster nozzles
+    graphics.beginFill(0x004466);
+    graphics.drawCircle(-17, 162, 5);
+    graphics.drawCircle(17, 162, 5);
+    graphics.endFill();
+    
+    // Maneuvering thrusters
+    graphics.beginFill(0x333333);
+    graphics.lineStyle(1, 0x666666);
+    graphics.drawRoundedRect(-55, 100, 8, 12, 2);
+    graphics.drawRoundedRect(47, 100, 8, 12, 2);
+    graphics.drawRoundedRect(-55, 120, 8, 12, 2);
+    graphics.drawRoundedRect(47, 120, 8, 12, 2);
+    graphics.drawRoundedRect(-55, 140, 8, 12, 2);
+    graphics.drawRoundedRect(47, 140, 8, 12, 2);
+    graphics.drawRoundedRect(-55, 160, 8, 12, 2);
+    graphics.drawRoundedRect(47, 160, 8, 12, 2);
+    graphics.endFill();
+    
+    // Thruster glow
+    graphics.beginFill(0x0088cc);
+    graphics.drawCircle(-51, 106, 2);
+    graphics.drawCircle(51, 106, 2);
+    graphics.drawCircle(-51, 126, 2);
+    graphics.drawCircle(51, 126, 2);
+    graphics.drawCircle(-51, 146, 2);
+    graphics.drawCircle(51, 146, 2);
+    graphics.drawCircle(-51, 166, 2);
+    graphics.drawCircle(51, 166, 2);
+    graphics.endFill();
+    
+    // Hull plating details
+    graphics.lineStyle(1, 0x333333, 0.5);
+    for (let i = 0; i < 20; i++) {
+        graphics.moveTo(-50, -190 + i * 20);
+        graphics.lineTo(50, -190 + i * 20);
+    }
+    
+    // Vertical hull lines
+    graphics.moveTo(-40, -190);
+    graphics.lineTo(-40, 190);
+    graphics.moveTo(40, -190);
+    graphics.lineTo(40, 190);
+    graphics.moveTo(0, -190);
+    graphics.lineTo(0, 190);
+    
+    // Deflector array
+    graphics.beginFill(0x001122);
+    graphics.lineStyle(2, 0x0066cc);
+    graphics.drawRoundedRect(-25, 100, 50, 30, 6);
+    graphics.endFill();
+    
+    // Deflector grid
+    graphics.lineStyle(1, 0x004466, 0.6);
+    for (let i = 0; i < 6; i++) {
+        graphics.moveTo(-20 + i * 8, 105);
+        graphics.lineTo(-20 + i * 8, 125);
+    }
+    for (let i = 0; i < 3; i++) {
+        graphics.moveTo(-20, 110 + i * 5);
+        graphics.lineTo(20, 110 + i * 5);
+    }
+    
+    // Deflector dish
+    graphics.beginFill(0x0066cc);
+    graphics.drawCircle(0, 115, 12);
+    graphics.endFill();
+    
+    // Emergency systems
+    graphics.beginFill(0xff0000);
+    graphics.drawCircle(-45, 50, 2);
+    graphics.drawCircle(45, 50, 2);
+    graphics.drawCircle(-45, 75, 2);
+    graphics.drawCircle(45, 75, 2);
+    graphics.endFill();
+    
+    // Add graphics to container
+    spaceshipContainer.addChild(graphics);
+    
+    // Create animated elements
+    const animatedElements = new Graphics();
+    spaceshipContainer.addChild(animatedElements);
+    
+    // Animation for engine glow and system activity
+    let animationTime = 0;
+    
+    const animateSpaceship = () => {
+        animationTime += 0.05;
+        
+        // Clear animated elements
+        animatedElements.clear();
+        
+        // Animate main engine glow
+        const engineGlow = 0.3 + Math.sin(animationTime * 3) * 0.2;
+        animatedElements.beginFill(0x00ccff, engineGlow);
+        animatedElements.drawCircle(-17, 162, 12);
+        animatedElements.drawCircle(17, 162, 12);
+        animatedElements.endFill();
+        
+        // Animate thruster trails
+        const thrusterAlpha = 0.4 + Math.sin(animationTime * 4) * 0.2;
+        animatedElements.beginFill(0x00aaff, thrusterAlpha);
+        animatedElements.drawRoundedRect(-20, 175, 6, 15, 2);
+        animatedElements.drawRoundedRect(14, 175, 6, 15, 2);
+        animatedElements.endFill();
+        
+        // Animate maneuvering thruster glow
+        const maneuverGlow = 0.2 + Math.sin(animationTime * 2 + 1) * 0.15;
+        animatedElements.beginFill(0x0088cc, maneuverGlow);
+        animatedElements.drawCircle(-51, 106, 3);
+        animatedElements.drawCircle(51, 106, 3);
+        animatedElements.drawCircle(-51, 126, 3);
+        animatedElements.drawCircle(51, 126, 3);
+        animatedElements.drawCircle(-51, 146, 3);
+        animatedElements.drawCircle(51, 146, 3);
+        animatedElements.drawCircle(-51, 166, 3);
+        animatedElements.drawCircle(51, 166, 3);
+        animatedElements.endFill();
+        
+        // Animate warp core
+        const coreGlow = 0.4 + Math.sin(animationTime * 5) * 0.3;
+        animatedElements.beginFill(0x0088ff, coreGlow);
+        animatedElements.drawRoundedRect(-15, -45, 30, 90, 3);
+        animatedElements.endFill();
+        
+        // Animate energy flow in core
+        const flowPos = (animationTime * 30) % 90;
+        animatedElements.beginFill(0x00ffaa, 0.8);
+        animatedElements.drawCircle(0, -45 + flowPos, 2);
+        animatedElements.endFill();
+        
+        // Animate deflector dish
+        const dishGlow = 0.3 + Math.sin(animationTime * 2.5) * 0.2;
+        animatedElements.beginFill(0x0066cc, dishGlow);
+        animatedElements.drawCircle(0, 115, 15);
+        animatedElements.endFill();
+        
+        // Animate navigation lights
+        const navBlink = Math.sin(animationTime * 4) > 0 ? 0.8 : 0.2;
+        animatedElements.beginFill(0x00ff00, navBlink);
+        animatedElements.drawCircle(-50, -170, 4);
+        animatedElements.drawCircle(50, -170, 4);
+        animatedElements.endFill();
+        
+        // Animate bridge glow
+        const bridgeGlow = 0.3 + Math.sin(animationTime * 1.5) * 0.1;
+        animatedElements.beginFill(0x004466, bridgeGlow);
+        animatedElements.drawRoundedRect(-30, -175, 60, 15, 3);
+        animatedElements.endFill();
+        
+        requestAnimationFrame(animateSpaceship);
+    };
+    
+    // Start animation
+    animateSpaceship();
+    
+    // Provide external animate method
+    spaceshipContainer.animate = function(delta) {
+        animationTime += delta * 0.01;
+    };
+    
+    return spaceshipContainer;
+}
+
 const populateRooms = (gameState) => {
   const { camera, TILE_SIZE } = gameState;
   
@@ -9735,10 +12019,10 @@ const populateRooms = (gameState) => {
     ],
     // Row 1: Main corridors and facilities
     [
-      { type: 'corridor', width: 200, height: 500, name: 'Main Corridor A' },
+      { type: 'secret_room', width: 200, height: 500, name: 'Hidden Room' },
       { type: 'med_bay', width: 500, height: 500, name: 'Medical Bay' },
       { type: 'lab', width: 450, height: 500, name: 'Research Lab' },
-      { type: 'corridor', width: 450, height: 500, name: 'Corridor A' },
+      { type: 'corridor2', width: 450, height: 500, name: 'Corridor A' },
     ],
     // Row 2: Engineering and storage
     [
@@ -9748,10 +12032,10 @@ const populateRooms = (gameState) => {
     ],
     // Row 3: Living quarters
     [
-      { type: 'quarters', width: 300, height: 350, name: 'Crew Quarters A' },
-      { type: 'quarters', width: 300, height: 350, name: 'Crew Quarters B' },
-      { type: 'cafeteria', width: 400, height: 350, name: 'Mess Hall' },
-      { type: 'recreation', width: 300, height: 350, name: 'Recreation' }
+      { type: 'quarters', width: 350, height: 350, name: 'Crew Quarters A' },
+      { type: 'quarters', width: 350, height: 350, name: 'Crew Quarters B' },
+      { type: 'cafeteria', width: 450, height: 350, name: 'Mess Hall' },
+      { type: 'recreation', width: 450, height: 350, name: 'Recreation' }
     ]
   ];
 
@@ -10146,153 +12430,154 @@ const populateRooms = (gameState) => {
           ));
           break;
 
-        // case 'quarters': // Crew Quarters
-        //   // Bunk beds
-        //   camera.addChild(createSpaceBunk(
-        //     offsetX + 80,
-        //     offsetY + 100,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   camera.addChild(createSpaceBunk(
-        //     offsetX + 80,
-        //     offsetY + 200,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+        case 'quarters': // Crew Quarters
+          // Bunk beds
+          camera.addChild(createSpaceBunk(
+            offsetX + 100,
+            offsetY + 5,
+            camera,
+            gameState.colliders
+          ));
+          camera.addChild(createSpaceBunk(
+            offsetX + 100,
+            offsetY + 200,
+            camera,
+            gameState.colliders
+          ));
           
-        //   // Personal storage
+          // Personal storage
+          camera.addChild(createPersonalLocker(
+            offsetX + width - 60,
+            offsetY + 200,
+            camera,
+            gameState.colliders
+          ));
         //   camera.addChild(createPersonalLocker(
         //     offsetX + width - 60,
-        //     offsetY + 120,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   camera.addChild(createPersonalLocker(
-        //     offsetX + width - 60,
         //     offsetY + 200,
         //     camera,
         //     gameState.colliders
         //   ));
           
-        //   // Recreation terminal
-        //   camera.addChild(createRecTerminal(
-        //     offsetX + width / 2,
-        //     offsetY + height - 60,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   break;
+          // Recreation terminal
+          camera.addChild(createRecTerminal(
+            offsetX + width - 60,
+            offsetY + 5,
+            camera,
+            gameState.colliders
+          ));
+          break;
+       
 
-        // case 'cafeteria': // Mess Hall
-        //   // Dining tables
-        //   camera.addChild(createDiningTable(
-        //     offsetX + 120,
-        //     offsetY + 150,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   camera.addChild(createDiningTable(
-        //     offsetX + width - 120,
-        //     offsetY + 150,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+        case 'cafeteria': // Mess Hall
+          // Dining tables
+            camera.addChild(createDiningTable(
+            offsetX + 120,
+            offsetY ,
+            camera,
+            gameState.colliders
+          ));
+          camera.addChild(createDiningTable(
+            offsetX + width - 120,
+            offsetY ,
+            camera,
+            gameState.colliders
+          ));
+          camera.addChild(createDiningTable(
+            offsetX + 220,
+            offsetY + 200,
+            camera,
+            gameState.colliders
+          ));
           
-        //   // Food replicator
-        //   camera.addChild(createFoodReplicator(
-        //     offsetX + width / 2,
-        //     offsetY + 80,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+          //Food replicator
+          camera.addChild(createFoodReplicator(
+           offsetX + width - 60,
+            offsetY + 210,
+            camera,
+            gameState.colliders
+          ));
           
-        //   // Beverage dispenser
-        //   camera.addChild(createBeverageDispenser(
-        //     offsetX + 60,
-        //     offsetY + 250,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+          // Beverage dispenser
+          camera.addChild(createBeverageDispenser(
+            offsetX + 50,
+            offsetY + 205,
+            camera,
+            gameState.colliders
+          ));
           
-        //   // Waste recycler
-        //   camera.addChild(createWasteRecycler(
-        //     offsetX + width - 60,
-        //     offsetY + 250,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   break;
+          break;
 
-        // case 'recreation': // Recreation
-        //   // Exercise equipment
-        //   camera.addChild(createExerciseEquipment(
-        //     offsetX + 80,
-        //     offsetY + 120,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+        case 'recreation': // Recreation
+          // Exercise equipment
+          camera.addChild(createExerciseEquipment(
+            offsetX + 120,
+            offsetY + 80,
+            camera,
+            gameState.colliders
+          ));
+            camera.addChild(createExerciseEquipment(
+            offsetX + width/2 + 80,
+            offsetY + 80,
+            camera,
+            gameState.colliders
+          ));
           
-        //   // Entertainment console
-        //   camera.addChild(createEntertainmentConsole(
-        //     offsetX + width - 80,
-        //     offsetY + 120,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+          // Entertainment console
+          camera.addChild(createEntertainmentConsole(
+            offsetX + width - 105,
+            offsetY + height - 130,
+            camera,
+            gameState.colliders
+          ));
           
-        //   // Relaxation pod
-        //   camera.addChild(createRelaxationPod(
-        //     offsetX + width / 2,
-        //     offsetY + 200,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-          
-        //   // Game table
-        //   camera.addChild(createGameTable(
-        //     offsetX + width / 2,
-        //     offsetY + height - 80,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   break;
+          // Game table
+          camera.addChild(createGameTable(
+            offsetX + 90,
+            offsetY + height - 120,
+            camera,
+            gameState.colliders
+          ));
+          break;
 
-        // case 'corridor': // Corridors
-  
-        //   // Emergency stations
-        //   camera.addChild(createEmergencyStation(
-        //     offsetX + width / 2,
-        //     offsetY + 100,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-          
-        //   // Lighting panels
-        //   camera.addChild(createLightingPanel(
-        //     offsetX + 30,
-        //     offsetY + 200,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   if (width > 300) {
-        //     camera.addChild(createLightingPanel(
-        //       offsetX + width - 30,
-        //       offsetY + 200,
-        //       camera,
-        //       gameState.colliders
-        //     ));
-        //   }
-          
-        //   // Air recycling units
-        //   camera.addChild(createAirRecycler(
-        //     offsetX + width / 2,
-        //     offsetY + height - 80,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   break;
+        case 'corridor2':
 
+        camera.addChild(createSpacePlant(
+            offsetX + 50,
+            offsetY + height - 60,
+            camera,
+            gameState.colliders
+          ));
+          camera.addChild(createSpacePlant(
+            offsetX +  width - 60,
+            offsetY + height - 60,
+            camera,
+            gameState.colliders
+          )); 
+            camera.addChild(createSpacePlant(
+            offsetX + 50,
+            offsetY + 30,
+            camera,
+            gameState.colliders
+          ));
+          camera.addChild(createSpacePlant(
+            offsetX +  width - 60,
+            offsetY + 30,
+            camera,
+            gameState.colliders
+          )); 
+
+          break;
+
+        case 'secret_room':
+        camera.addChild(createSpaceship(
+            offsetX + 110 ,
+            offsetY + width/2 + 150 ,
+            camera,
+            gameState.colliders
+        ))  
+
+        break;
 
       }
       
@@ -10371,7 +12656,6 @@ const setupInput = (gameState, app) => {
   });
 };
 
-// 3. Fixed gameLoop function (uncomment the movement code)
 // const gameLoop = (gameState, app) => {
 //   const speed = gameState.playerSpeed || 2;
 //   const { player, keys, camera, world, ROOM_GRID, colliders } = gameState;

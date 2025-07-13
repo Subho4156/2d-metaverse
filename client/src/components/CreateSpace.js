@@ -20,13 +20,13 @@ const CreateSpace = ({
       id: "office",
       name: "Office Space",
       image: "/maps/map_office.png", 
-      description: "A modern office for day to day work"
+      description: "Your key to navigating the daily grind from the coffee nexus to collab zones."
     },
     {
       id: "spacestation",
       name: "Space-Station",
-      image: "space_map.jpg",
-      description: "Futuristic neon-lit metropolis"
+      image: "/maps/spacestation.png",
+      description: "Chart your course through Aetheria Station's celestial sprawl."
     }
   ];
 
