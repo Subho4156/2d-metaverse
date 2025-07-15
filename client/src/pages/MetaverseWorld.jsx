@@ -14,6 +14,8 @@ import {
 import MetaverseMinimap from "../components/Minimap";
 import LeftToolbar from "../components/Toolbar";
 import { io } from "socket.io-client";
+import useUser from "../hooks/useUser";
+import AdminPanel from "../components/AdminPanel";
 
 const MetaverseWorld = () => {
   const [showFade, setShowFade] = useState(false);
@@ -33,6 +35,15 @@ const MetaverseWorld = () => {
   const [showBackWarning, setShowBackWarning] = useState(false);
   const [onlinePlayers, setOnlinePlayers] = useState([]);
   const [showToolbar, setShowToolbar] = useState(true);
+  const [hackPermissions, setHackPermissions] = useState({
+    wallhack: false,
+    speedup: false,
+    teleport: false,
+  });
+  const { user, loading } = useUser();
+
+  const currentUserId = user?._id;
+  const isOwner = space?.creator?.toString?.() === currentUserId;
 
   const gameStateRef = useRef({
     colliders: [],
@@ -59,6 +70,23 @@ const MetaverseWorld = () => {
     width: 16,
     height: 45,
   };
+
+  const handlePermissionsChange = (newPermissions) => {
+  console.log("🔧 Admin updating permissions:", newPermissions);
+  
+  // Update local state
+  setHackPermissions(newPermissions);
+  
+  // Broadcast to all users in the space
+  if (socket && isOwner) {
+    socket.emit("hackPermissionsUpdate", {
+      permissions: newPermissions,
+      targetUserId: "all" // Send to all users
+    });
+    
+    console.log("📡 Broadcasted permissions to all users");
+  }
+};
 
   const createGirlPlayer = (gameState, playerName = "You") => {
     const player = new Graphics();
@@ -3369,6 +3397,8 @@ const MetaverseWorld = () => {
     fetchSpace();
   }, [id]);
 
+  
+
   useEffect(() => {
     const fetchPlayerName = async () => {
       try {
@@ -3395,6 +3425,21 @@ const MetaverseWorld = () => {
     console.log("🟢 Connected:", socket.id);
     gameStateRef.current.socketId = socket.id;
   });
+
+   useEffect(() => {
+  if (socket && space && !isOwner) {
+    // Request permissions when joining as non-owner
+    const requestPermissions = () => {
+      socket.emit("requestPermissions");
+      console.log("❓ Requested permissions from admin");
+    };
+
+    // Request permissions after a short delay to ensure connection is stable
+    const timeoutId = setTimeout(requestPermissions, 1500);
+
+    return () => clearTimeout(timeoutId);
+  }
+}, [socket, space, isOwner]);
 
   useEffect(() => {
     if (!loadingPage && space && canvasRef.current) {
@@ -3462,6 +3507,9 @@ const MetaverseWorld = () => {
         socket.off("player-left");
         socket.off("avatar-change");
         socket.off("player-emote");
+        socket.off("hackPermissionsUpdate");
+        socket.off("requestPermissions");
+        socket.off("userJoined");
 
         socket.on("existing-players", (players) => {
           console.log("📥 Received existing players:", players);
@@ -3486,6 +3534,11 @@ const MetaverseWorld = () => {
             gameState.otherPlayers[id] = container;
             gameState.camera.addChild(container);
             // updated.push(data.name);
+          }
+          if (!isOwner) {
+            setTimeout(() => {
+              socket.emit("requestPermissions");
+            }, 500);
           }
           // setOnlinePlayers([playerName, ...updated]);
         });
@@ -3513,6 +3566,14 @@ const MetaverseWorld = () => {
           gameState.camera.addChild(container);
           // setOnlinePlayers(prev => [...prev, data.name]);
           console.log("➕ Added new player:", data.id);
+
+          // ✅ Send current permissions to new player (if owner)
+          if (isOwner) {
+            socket.emit("hackPermissionsUpdate", {
+              permissions: hackPermissions,
+              targetUserId: data.id,
+            });
+          }
         });
 
         // ✅ FIXED: Now handles name and avatarKey from server
@@ -3644,6 +3705,43 @@ const MetaverseWorld = () => {
             // const name = player.playerName || "Unknown";
             delete gameState.otherPlayers[id];
             // setOnlinePlayers(prev => prev.filter(n => n !== name));
+          }
+        });
+
+        // ✅ NEW: Permission-related socket listeners
+        socket.on("hackPermissionsUpdate", (data) => {
+          console.log("🔧 Received permission update:", data);
+
+          // Only non-owners should update their permissions from server
+          if (!isOwner) {
+            setHackPermissions(data.permissions || data);
+          }
+        });
+
+        socket.on("requestPermissions", (userId) => {
+          console.log("❓ Permission request from:", userId);
+
+          // Only owners should respond to permission requests
+          if (isOwner) {
+            socket.emit("hackPermissionsUpdate", {
+              permissions: hackPermissions,
+              targetUserId: userId,
+            });
+          }
+        });
+
+        // ✅ NEW: Handle when user joins (for permission sync)
+        socket.on("userJoined", (userData) => {
+          console.log("👋 User joined notification:", userData);
+
+          // Send permissions to newly joined user if we're the owner
+          if (isOwner) {
+            setTimeout(() => {
+              socket.emit("hackPermissionsUpdate", {
+                permissions: hackPermissions,
+                targetUserId: userData.id,
+              });
+            }, 1000); // Small delay to ensure they're ready
           }
         });
       };
@@ -10360,50 +10458,47 @@ const MetaverseWorld = () => {
           zIndex: 100,
         }}
       >
-
         {/* 🔥 TOOLBAR TOGGLE BUTTON - Positioned in top-left corner */}
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          pointerEvents: "auto",
-        }}
-      >
-        <button
-          onClick={() => setShowToolbar(!showToolbar)}
+        <div
           style={{
-            background: showToolbar ? "#e74c3c" : "#27ae60",
-            color: "white",
-            border: "2px solid rgba(255,255,255,0.3)",
-            padding: "8px 16px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "bold",
-            fontFamily: "Arial, sans-serif",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-            transition: "all 0.2s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-          onMouseOver={(e) => {
-            e.target.style.transform = "scale(1.05)";
-            e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.6)";
-          }}
-          onMouseOut={(e) => {
-            e.target.style.transform = "scale(1)";
-            e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            pointerEvents: "auto",
           }}
         >
-          <span style={{ fontSize: "14px" }}>
-            {showToolbar ? "✕" : "☰"}
-          </span>
-          {showToolbar ? "Hide" : "Show"}
-        </button>
-      </div>
-      
+          <button
+            onClick={() => setShowToolbar(!showToolbar)}
+            style={{
+              background: showToolbar ? "#e74c3c" : "#27ae60",
+              color: "white",
+              border: "2px solid rgba(255,255,255,0.3)",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "bold",
+              fontFamily: "Arial, sans-serif",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = "scale(1.05)";
+              e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.6)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = "scale(1)";
+              e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
+            }}
+          >
+            <span style={{ fontSize: "14px" }}>{showToolbar ? "✕" : "☰"}</span>
+            {showToolbar ? "Hide" : "Show"}
+          </button>
+        </div>
+
         {/* Top Bar */}
         <div
           style={{
@@ -10442,18 +10537,25 @@ const MetaverseWorld = () => {
         </div>
 
         {showToolbar && (
-        <LeftToolbar
-          space={space}
-          playerName={playerName}
-          gameStateRef={gameStateRef}
-          onTeleport={handleTeleportWithFade}
-          changeSpeed={changeSpeed}
-          wallHackEnabled={wallHackEnabled}
-          setWallHackEnabled={setWallHackEnabled}
-          triggerEmote={triggerEmote}
-          changeAvatar={changeAvatar}
+          <LeftToolbar
+            space={space}
+            playerName={playerName}
+            gameStateRef={gameStateRef}
+            onTeleport={handleTeleportWithFade}
+            changeSpeed={changeSpeed}
+            wallHackEnabled={wallHackEnabled}
+            setWallHackEnabled={setWallHackEnabled}
+            triggerEmote={triggerEmote}
+            changeAvatar={changeAvatar}
+            hackPermissions={hackPermissions}
+            isOwner={isOwner}
+          />
+        )}
+
+        <AdminPanel
+          isOwner={isOwner}
+          onPermissionsChange={handlePermissionsChange}
         />
-      )}
 
         {/* Mini Map */}
         <MetaverseMinimap gameStateRef={gameStateRef} />

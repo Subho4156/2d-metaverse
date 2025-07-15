@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { updateSpace } from "../api";
 
 const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, changeSpeed, wallHackEnabled,
-  setWallHackEnabled, triggerEmote, changeAvatar }) => {
+  setWallHackEnabled, triggerEmote, changeAvatar, 
+   hackPermissions = { wallhack: false, speedup: false, teleport: false },
+  isOwner = false
+ }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [selectedSpeed, setSelectedSpeed] = useState(2); // Default speed
@@ -20,6 +23,9 @@ const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, c
 const lastEmoteTimeRef = useRef(0);
   const EMOTE_COOLDOWN_MS = 3000; 
 
+  const canUseWallhack = hackPermissions.wallhack || isOwner;
+  const canUseSpeedup = hackPermissions.speedup || isOwner;
+  const canUseTeleport = hackPermissions.teleport || isOwner;
 
   const avatarOptions = [
   { src: "/assets/avatar5.png", label: "Spiderman", width: 40, height: 50 },
@@ -430,60 +436,71 @@ const handleSave = async (type, value) => {
         </div>
 
         {/* Teleport Button */}
-        <button
-          onClick={() => setTeleportOpen(true)}
-          style={{
-            ...pixelFont,
-            width: "48%",
-            height: "fit-content",
-            padding: "10px",
-            backgroundColor: "rgb(223, 223, 223)",
-            borderLeft: "3px solid white",
-            borderTop: "3px solid white",
-            borderRight: "3px solid gray",
-            borderBottom: "3px solid gray",
-            fontFamily: "'Courier New', Courier, monospace",
-            fontSize: "1.1rem",
-            fontWeight: "900",
-            outline: "2px solid black",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            marginBottom: "10px",
-            marginRight: "9px",
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "rgb(0, 197, 0)";
-            e.target.style.color = "white";
-            e.target.style.outlineColor = "white";
-            e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderRight = "3px solid green";
-            e.target.style.borderBottom = "3px solid green";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "rgb(223, 223, 223)";
-            e.target.style.color = "black";
-            e.target.style.outlineColor = "black";
-            e.target.style.borderLeft = "3px solid white";
-            e.target.style.borderTop = "3px solid white";
-            e.target.style.borderRight = "3px solid gray";
-            e.target.style.borderBottom = "3px solid gray";
-          }}
-          onMouseDown={(e) => {
-            e.target.style.borderLeft = "3px solid green";
-            e.target.style.borderTop = "3px solid green";
-            e.target.style.borderRight = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderBottom = "3px solid rgb(0, 255, 0)";
-          }}
-          onMouseUp={(e) => {
-            e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderRight = "3px solid green";
-            e.target.style.borderBottom = "3px solid green";
-          }}
-        >
-          Teleport
-        </button>
+<button
+  onClick={() => canUseTeleport && setTeleportOpen(true)}
+  disabled={!canUseTeleport}
+  style={{
+    ...pixelFont,
+    width: "48%",
+    height: "fit-content",
+    padding: "10px",
+    backgroundColor: !canUseTeleport ? "rgb(150, 150, 150)" : "rgb(223, 223, 223)",
+    borderLeft: !canUseTeleport ? "3px solid rgb(180, 180, 180)" : "3px solid white",
+    borderTop: !canUseTeleport ? "3px solid rgb(180, 180, 180)" : "3px solid white",
+    borderRight: !canUseTeleport ? "3px solid rgb(100, 100, 100)" : "3px solid gray",
+    borderBottom: !canUseTeleport ? "3px solid rgb(100, 100, 100)" : "3px solid gray",
+    fontFamily: "'Courier New', Courier, monospace",
+    fontSize: "1.1rem",
+    fontWeight: "900",
+    outline: "2px solid black",
+    cursor: !canUseTeleport ? "not-allowed" : "pointer",
+    transition: "all 0.2s ease",
+    marginBottom: "10px",
+    marginRight: "9px",
+    opacity: !canUseTeleport ? 0.6 : 1,
+    color: !canUseTeleport ? "rgb(100, 100, 100)" : "black",
+  }}
+  onMouseEnter={(e) => {
+    if (canUseTeleport) {
+      e.target.style.backgroundColor = "rgb(0, 197, 0)";
+      e.target.style.color = "white";
+      e.target.style.outlineColor = "white";
+      e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderRight = "3px solid green";
+      e.target.style.borderBottom = "3px solid green";
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (canUseTeleport) {
+      e.target.style.backgroundColor = "rgb(223, 223, 223)";
+      e.target.style.color = "black";
+      e.target.style.outlineColor = "black";
+      e.target.style.borderLeft = "3px solid white";
+      e.target.style.borderTop = "3px solid white";
+      e.target.style.borderRight = "3px solid gray";
+      e.target.style.borderBottom = "3px solid gray";
+    }
+  }}
+  onMouseDown={(e) => {
+    if (canUseTeleport) {
+      e.target.style.borderLeft = "3px solid green";
+      e.target.style.borderTop = "3px solid green";
+      e.target.style.borderRight = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderBottom = "3px solid rgb(0, 255, 0)";
+    }
+  }}
+  onMouseUp={(e) => {
+    if (canUseTeleport) {
+      e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderRight = "3px solid green";
+      e.target.style.borderBottom = "3px solid green";
+    }
+  }}
+>
+  {!canUseTeleport ? "Teleport (Disabled)" : "Teleport"}
+</button>
         {teleportOpen && (
           <div
             style={{
@@ -539,57 +556,68 @@ const handleSave = async (type, value) => {
         )}
 
         <button
-          onClick={() => setSpeedOpen(true)}
-          style={{
-            ...pixelFont,
-            width: "48%",
-            height: "fit-content",
-            padding: "10px",
-            backgroundColor: "rgb(223, 223, 223)",
-            borderLeft: "3px solid white",
-            borderTop: "3px solid white",
-            borderRight: "3px solid gray",
-            borderBottom: "3px solid gray",
-            fontFamily: "'Courier New', Courier, monospace",
-            fontSize: "1.1rem",
-            fontWeight: "900",
-            outline: "2px solid black",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "rgb(0, 197, 0)";
-            e.target.style.color = "white";
-            e.target.style.outlineColor = "white";
-            e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderRight = "3px solid green";
-            e.target.style.borderBottom = "3px solid green";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "rgb(223, 223, 223)";
-            e.target.style.color = "black";
-            e.target.style.outlineColor = "black";
-            e.target.style.borderLeft = "3px solid white";
-            e.target.style.borderTop = "3px solid white";
-            e.target.style.borderRight = "3px solid gray";
-            e.target.style.borderBottom = "3px solid gray";
-          }}
-          onMouseDown={(e) => {
-            e.target.style.borderLeft = "3px solid green";
-            e.target.style.borderTop = "3px solid green";
-            e.target.style.borderRight = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderBottom = "3px solid rgb(0, 255, 0)";
-          }}
-          onMouseUp={(e) => {
-            e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderRight = "3px solid green";
-            e.target.style.borderBottom = "3px solid green";
-          }}
-        >
-          Speed
-        </button>
+  onClick={() => canUseSpeedup && setSpeedOpen(true)}
+  disabled={!canUseSpeedup}
+  style={{
+    ...pixelFont,
+    width: "48%",
+    height: "fit-content",
+    padding: "10px",
+    backgroundColor: !canUseSpeedup ? "rgb(150, 150, 150)" : "rgb(223, 223, 223)",
+    borderLeft: !canUseSpeedup ? "3px solid rgb(180, 180, 180)" : "3px solid white",
+    borderTop: !canUseSpeedup ? "3px solid rgb(180, 180, 180)" : "3px solid white",
+    borderRight: !canUseSpeedup ? "3px solid rgb(100, 100, 100)" : "3px solid gray",
+    borderBottom: !canUseSpeedup ? "3px solid rgb(100, 100, 100)" : "3px solid gray",
+    fontFamily: "'Courier New', Courier, monospace",
+    fontSize: "1.1rem",
+    fontWeight: "900",
+    outline: "2px solid black",
+    cursor: !canUseSpeedup ? "not-allowed" : "pointer",
+    transition: "all 0.2s ease",
+    opacity: !canUseSpeedup ? 0.6 : 1,
+    color: !canUseSpeedup ? "rgb(100, 100, 100)" : "black",
+  }}
+  onMouseEnter={(e) => {
+    if (canUseSpeedup) {
+      e.target.style.backgroundColor = "rgb(0, 197, 0)";
+      e.target.style.color = "white";
+      e.target.style.outlineColor = "white";
+      e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderRight = "3px solid green";
+      e.target.style.borderBottom = "3px solid green";
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (canUseSpeedup) {
+      e.target.style.backgroundColor = "rgb(223, 223, 223)";
+      e.target.style.color = "black";
+      e.target.style.outlineColor = "black";
+      e.target.style.borderLeft = "3px solid white";
+      e.target.style.borderTop = "3px solid white";
+      e.target.style.borderRight = "3px solid gray";
+      e.target.style.borderBottom = "3px solid gray";
+    }
+  }}
+  onMouseDown={(e) => {
+    if (canUseSpeedup) {
+      e.target.style.borderLeft = "3px solid green";
+      e.target.style.borderTop = "3px solid green";
+      e.target.style.borderRight = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderBottom = "3px solid rgb(0, 255, 0)";
+    }
+  }}
+  onMouseUp={(e) => {
+    if (canUseSpeedup) {
+      e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderRight = "3px solid green";
+      e.target.style.borderBottom = "3px solid green";
+    }
+  }}
+>
+  {!canUseSpeedup ? "Speed (Disabled)" : "Speed"}
+</button>
         {speedOpen && (
           <div
             style={{
@@ -827,58 +855,69 @@ const handleSave = async (type, value) => {
           </div>
         )}
         <button
-          onClick={() => setWallhackwindowOpen(true)}
-          style={{
-            ...pixelFont,
-            width: "48%",
-            height: "fit-content",
-            padding: "10px",
-            backgroundColor: "rgb(223, 223, 223)",
-            borderLeft: "3px solid white",
-            borderTop: "3px solid white",
-            borderRight: "3px solid gray",
-            borderBottom: "3px solid gray",
-            fontFamily: "'Courier New', Courier, monospace",
-            fontSize: "1.1rem",
-            fontWeight: "900",
-            outline: "2px solid black",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            marginRight: "9px",
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "rgb(0, 197, 0)";
-            e.target.style.color = "white";
-            e.target.style.outlineColor = "white";
-            e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderRight = "3px solid green";
-            e.target.style.borderBottom = "3px solid green";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "rgb(223, 223, 223)";
-            e.target.style.color = "black";
-            e.target.style.outlineColor = "black";
-            e.target.style.borderLeft = "3px solid white";
-            e.target.style.borderTop = "3px solid white";
-            e.target.style.borderRight = "3px solid gray";
-            e.target.style.borderBottom = "3px solid gray";
-          }}
-          onMouseDown={(e) => {
-            e.target.style.borderLeft = "3px solid green";
-            e.target.style.borderTop = "3px solid green";
-            e.target.style.borderRight = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderBottom = "3px solid rgb(0, 255, 0)";
-          }}
-          onMouseUp={(e) => {
-            e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
-            e.target.style.borderRight = "3px solid green";
-            e.target.style.borderBottom = "3px solid green";
-          }}
-        >
-          Wallhack
-        </button>
+  onClick={() => canUseWallhack && setWallhackwindowOpen(true)}
+  disabled={!canUseWallhack}
+  style={{
+    ...pixelFont,
+    width: "48%",
+    height: "fit-content",
+    padding: "10px",
+    backgroundColor: !canUseWallhack ? "rgb(150, 150, 150)" : "rgb(223, 223, 223)",
+    borderLeft: !canUseWallhack ? "3px solid rgb(180, 180, 180)" : "3px solid white",
+    borderTop: !canUseWallhack ? "3px solid rgb(180, 180, 180)" : "3px solid white",
+    borderRight: !canUseWallhack ? "3px solid rgb(100, 100, 100)" : "3px solid gray",
+    borderBottom: !canUseWallhack ? "3px solid rgb(100, 100, 100)" : "3px solid gray",
+    fontFamily: "'Courier New', Courier, monospace",
+    fontSize: "1.1rem",
+    fontWeight: "900",
+    outline: "2px solid black",
+    cursor: !canUseWallhack ? "not-allowed" : "pointer",
+    transition: "all 0.2s ease",
+    marginRight: "9px",
+    opacity: !canUseWallhack ? 0.6 : 1,
+    color: !canUseWallhack ? "rgb(100, 100, 100)" : "black",
+  }}
+  onMouseEnter={(e) => {
+    if (canUseWallhack) {
+      e.target.style.backgroundColor = "rgb(0, 197, 0)";
+      e.target.style.color = "white";
+      e.target.style.outlineColor = "white";
+      e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderRight = "3px solid green";
+      e.target.style.borderBottom = "3px solid green";
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (canUseWallhack) {
+      e.target.style.backgroundColor = "rgb(223, 223, 223)";
+      e.target.style.color = "black";
+      e.target.style.outlineColor = "black";
+      e.target.style.borderLeft = "3px solid white";
+      e.target.style.borderTop = "3px solid white";
+      e.target.style.borderRight = "3px solid gray";
+      e.target.style.borderBottom = "3px solid gray";
+    }
+  }}
+  onMouseDown={(e) => {
+    if (canUseWallhack) {
+      e.target.style.borderLeft = "3px solid green";
+      e.target.style.borderTop = "3px solid green";
+      e.target.style.borderRight = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderBottom = "3px solid rgb(0, 255, 0)";
+    }
+  }}
+  onMouseUp={(e) => {
+    if (canUseWallhack) {
+      e.target.style.borderLeft = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderTop = "3px solid rgb(0, 255, 0)";
+      e.target.style.borderRight = "3px solid green";
+      e.target.style.borderBottom = "3px solid green";
+    }
+  }}
+>
+  {!canUseWallhack ? "Wallhack (Disabled)" : "Wallhack"}
+</button>
         {wallhackwindowOpen && (
           <div
             style={{
