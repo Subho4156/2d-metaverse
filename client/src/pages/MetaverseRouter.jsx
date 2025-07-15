@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MetaverseOffice from "./MetaverseWorld";
+import MetaverseOffice from "./Office";
 import SpaceStation from "./SpaceStation";
 import { getSpaceById } from "../api";
 

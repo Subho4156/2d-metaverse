@@ -4239,7 +4239,7 @@ const MetaverseWorld = () => {
 
         if (!window.interactables) window.interactables = [];
         window.interactables.push({
-          label: "elevator",
+          label: "cat",
           bounds,
           message: "A smol car sleeping...",
           bubble: null,
@@ -10243,6 +10243,13 @@ const MetaverseWorld = () => {
     });
   };
 
+    const teleportLocations = [
+  { label: "Meeting Room", x: 400, y: 300 },
+  { label: "Library", x: 1200, y: 300 },
+  { label: "Conference Room", x: 600, y: 800 },
+  { label: "Game Room", x: 1200, y: 800 },
+];
+
   return (
     <div
       style={{
@@ -10447,6 +10454,7 @@ const MetaverseWorld = () => {
           playerName={playerName}
           gameStateRef={gameStateRef}
           onTeleport={handleTeleportWithFade}
+          teleportLocations={teleportLocations}
           changeSpeed={changeSpeed}
           wallHackEnabled={wallHackEnabled}
           setWallHackEnabled={setWallHackEnabled}

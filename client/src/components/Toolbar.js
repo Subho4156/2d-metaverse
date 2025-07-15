@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { updateSpace } from "../api";
 
-const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport, changeSpeed, wallHackEnabled,
+const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport,teleportLocations = [], changeSpeed, wallHackEnabled,
   setWallHackEnabled, triggerEmote, changeAvatar }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -26,13 +26,6 @@ const lastEmoteTimeRef = useRef(0);
   { src: "/assets/avatar4.png", label: "Batman", width: 20, height: 45 },
   { src: "/assets/avatar2.png", label: "Male", width: 25, height: 45 },
   { src: "/assets/avatar3.png", label: "Female", width: 25, height: 45 },
-];
-
-  const teleportLocations = [
-  { label: "Meeting Room", x: 400, y: 300 },
-  { label: "Library", x: 1200, y: 300 },
-  { label: "Conference Room", x: 600, y: 800 },
-  { label: "Game Room", x: 1200, y: 800 },
 ];
 
   const speedOptions = [

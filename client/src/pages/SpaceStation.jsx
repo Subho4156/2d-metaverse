@@ -11,6 +11,7 @@ import {
   TextStyle,
   Ticker,
 } from "pixi.js";
+import LeftToolbar from "../components/Toolbar";
 
 
 function SpaceStation() {
@@ -57,6 +58,1314 @@ function SpaceStation() {
     width: 16,
     height: 45,
   };
+
+    const createGirlPlayer = (gameState, playerName = "You") => {
+      const player = new Graphics();
+      const legLeft = new Graphics();
+      const legRight = new Graphics();
+      const armLeft = new Graphics();
+      const armRight = new Graphics();
+  
+      // Professional color palette for office girl
+      const skinColor = 0xf4c2a1;
+      const skinShadow = 0xe6b596;
+      const blouseColor = 0xffffff; // White blouse
+      const blouseShadow = 0xe8e8e8;
+      const suitColor = 0x2c3e50; // Navy blue suit
+      const suitShadow = 0x1a252f;
+      const hairColor = 0x4a4a4a; // Dark brown/black hair
+      const hairHighlight = 0x666666;
+      const shoeColor = 0x000000; // Black heels
+      const stockingColor = 0xf5deb3; // Nude stockings
+  
+      // Player body (white blouse)
+      player.beginFill(blouseColor);
+      player.drawRect(-8, -5, 16, 18);
+      player.endFill();
+  
+      // Blouse shadow/depth
+      player.beginFill(blouseShadow);
+      player.drawRect(-8, 11, 16, 2);
+      player.endFill();
+  
+      // Professional collar
+      player.beginFill(blouseShadow);
+      player.drawRect(-7, -4, 14, 3);
+      player.endFill();
+  
+      // Suit jacket/blazer
+      player.beginFill(suitColor);
+      player.drawRect(-9, -3, 18, 16);
+      player.endFill();
+  
+      // Jacket shadow
+      player.beginFill(suitShadow);
+      player.drawRect(-9, 11, 18, 2);
+      player.endFill();
+  
+      // Jacket lapels
+      player.beginFill(suitShadow);
+      player.drawRect(-8, -2, 6, 8);
+      player.drawRect(2, -2, 6, 8);
+      player.endFill();
+  
+      // Showing white blouse underneath
+      player.beginFill(blouseColor);
+      player.drawRect(-2, -2, 4, 8);
+      player.endFill();
+  
+      // Head with better shading
+      player.beginFill(skinColor);
+      player.drawRect(-6, -18, 12, 12);
+      player.endFill();
+  
+      // Face shadow
+      player.beginFill(skinShadow);
+      player.drawRect(-6, -8, 12, 2);
+      player.endFill();
+  
+      // Professional hair (neat bun/updo)
+      player.beginFill(hairColor);
+      player.drawRect(-7, -19, 14, 7);
+      player.endFill();
+  
+      // Hair bun at back
+      player.beginFill(hairColor);
+      player.drawRect(-3, -21, 6, 4);
+      player.endFill();
+  
+      // Hair highlights (subtle)
+      player.beginFill(hairHighlight);
+      player.drawRect(-6, -18, 3, 4);
+      player.endFill();
+  
+      // Side part
+      player.beginFill(hairHighlight);
+      player.drawRect(-1, -19, 1, 6);
+      player.endFill();
+  
+      // Eyes (professional makeup)
+      player.beginFill(0xffffff);
+      player.drawRect(-4, -15, 2, 2);
+      player.drawRect(2, -15, 2, 2);
+      player.endFill();
+  
+      // Eye pupils
+      player.beginFill(0x000000);
+      player.drawRect(-3.5, -14.5, 1, 1);
+      player.drawRect(2.5, -14.5, 1, 1);
+      player.endFill();
+  
+      // Subtle eyeliner
+      player.beginFill(0x000000);
+      player.drawRect(-4, -16, 2, 0.5);
+      player.drawRect(2, -16, 2, 0.5);
+      player.endFill();
+  
+      // Nose
+      player.beginFill(skinShadow);
+      player.drawRect(-0.5, -12, 1, 1);
+      player.endFill();
+  
+      // Professional lipstick (subtle)
+      player.beginFill(0xd63384);
+      player.drawRect(-1, -10, 2, 1);
+      player.endFill();
+  
+      // Arms in suit jacket
+      armLeft.beginFill(suitColor);
+      armLeft.drawRect(-10, -2, 3, 12);
+      armLeft.endFill();
+  
+      // Jacket cuffs
+      armLeft.beginFill(suitShadow);
+      armLeft.drawRect(-10, 8, 3, 2);
+      armLeft.endFill();
+  
+      // Hand showing
+      armLeft.beginFill(skinColor);
+      armLeft.drawRect(-9, 10, 2, 3);
+      armLeft.endFill();
+  
+      armRight.beginFill(suitColor);
+      armRight.drawRect(7, -2, 3, 12);
+      armRight.endFill();
+  
+      armRight.beginFill(suitShadow);
+      armRight.drawRect(7, 8, 3, 2);
+      armRight.endFill();
+  
+      armRight.beginFill(skinColor);
+      armRight.drawRect(7, 10, 2, 3);
+      armRight.endFill();
+  
+      player.addChild(armLeft);
+      player.addChild(armRight);
+  
+      // Professional pencil skirt
+      player.beginFill(suitColor);
+      player.drawRect(-7, 13, 14, 10);
+      player.endFill();
+  
+      // Skirt shadow
+      player.beginFill(suitShadow);
+      player.drawRect(-7, 21, 14, 2);
+      player.endFill();
+  
+      // Legs with stockings
+      legLeft.beginFill(stockingColor);
+      legLeft.drawRect(-5, 23, 4, 6);
+      legLeft.endFill();
+  
+      legRight.beginFill(stockingColor);
+      legRight.drawRect(1, 23, 4, 6);
+      legRight.endFill();
+  
+      player.addChild(legLeft);
+      player.addChild(legRight);
+  
+      // Professional heels
+      const shoeLeft = new Graphics();
+      shoeLeft.beginFill(shoeColor);
+      shoeLeft.drawRect(-6, 29, 5, 3);
+      shoeLeft.endFill();
+  
+      // Heel
+      shoeLeft.beginFill(shoeColor);
+      shoeLeft.drawRect(-3, 32, 2, 2);
+      shoeLeft.endFill();
+  
+      // Shoe highlight
+      shoeLeft.beginFill(0x333333);
+      shoeLeft.drawRect(-6, 29, 5, 1);
+      shoeLeft.endFill();
+  
+      const shoeRight = new Graphics();
+      shoeRight.beginFill(shoeColor);
+      shoeRight.drawRect(1, 29, 5, 3);
+      shoeRight.endFill();
+  
+      // Heel
+      shoeRight.beginFill(shoeColor);
+      shoeRight.drawRect(2, 32, 2, 2);
+      shoeRight.endFill();
+  
+      // Shoe highlight
+      shoeRight.beginFill(0x333333);
+      shoeRight.drawRect(1, 29, 5, 1);
+      shoeRight.endFill();
+  
+      player.addChild(shoeLeft);
+      player.addChild(shoeRight);
+  
+      // Name tag
+      let tickerFn = null;
+      // Name tag with better styling
+      const nameTag = new Text({
+        text: playerName,
+        style: new TextStyle({
+          fontSize: 12,
+          fill: 0xffffff,
+          fontFamily: "Arial",
+          stroke: { color: 0x000000, width: 2 },
+          dropShadow: {
+            color: 0x000000,
+            blur: 2,
+            angle: Math.PI / 4,
+            distance: 2,
+          },
+        }),
+      });
+      nameTag.anchor.set(0.5);
+      nameTag.y = -35;
+      player.addChild(nameTag);
+  
+      // Initial position
+      player.x = 400;
+      player.y = 300;
+  
+      // Add to scene
+      gameState.camera.addChild(player);
+      gameState.player = player;
+  
+      // Enhanced animation state
+      let walking = false;
+      let walkFrame = 0;
+      let direction = "down";
+      const walkSpeed = 0.3;
+      const legSwingAmount = 4;
+      const armSwingAmount = 3;
+      const bodyBobAmount = 1;
+  
+      tickerFn = () => {
+        if (!player || !player.parent) return; // prevent stale access
+        if (walking) {
+          walkFrame += walkSpeed;
+  
+          const legAngle = Math.sin(walkFrame) * legSwingAmount;
+          const armAngle = Math.sin(walkFrame) * armSwingAmount;
+          const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+  
+          // Leg animation (opposite swing)
+          legLeft.y = 0 + legAngle;
+          legRight.y = 0 - legAngle;
+  
+          // Arm animation (opposite to legs for natural walking)
+          armLeft.y = 0 - armAngle * 0.7;
+          armRight.y = 0 + armAngle * 0.7;
+  
+          // Slight arm rotation
+          armLeft.rotation = -armAngle * 0.1;
+          armRight.rotation = armAngle * 0.1;
+  
+          // Body bobbing
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+  
+          // Directional facing (flip sprite)
+          if (direction === "left") {
+            player.scale.x = -1;
+          } else if (direction === "right") {
+            player.scale.x = 1;
+          }
+          nameTag.scale.x = 1 / player.scale.x;
+        } else {
+          // Return to idle position smoothly
+          legLeft.y += (0 - legLeft.y) * 0.1;
+          legRight.y += (0 - legRight.y) * 0.1;
+          armLeft.y += (0 - armLeft.y) * 0.1;
+          armRight.y += (0 - armRight.y) * 0.1;
+          armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+          armRight.rotation += (0 - armRight.rotation) * 0.1;
+  
+          // Reset body parts to original positions
+          // Body bobbing (exclude nameTag)
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight &&
+              child !== nameTag
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+        }
+      };
+  
+      // Ticker-based enhanced animation
+      Ticker.shared.add(tickerFn);
+      player._tickerFn = tickerFn;
+  
+      // Enhanced movement API
+      player.walk = (dir) => {
+        walking = true;
+        direction = dir;
+        const speed = 2;
+  
+        if (dir === "left") player.x -= speed;
+        if (dir === "right") player.x += speed;
+        if (dir === "up") player.y -= speed;
+        if (dir === "down") player.y += speed;
+      };
+  
+      player.stop = () => {
+        walking = false;
+      };
+  
+      // Store original positions for smooth transitions
+      player.children.forEach((child) => {
+        child.originalY = child.y;
+      });
+      return player;
+    };
+  
+    const createSpidey = (gameState, playerName = "Spiderman") => {
+      const player = new Graphics();
+      const legLeft = new Graphics();
+      const legRight = new Graphics();
+      const armLeft = new Graphics();
+      const armRight = new Graphics();
+  
+      // Enhanced Spiderman color palette
+      const spidermanRed = 0xdc143c;
+      const spidermanRedShadow = 0xa01024;
+      const spidermanRedHighlight = 0xff3050;
+      const spidermanBlue = 0x1e40af;
+      const spidermanBlueShadow = 0x1e3a8a;
+      const spidermanBlueHighlight = 0x3b82f6;
+      const webColor = 0x000000;
+      const eyeColor = 0xffffff;
+      const eyeReflection = 0xe0e0e0;
+      const muscleShadow = 0x8b1538;
+  
+      // Create separate graphics objects for emblem and web patterns
+      const emblem = new Graphics();
+      const webPattern = new Graphics();
+  
+      // Main body (red suit with muscle definition)
+      player.beginFill(spidermanRed);
+      player.drawRect(-8, -5, 16, 18);
+      player.endFill();
+  
+      // Muscle definition on torso
+      player.beginFill(spidermanRedShadow);
+      player.drawRect(-6, -3, 2, 8); // Left pec
+      player.drawRect(4, -3, 2, 8); // Right pec
+      player.drawRect(-2, 2, 4, 6); // Abs
+      player.endFill();
+  
+      // Body highlights
+      player.beginFill(spidermanRedHighlight);
+      player.drawRect(-7, -4, 1, 6); // Left highlight
+      player.drawRect(6, -4, 1, 6); // Right highlight
+      player.endFill();
+  
+      // Body shadow
+      player.beginFill(spidermanRedShadow);
+      player.drawRect(-8, 11, 16, 2);
+      player.endFill();
+  
+      // Enhanced spider emblem on chest
+      emblem.beginFill(webColor);
+      // Spider body (more detailed)
+      emblem.drawRect(-1, -3, 2, 8);
+      emblem.drawRect(-2, -1, 4, 2);
+      // Spider legs (more realistic)
+      emblem.drawRect(-5, -1, 3, 1);
+      emblem.drawRect(2, -1, 3, 1);
+      emblem.drawRect(-4, 1, 2, 1);
+      emblem.drawRect(2, 1, 2, 1);
+      emblem.drawRect(-3, 3, 1, 1);
+      emblem.drawRect(2, 3, 1, 1);
+      // Add spider head
+      emblem.drawRect(-1, -4, 2, 2);
+      emblem.endFill();
+  
+      // Enhanced web pattern on torso
+      webPattern.beginFill(webColor);
+      // Vertical web lines
+      for (let i = -6; i <= 6; i += 2) {
+        webPattern.drawRect(i, -4, 1, 16);
+      }
+      // Horizontal web lines
+      for (let i = -4; i <= 12; i += 2) {
+        webPattern.drawRect(-7, i, 14, 1);
+      }
+      // Diagonal web connections
+      for (let i = -6; i <= 4; i += 2) {
+        webPattern.drawRect(i, -3 + Math.abs(i), 1, 1);
+        webPattern.drawRect(i, 1 + Math.abs(i), 1, 1);
+      }
+      webPattern.endFill();
+  
+      // Head (full mask with better shape)
+      player.beginFill(spidermanRed);
+      player.drawRect(-6, -18, 12, 12);
+      player.endFill();
+  
+      // Head muscle definition
+      player.beginFill(spidermanRedShadow);
+      player.drawRect(-5, -16, 2, 3); // Left cheek
+      player.drawRect(3, -16, 2, 3); // Right cheek
+      player.drawRect(-2, -12, 4, 2); // Jaw line
+      player.endFill();
+  
+      // Head highlights
+      player.beginFill(spidermanRedHighlight);
+      player.drawRect(-5, -17, 1, 2);
+      player.drawRect(4, -17, 1, 2);
+      player.endFill();
+  
+      // Enhanced web pattern on head
+      player.beginFill(webColor);
+      // Radial web pattern from center
+      for (let i = -5; i <= 5; i += 2) {
+        player.drawRect(i, -18, 1, 12);
+      }
+      for (let i = -17; i <= -7; i += 2) {
+        player.drawRect(-6, i, 12, 1);
+      }
+      // Curved web lines around eyes
+      player.drawRect(-6, -15, 2, 1);
+      player.drawRect(-6, -14, 3, 1);
+      player.drawRect(3, -15, 3, 1);
+      player.drawRect(4, -14, 2, 1);
+      player.endFill();
+  
+      // Enhanced Spiderman eyes (larger and more expressive)
+      player.beginFill(eyeColor);
+      // Left eye (teardrop shape)
+      player.drawRect(-5, -16, 4, 5);
+      player.drawRect(-4, -17, 2, 1);
+      player.drawRect(-4, -11, 2, 1);
+      // Right eye
+      player.drawRect(1, -16, 4, 5);
+      player.drawRect(2, -17, 2, 1);
+      player.drawRect(2, -11, 2, 1);
+      player.endFill();
+  
+      // Eye reflections
+      player.beginFill(eyeReflection);
+      player.drawRect(-4, -15, 1, 1);
+      player.drawRect(2, -15, 1, 1);
+      player.endFill();
+  
+      // Eye outline (more detailed)
+      player.beginFill(webColor);
+      // Left eye outline
+      player.drawRect(-5, -17, 4, 1);
+      player.drawRect(-5, -11, 4, 1);
+      player.drawRect(-5, -16, 1, 5);
+      player.drawRect(-1, -16, 1, 5);
+      player.drawRect(-4, -17, 1, 1);
+      player.drawRect(-2, -17, 1, 1);
+      // Right eye outline
+      player.drawRect(1, -17, 4, 1);
+      player.drawRect(1, -11, 4, 1);
+      player.drawRect(1, -16, 1, 5);
+      player.drawRect(4, -16, 1, 5);
+      player.drawRect(2, -17, 1, 1);
+      player.drawRect(4, -17, 1, 1);
+      player.endFill();
+  
+      // Enhanced arms (red with better muscle definition)
+      armLeft.beginFill(spidermanRed);
+      armLeft.drawRect(-10, -2, 3, 12);
+      armLeft.endFill();
+  
+      // Muscle definition on arms
+      armLeft.beginFill(spidermanRedShadow);
+      armLeft.drawRect(-9, 0, 1, 8); // Bicep
+      armLeft.endFill();
+  
+      armLeft.beginFill(spidermanRedHighlight);
+      armLeft.drawRect(-10, 1, 1, 6);
+      armLeft.endFill();
+  
+      // Enhanced web pattern on arms
+      armLeft.beginFill(webColor);
+      armLeft.drawRect(-10, 0, 3, 1);
+      armLeft.drawRect(-10, 3, 3, 1);
+      armLeft.drawRect(-10, 6, 3, 1);
+      armLeft.drawRect(-9, -2, 1, 12);
+      // Diagonal connections
+      armLeft.drawRect(-10, 1, 1, 1);
+      armLeft.drawRect(-8, 2, 1, 1);
+      armLeft.drawRect(-10, 4, 1, 1);
+      armLeft.drawRect(-8, 5, 1, 1);
+      armLeft.endFill();
+  
+      // Enhanced hands
+      armLeft.beginFill(spidermanRed);
+      armLeft.drawRect(-9, 10, 2, 3);
+      armLeft.endFill();
+  
+      // Hand web pattern
+      armLeft.beginFill(webColor);
+      armLeft.drawRect(-9, 11, 2, 1);
+      armLeft.endFill();
+  
+      // Right arm (mirrored)
+      armRight.beginFill(spidermanRed);
+      armRight.drawRect(7, -2, 3, 12);
+      armRight.endFill();
+  
+      armRight.beginFill(spidermanRedShadow);
+      armRight.drawRect(8, 0, 1, 8);
+      armRight.endFill();
+  
+      armRight.beginFill(spidermanRedHighlight);
+      armRight.drawRect(9, 1, 1, 6);
+      armRight.endFill();
+  
+      armRight.beginFill(webColor);
+      armRight.drawRect(7, 0, 3, 1);
+      armRight.drawRect(7, 3, 3, 1);
+      armRight.drawRect(7, 6, 3, 1);
+      armRight.drawRect(8, -2, 1, 12);
+      armRight.drawRect(9, 1, 1, 1);
+      armRight.drawRect(7, 2, 1, 1);
+      armRight.drawRect(9, 4, 1, 1);
+      armRight.drawRect(7, 5, 1, 1);
+      armRight.endFill();
+  
+      armRight.beginFill(spidermanRed);
+      armRight.drawRect(7, 10, 2, 3);
+      armRight.endFill();
+  
+      armRight.beginFill(webColor);
+      armRight.drawRect(7, 11, 2, 1);
+      armRight.endFill();
+  
+      // Enhanced legs (blue suit with muscle definition)
+      legLeft.beginFill(spidermanBlue);
+      legLeft.drawRect(-5, 13, 4, 16);
+      legLeft.endFill();
+  
+      // Muscle definition on legs
+      legLeft.beginFill(spidermanBlueShadow);
+      legLeft.drawRect(-4, 15, 1, 12); // Quad muscle
+      legLeft.drawRect(-2, 17, 1, 8); // Inner muscle
+      legLeft.endFill();
+  
+      legLeft.beginFill(spidermanBlueHighlight);
+      legLeft.drawRect(-5, 16, 1, 10);
+      legLeft.endFill();
+  
+      // Enhanced web pattern on legs
+      legLeft.beginFill(webColor);
+      legLeft.drawRect(-5, 16, 4, 1);
+      legLeft.drawRect(-5, 20, 4, 1);
+      legLeft.drawRect(-5, 24, 4, 1);
+      legLeft.drawRect(-3, 13, 1, 16);
+      // Diagonal connections
+      legLeft.drawRect(-5, 17, 1, 1);
+      legLeft.drawRect(-2, 18, 1, 1);
+      legLeft.drawRect(-5, 21, 1, 1);
+      legLeft.drawRect(-2, 22, 1, 1);
+      legLeft.endFill();
+  
+      // Right leg (mirrored)
+      legRight.beginFill(spidermanBlue);
+      legRight.drawRect(1, 13, 4, 16);
+      legRight.endFill();
+  
+      legRight.beginFill(spidermanBlueShadow);
+      legRight.drawRect(3, 15, 1, 12);
+      legRight.drawRect(1, 17, 1, 8);
+      legRight.endFill();
+  
+      legRight.beginFill(spidermanBlueHighlight);
+      legRight.drawRect(4, 16, 1, 10);
+      legRight.endFill();
+  
+      legRight.beginFill(webColor);
+      legRight.drawRect(1, 16, 4, 1);
+      legRight.drawRect(1, 20, 4, 1);
+      legRight.drawRect(1, 24, 4, 1);
+      legRight.drawRect(2, 13, 1, 16);
+      legRight.drawRect(4, 17, 1, 1);
+      legRight.drawRect(1, 18, 1, 1);
+      legRight.drawRect(4, 21, 1, 1);
+      legRight.drawRect(1, 22, 1, 1);
+      legRight.endFill();
+  
+      // Enhanced boots
+      const shoeLeft = new Graphics();
+      shoeLeft.beginFill(spidermanRed);
+      shoeLeft.drawRect(-6, 29, 5, 3);
+      shoeLeft.endFill();
+  
+      // Boot details
+      shoeLeft.beginFill(spidermanRedShadow);
+      shoeLeft.drawRect(-6, 30, 5, 1);
+      shoeLeft.endFill();
+  
+      shoeLeft.beginFill(webColor);
+      shoeLeft.drawRect(-5, 29, 1, 3);
+      shoeLeft.drawRect(-3, 29, 1, 3);
+      shoeLeft.endFill();
+  
+      const shoeRight = new Graphics();
+      shoeRight.beginFill(spidermanRed);
+      shoeRight.drawRect(1, 29, 5, 3);
+      shoeRight.endFill();
+  
+      shoeRight.beginFill(spidermanRedShadow);
+      shoeRight.drawRect(1, 30, 5, 1);
+      shoeRight.endFill();
+  
+      shoeRight.beginFill(webColor);
+      shoeRight.drawRect(2, 29, 1, 3);
+      shoeRight.drawRect(4, 29, 1, 3);
+      shoeRight.endFill();
+  
+      // Add all child elements in correct order
+      player.addChild(webPattern); // Web pattern first
+      player.addChild(emblem); // Emblem on top
+      player.addChild(armLeft);
+      player.addChild(armRight);
+      player.addChild(legLeft);
+      player.addChild(legRight);
+      player.addChild(shoeLeft);
+      player.addChild(shoeRight);
+  
+      // Name tag
+      const nameTag = new Text({
+        text: playerName,
+        style: new TextStyle({
+          fontSize: 12,
+          fill: 0xffffff,
+          fontFamily: "Arial",
+          stroke: { color: 0x000000, width: 2 },
+          dropShadow: {
+            color: 0x000000,
+            blur: 2,
+            angle: Math.PI / 4,
+            distance: 2,
+          },
+        }),
+      });
+      nameTag.anchor.set(0.5);
+      nameTag.y = -35;
+      player.addChild(nameTag);
+  
+      return setupPlayerAnimation(
+        player,
+        gameState,
+        legLeft,
+        legRight,
+        armLeft,
+        armRight,
+        shoeLeft,
+        shoeRight,
+        nameTag,
+        null,
+        emblem,
+        webPattern
+      );
+    };
+  
+    // Batman Character Design
+    const createBatman = (gameState, playerName = "Batman") => {
+      let tickerFn = null;
+      const player = new Graphics();
+      const legLeft = new Graphics();
+      const legRight = new Graphics();
+      const armLeft = new Graphics();
+      const armRight = new Graphics();
+  
+      // Batman color palette
+      const batmanGray = 0x4a5568;
+      const batmanGrayShadow = 0x2d3748;
+      const batmanBlack = 0x1a202c;
+      const batmanBlackShadow = 0x000000;
+      const batmanYellow = 0xffd700;
+      const batmanYellowShadow = 0xe6c200;
+      const batmanBlue = 0x2563eb;
+      const capeColor = 0x1a202c;
+  
+      // Cape (behind character) - Ensure this is added first to be at the back
+      const cape = new Graphics();
+      cape.beginFill(capeColor);
+      cape.drawRect(-12, -8, 24, 25);
+      cape.endFill();
+  
+      // Cape shadow
+      cape.beginFill(batmanBlackShadow);
+      cape.drawRect(-12, 15, 24, 2);
+      cape.endFill();
+  
+      player.addChild(cape); // Add cape first
+  
+      // Main body (gray suit)
+      player.beginFill(batmanGray);
+      player.drawRect(-8, -5, 16, 18);
+      player.endFill();
+  
+      // Body shadow
+      player.beginFill(batmanGrayShadow);
+      player.drawRect(-8, 11, 16, 2);
+      player.endFill();
+  
+      // Head with cowl (drawn after body)
+      player.beginFill(batmanGray);
+      player.drawRect(-6, -18, 12, 12);
+      player.endFill();
+  
+      // Batman cowl ears
+      player.beginFill(batmanGray);
+      player.drawRect(-4, -22, 2, 4);
+      player.drawRect(2, -22, 2, 4);
+      player.endFill();
+  
+      // Cowl shadow
+      player.beginFill(batmanGrayShadow);
+      player.drawRect(-6, -8, 12, 2);
+      player.endFill();
+  
+      // Batman eyes (white slits)
+      player.beginFill(0xffffff);
+      player.drawRect(-4, -15, 2, 1);
+      player.drawRect(2, -15, 2, 1);
+      player.endFill();
+  
+      // Mouth (stern expression)
+      player.beginFill(batmanGrayShadow);
+      player.drawRect(-1, -10, 2, 1);
+      player.endFill();
+  
+      // Create separate graphics objects for emblem and belt
+      const emblem = new Graphics();
+      const belt = new Graphics();
+  
+      // Bat emblem on chest - separate object
+      emblem.beginFill(batmanYellow);
+      emblem.drawRect(-3, -2, 6, 4);
+      emblem.endFill();
+  
+      // Bat symbol
+      emblem.beginFill(batmanBlack);
+      // Bat body
+      emblem.drawRect(-1, -1, 2, 2);
+      // Bat wings
+      emblem.drawRect(-3, 0, 2, 1);
+      emblem.drawRect(1, 0, 2, 1);
+      // Wing tips
+      emblem.drawRect(-4, 1, 1, 1);
+      emblem.drawRect(3, 1, 1, 1);
+      emblem.endFill();
+  
+      // Utility belt - separate object
+      belt.beginFill(batmanYellow);
+      belt.drawRect(-8, 8, 16, 2);
+      belt.endFill();
+  
+      // Belt pouches
+      belt.beginFill(batmanYellowShadow);
+      belt.drawRect(-6, 8, 2, 2);
+      belt.drawRect(-2, 8, 2, 2);
+      belt.drawRect(2, 8, 2, 2);
+      belt.endFill();
+  
+      // Belt buckle
+      belt.beginFill(batmanYellowShadow);
+      belt.drawRect(-1, 8, 2, 2);
+      belt.endFill();
+  
+      // Add emblem and belt to player
+      player.addChild(emblem);
+      player.addChild(belt);
+  
+      // Arms (gray with black gloves)
+      armLeft.beginFill(batmanGray);
+      armLeft.drawRect(-10, -2, 3, 10);
+      armLeft.endFill();
+  
+      // Black gloves
+      armLeft.beginFill(batmanBlack);
+      armLeft.drawRect(-10, 8, 3, 5);
+      armLeft.endFill();
+  
+      armRight.beginFill(batmanGray);
+      armRight.drawRect(7, -2, 3, 10);
+      armRight.endFill();
+  
+      armRight.beginFill(batmanBlack);
+      armRight.drawRect(7, 8, 3, 5);
+      armRight.endFill();
+  
+      player.addChild(armLeft);
+      player.addChild(armRight);
+  
+      // Legs (gray with black boots)
+      legLeft.beginFill(batmanGray);
+      legLeft.drawRect(-5, 13, 4, 12);
+      legLeft.endFill();
+  
+      // Black boots
+      legLeft.beginFill(batmanBlack);
+      legLeft.drawRect(-5, 25, 4, 4);
+      legLeft.endFill();
+  
+      legRight.beginFill(batmanGray);
+      legRight.drawRect(1, 13, 4, 12);
+      legRight.endFill();
+  
+      legRight.beginFill(batmanBlack);
+      legRight.drawRect(1, 25, 4, 4);
+      legRight.endFill();
+  
+      player.addChild(legLeft);
+      player.addChild(legRight);
+  
+      // Boots
+      const shoeLeft = new Graphics();
+      shoeLeft.beginFill(batmanBlack);
+      shoeLeft.drawRect(-6, 29, 5, 3);
+      shoeLeft.endFill();
+  
+      const shoeRight = new Graphics();
+      shoeRight.beginFill(batmanBlack);
+      shoeRight.drawRect(1, 29, 5, 3);
+      shoeRight.endFill();
+  
+      player.addChild(shoeLeft);
+      player.addChild(shoeRight);
+  
+      // Name tag
+      const nameTag = new Text({
+        text: playerName,
+        style: new TextStyle({
+          fontSize: 12,
+          fill: 0xffffff,
+          fontFamily: "Arial",
+          stroke: { color: 0x000000, width: 2 },
+          dropShadow: {
+            color: 0x000000,
+            blur: 2,
+            angle: Math.PI / 4,
+            distance: 2,
+          },
+        }),
+      });
+      nameTag.anchor.set(0.5);
+      nameTag.y = -35;
+      player.addChild(nameTag);
+  
+      return setupPlayerAnimation(
+        player,
+        gameState,
+        legLeft,
+        legRight,
+        armLeft,
+        armRight,
+        shoeLeft,
+        shoeRight,
+        nameTag,
+        cape,
+        emblem,
+        belt
+      );
+    };
+  
+    // Shared animation setup function
+    const setupPlayerAnimation = (
+      player,
+      gameState,
+      legLeft,
+      legRight,
+      armLeft,
+      armRight,
+      shoeLeft,
+      shoeRight,
+      nameTag,
+      cape = null,
+      emblem = null,
+      belt = null
+    ) => {
+      // Initial position
+      let tickerFn = null;
+      player.x = 400;
+      player.y = 300;
+  
+      // Add to scene
+      gameState.camera.addChild(player);
+      gameState.player = player;
+  
+      // Animation variables
+      let walking = false;
+      let walkFrame = 0;
+      let direction = "down";
+      const walkSpeed = 0.3;
+      const legSwingAmount = 4;
+      const armSwingAmount = 3;
+      const bodyBobAmount = 1;
+  
+      tickerFn = () => {
+        if (!player || !player.parent) return; // prevent stale access
+  
+        if (walking) {
+          walkFrame += walkSpeed;
+  
+          const legAngle = Math.sin(walkFrame) * legSwingAmount;
+          const armAngle = Math.sin(walkFrame) * armSwingAmount;
+          const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+  
+          legLeft.y = 0 + legAngle;
+          legRight.y = 0 - legAngle;
+  
+          armLeft.y = 0 - armAngle * 0.7;
+          armRight.y = 0 + armAngle * 0.7;
+  
+          armLeft.rotation = -armAngle * 0.1;
+          armRight.rotation = armAngle * 0.1;
+  
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight &&
+              child !== cape &&
+              child !== emblem &&
+              child !== belt
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+  
+          if (direction === "left") {
+            player.scale.x = -1;
+          } else if (direction === "right") {
+            player.scale.x = 1;
+          }
+          nameTag.scale.x = 1 / player.scale.x;
+        } else {
+          legLeft.y += (0 - legLeft.y) * 0.1;
+          legRight.y += (0 - legRight.y) * 0.1;
+          armLeft.y += (0 - armLeft.y) * 0.1;
+          armRight.y += (0 - armRight.y) * 0.1;
+          armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+          armRight.rotation += (0 - armRight.rotation) * 0.1;
+  
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight &&
+              child !== nameTag &&
+              child !== cape &&
+              child !== emblem &&
+              child !== belt
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+        }
+      };
+  
+      Ticker.shared.add(tickerFn);
+      player._tickerFn = tickerFn;
+  
+      player.walk = (dir) => {
+        walking = true;
+        direction = dir;
+        const speed = 2;
+  
+        if (dir === "left") player.x -= speed;
+        if (dir === "right") player.x += speed;
+        if (dir === "up") player.y -= speed;
+        if (dir === "down") player.y += speed;
+      };
+  
+      player.stop = () => {
+        walking = false;
+      };
+  
+      player.children.forEach((child) => {
+        child.originalY = child.y;
+      });
+  
+      return player;
+    };
+  
+    // ALTERNATIVE MALE VERSION (CASUAL STYLE)
+    const createMalePlayer = (gameState, playerName = "You") => {
+      let tickerFn = null;
+      const player = new Graphics();
+      const legLeft = new Graphics();
+      const legRight = new Graphics();
+      const armLeft = new Graphics();
+      const armRight = new Graphics();
+  
+      // Enhanced color palette for casual male
+      const skinColor = 0xd4a574; // Slightly different skin tone
+      const skinShadow = 0xc19660;
+      const hoodieColor = 0x27ae60; // Green hoodie
+      const hoodieShadow = 0x229954;
+      const jeansColor = 0x34495e; // Dark blue jeans
+      const jeansShadow = 0x2c3e50;
+      const hairColor = 0x2c3e50; // Dark hair
+      const sneakerColor = 0xff6b6b; // Red sneakers
+  
+      // Player body (hoodie)
+      player.beginFill(hoodieColor);
+      player.drawRect(-9, -5, 18, 22);
+      player.endFill();
+  
+      // Hoodie shadow
+      player.beginFill(hoodieShadow);
+      player.drawRect(-9, 15, 18, 2);
+      player.endFill();
+  
+      // Hoodie pocket
+      player.beginFill(hoodieShadow);
+      player.drawRect(-6, 5, 12, 8);
+      player.endFill();
+  
+      // Hoodie strings
+      player.beginFill(0xffffff);
+      player.drawRect(-2, -3, 1, 8);
+      player.drawRect(1, -3, 1, 8);
+      player.endFill();
+  
+      // Head
+      player.beginFill(skinColor);
+      player.drawRect(-6, -18, 12, 12);
+      player.endFill();
+  
+      // Face shadow
+      player.beginFill(skinShadow);
+      player.drawRect(-6, -8, 12, 2);
+      player.endFill();
+  
+      // Messy hair style
+      player.beginFill(hairColor);
+      player.drawRect(-7, -19, 14, 7);
+      player.endFill();
+  
+      // Hair spikes/texture
+      player.beginFill(0x1a252f);
+      player.drawRect(-6, -18, 2, 3);
+      player.drawRect(-2, -19, 2, 3);
+      player.drawRect(2, -18, 2, 3);
+      player.drawRect(5, -17, 2, 2);
+      player.endFill();
+  
+      // Eyes with different expression
+      player.beginFill(0xffffff);
+      player.drawRect(-4, -15, 2, 2);
+      player.drawRect(2, -15, 2, 2);
+      player.endFill();
+  
+      // Eye pupils
+      player.beginFill(0x000000);
+      player.drawRect(-3.5, -14.5, 1, 1);
+      player.drawRect(2.5, -14.5, 1, 1);
+      player.endFill();
+  
+      // Nose
+      player.beginFill(skinShadow);
+      player.drawRect(-0.5, -12, 1, 1);
+      player.endFill();
+  
+      // Slight smile
+      player.beginFill(skinShadow);
+      player.drawRect(-1, -10, 3, 1);
+      player.endFill();
+  
+      // Arms in hoodie sleeves
+      armLeft.beginFill(hoodieColor);
+      armLeft.drawRect(-11, -2, 4, 14);
+      armLeft.endFill();
+  
+      // Sleeve cuffs
+      armLeft.beginFill(hoodieShadow);
+      armLeft.drawRect(-11, 10, 4, 2);
+      armLeft.endFill();
+  
+      // Hand showing
+      armLeft.beginFill(skinColor);
+      armLeft.drawRect(-10, 12, 2, 3);
+      armLeft.endFill();
+  
+      armRight.beginFill(hoodieColor);
+      armRight.drawRect(7, -2, 4, 14);
+      armRight.endFill();
+  
+      armRight.beginFill(hoodieShadow);
+      armRight.drawRect(7, 10, 4, 2);
+      armRight.endFill();
+  
+      armRight.beginFill(skinColor);
+      armRight.drawRect(8, 12, 2, 3);
+      armRight.endFill();
+  
+      player.addChild(armLeft);
+      player.addChild(armRight);
+  
+      // Jeans
+      legLeft.beginFill(jeansColor);
+      legLeft.drawRect(-7, 17, 6, 10);
+      legLeft.endFill();
+  
+      // Jeans shadow
+      legLeft.beginFill(jeansShadow);
+      legLeft.drawRect(-7, 25, 6, 2);
+      legLeft.endFill();
+  
+      // Jeans stitching
+      legLeft.beginFill(0x5d6d7e);
+      legLeft.drawRect(-6, 17, 1, 10);
+      legLeft.endFill();
+  
+      legRight.beginFill(jeansColor);
+      legRight.drawRect(1, 17, 6, 10);
+      legRight.endFill();
+  
+      legRight.beginFill(jeansShadow);
+      legRight.drawRect(1, 25, 6, 2);
+      legRight.endFill();
+  
+      legRight.beginFill(0x5d6d7e);
+      legRight.drawRect(5, 17, 1, 10);
+      legRight.endFill();
+  
+      player.addChild(legLeft);
+      player.addChild(legRight);
+  
+      // Sneakers
+      const shoeLeft = new Graphics();
+      shoeLeft.beginFill(sneakerColor);
+      shoeLeft.drawRect(-8, 27, 7, 4);
+      shoeLeft.endFill();
+  
+      // Sneaker sole
+      shoeLeft.beginFill(0xffffff);
+      shoeLeft.drawRect(-8, 30, 7, 1);
+      shoeLeft.endFill();
+  
+      // Sneaker details
+      shoeLeft.beginFill(0xffffff);
+      shoeLeft.drawRect(-7, 28, 5, 1);
+      shoeLeft.endFill();
+  
+      const shoeRight = new Graphics();
+      shoeRight.beginFill(sneakerColor);
+      shoeRight.drawRect(1, 27, 7, 4);
+      shoeRight.endFill();
+  
+      shoeRight.beginFill(0xffffff);
+      shoeRight.drawRect(1, 30, 7, 1);
+      shoeRight.endFill();
+  
+      shoeRight.beginFill(0xffffff);
+      shoeRight.drawRect(2, 28, 5, 1);
+      shoeRight.endFill();
+  
+      player.addChild(shoeLeft);
+      player.addChild(shoeRight);
+  
+      // Name tag
+      const nameTag = new Text({
+        text: playerName,
+        style: new TextStyle({
+          fontSize: 12,
+          fill: 0xffffff,
+          fontFamily: "Arial",
+          stroke: { color: 0x000000, width: 2 },
+          dropShadow: {
+            color: 0x000000,
+            blur: 2,
+            angle: Math.PI / 4,
+            distance: 2,
+          },
+        }),
+      });
+      nameTag.anchor.set(0.5);
+      nameTag.y = -35;
+      player.addChild(nameTag);
+  
+      // Initial position
+      player.x = 400;
+      player.y = 300;
+  
+      // Add to scene
+      gameState.camera.addChild(player);
+      gameState.player = player;
+  
+      // Enhanced animation state
+      let walking = false;
+      let walkFrame = 0;
+      let direction = "down";
+      const walkSpeed = 0.3;
+      const legSwingAmount = 4;
+      const armSwingAmount = 3;
+      const bodyBobAmount = 1;
+  
+      tickerFn = () => {
+        if (!player || !player.parent) return; // prevent stale access
+        if (walking) {
+          walkFrame += walkSpeed;
+  
+          const legAngle = Math.sin(walkFrame) * legSwingAmount;
+          const armAngle = Math.sin(walkFrame) * armSwingAmount;
+          const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+  
+          // Leg animation (opposite swing)
+          legLeft.y = 0 + legAngle;
+          legRight.y = 0 - legAngle;
+  
+          // Arm animation (opposite to legs for natural walking)
+          armLeft.y = 0 - armAngle * 0.7;
+          armRight.y = 0 + armAngle * 0.7;
+  
+          // Slight arm rotation
+          armLeft.rotation = -armAngle * 0.1;
+          armRight.rotation = armAngle * 0.1;
+  
+          // Body bobbing
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+  
+          // Directional facing (flip sprite)
+          if (direction === "left") {
+            player.scale.x = -1;
+          } else if (direction === "right") {
+            player.scale.x = 1;
+          }
+          nameTag.scale.x = 1 / player.scale.x;
+        } else {
+          // Return to idle position smoothly
+          legLeft.y += (0 - legLeft.y) * 0.1;
+          legRight.y += (0 - legRight.y) * 0.1;
+          armLeft.y += (0 - armLeft.y) * 0.1;
+          armRight.y += (0 - armRight.y) * 0.1;
+          armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+          armRight.rotation += (0 - armRight.rotation) * 0.1;
+  
+          // Reset body parts to original positions
+          // Body bobbing (exclude nameTag)
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight &&
+              child !== nameTag
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+        }
+      };
+  
+      // Ticker-based enhanced animation
+      Ticker.shared.add(tickerFn);
+      player._tickerFn = tickerFn;
+  
+      // Enhanced movement API
+      player.walk = (dir) => {
+        walking = true;
+        direction = dir;
+        const speed = 2;
+  
+        if (dir === "left") player.x -= speed;
+        if (dir === "right") player.x += speed;
+        if (dir === "up") player.y -= speed;
+        if (dir === "down") player.y += speed;
+      };
+  
+      player.stop = () => {
+        walking = false;
+      };
+  
+      // Store original positions for smooth transitions
+      player.children.forEach((child) => {
+        child.originalY = child.y;
+      });
+      return player;
+    };
 
   const createPlayer = (gameState, playerName = "Astronaut") => {
     const player = new Graphics();
@@ -412,7 +1721,14 @@ function SpaceStation() {
 
     return player;
 };
-
+ const avatarMap = {
+    default: createPlayer,
+    Batman: createBatman,
+    Spiderman: createSpidey,
+    Male: createMalePlayer,
+    Female: createGirlPlayer,
+  };
+ const createFn = avatarMap[avatarType] || createPlayer;
 
   useEffect(() => {
     const fetchSpace = async () => {
@@ -446,6 +1762,12 @@ function SpaceStation() {
       fetchPlayerName();
     }, []);
 
+     useEffect(() => {
+        if (gameStateRef.current) {
+          gameStateRef.current.wallHackEnabled = wallHackEnabled;
+        }
+      }, [wallHackEnabled]);
+
   useEffect(() => {
     if (!loadingPage && space && canvasRef.current) {
       const initPixi = async () => {
@@ -477,9 +1799,8 @@ function SpaceStation() {
               gameState.world.addChild(gameState.camera);
       
               createSpaceStationGrid(gameState);
-              createPlayer(gameState, playerName);
               populateRooms(gameState);
-            //   createFn(gameState, playerName);
+              createFn(gameState, playerName);
             //   setupSocketListeners(gameState);
       
               // ✅ Now emit player-join after everything is ready
@@ -504,6 +1825,11 @@ function SpaceStation() {
               // app.ticker drives the game loop
               app.ticker.add(() => gameLoop(gameState, app));
             };
+
+      const addWithCollider = (container, displayObject, bounds, colliders) => {
+        container.addChild(displayObject);
+        colliders.push(bounds);
+      };            
 
 
 const createSpaceStationGrid = (gameState) => {
@@ -635,8 +1961,7 @@ const walls = createSpaceWalls(
   
 };
 
-
-function createCommandChair(x, y) {
+function createCommandChair(x, y, camera, colliders) {
     // Create main command chair container
     const chairContainer = new Container();
     chairContainer.x = x;
@@ -927,11 +2252,24 @@ function createCommandChair(x, y) {
         requestAnimationFrame(breatheAnimation);
     };
     breatheAnimation();
+
+    const bounds = {
+      x: x - 35, // left side (based on seat and backrest)
+      y: y - 50, // top of headrest
+      width: 70, // full width of chair (seat + arms + armrests)
+      height: 100, // from headrest to bottom pedestal base
+      label: "commandchair",
+    };
+
+
+        if (colliders) {
+          addWithCollider(camera, chairContainer, bounds, colliders);
+        }
     
     return chairContainer;
 }
 
-function createHoloDisplay(x, y) {
+function createHoloDisplay(x, y, camera, colliders) {
     // Create main holographic display container
     const holoContainer = new Container();
     holoContainer.x = x;
@@ -1085,11 +2423,32 @@ function createHoloDisplay(x, y) {
         requestAnimationFrame(pulseAnimation);
     };
     pulseAnimation();
+
+    const bounds = {
+  x: x - 50,
+  y: y - 40,
+  width: 100,
+  height: 95, // from -40 to 55
+  label: "holodisplay"
+};
+
+if(colliders){
+    addWithCollider(camera, holoContainer, bounds, colliders);
+}
+
+if (!window.interactables) window.interactables = [];
+window.interactables.push({
+  label: "holodisplay",
+  bounds,
+  message: "Live 3D rendering of local space, showing friendly, neutral, and hostile contacts",
+  bubble: null,
+});
+
     
     return holoContainer;
 }
 
-function createNavConsole(x, y) {
+function createNavConsole(x, y, camera, colliders) {
     // Create main navigation console container
     const navContainer = new Container();
     navContainer.x = x;
@@ -1328,6 +2687,15 @@ function createNavConsole(x, y) {
         requestAnimationFrame(scanAnimation);
     };
     scanAnimation();
+    const bounds = {
+  x: x - 70,
+  y: y - 25,
+  width: 140,
+  height: 82,
+  label: "navconsole"
+};
+    if(colliders)
+        addWithCollider(camera, navContainer, bounds, colliders);
     
     return navContainer;
 }
@@ -1816,7 +3184,7 @@ const createAirlockDoor = (wall, x, y, width, height, orientation) => {
   }
 };
 
-function createControlStation(x, y) {
+function createControlStation(x, y, camera, colliders) {
     // Create main station container
     const stationContainer = new Container();
     stationContainer.x = x;
@@ -1990,7 +3358,6 @@ function createControlStation(x, y) {
             requestAnimationFrame(animate);
         };
         animate();
-        
         return element;
     };
     
@@ -2042,11 +3409,29 @@ function createControlStation(x, y) {
     animateDataStream();
     
     stationContainer.addChild(dataStream);
+            const bounds = {
+  x: x - 45,
+  y: y - 52,
+  width: 90,
+  height: 104,
+  label: "controlstation"
+};
+if(colliders){
+    addWithCollider(camera, stationContainer, bounds, colliders);
+}
+
+ if (!window.interactables) window.interactables = [];
+        window.interactables.push({
+          label: "controlstation",
+          bounds,
+          message: "Accessing the main sensor array. Distant stars and unseen threats flicker across these screens",
+          bubble: null,
+        });
     
     return stationContainer;
 }
 
-function createBridgeStation(x, y) {
+function createBridgeStation(x, y, camera, colliders) {
     // Create main bridge station container
     const bridgeContainer = new Container();
     bridgeContainer.x = x;
@@ -2471,11 +3856,30 @@ function createBridgeStation(x, y) {
     bridgeContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 100,
+  y: y - 60,
+  width: 200,
+  height: 140,
+  label: "bridgestation"
+};
+
+if(colliders){
+    addWithCollider(camera, bridgeContainer, bounds, colliders);
+}
+
+if (!window.interactables) window.interactables = [];
+window.interactables.push({
+  label: "bridgestation",
+  bounds,
+  message: "Scans of uncharted nebulae and distant civilizations flicker across these holographic displays",
+  bubble: null,
+});
     
     return bridgeContainer;
 }
 
-function createTelescope(x, y) {
+function createTelescope(x, y, camera, colliders) {
     // Create main telescope container
     const telescopeContainer = new Container();
     telescopeContainer.x = x;
@@ -2843,7 +4247,6 @@ function createTelescope(x, y) {
             requestAnimationFrame(animateBlink);
         };
         animateBlink();
-        
         return led;
     };
     
@@ -2896,11 +4299,27 @@ function createTelescope(x, y) {
     animateCrosshair();
     
     telescopeContainer.addChild(crosshair);
+            const bounds = {
+  x: x - 40,    // -25 to +55 → center ~x, span 80
+  y: y - 88,    // -88 to +88
+  width: 80,
+  height: 176,
+  label: "telescope"
+};
+if(colliders) addWithCollider(camera, telescopeContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "telescope",
+    bounds,
+    message: "The Telescope's aperture points silently towards the inky blackness, patiently gathering light from distant, unseen wonders",
+    bubble: null,
+});
     
     return telescopeContainer;
 }
 
-function createObservationSeat(x, y) {
+function createObservationSeat(x, y, camera, colliders) {
     // Create main seat container
     const seatContainer = new Container();
     seatContainer.x = x;
@@ -3205,11 +4624,22 @@ function createObservationSeat(x, y) {
     animateWarmth();
     
     seatContainer.addChild(seatWarmth);
+    const bounds = {
+  x: x - 35,    // center x - half width
+  y: y - 50,    // top
+  width: 70,
+  height: 95,
+  label: "observationSeat"
+};
+
+if(colliders){
+    addWithCollider(camera, seatContainer, bounds, colliders);
+}
     
     return seatContainer;
 }
 
-function createSpacePlant(x, y) {
+function createSpacePlant(x, y, camera, colliders) {
     // Create main plant container
     const plantContainer = new Container();
     plantContainer.x = x;
@@ -3567,11 +4997,19 @@ function createSpacePlant(x, y) {
     animateGrowth();
     
     plantContainer.addChild(growthIndicator);
+    const bounds = {
+  x: x - 20.5,
+  y: y - 12,
+  width: 41,
+  height: 46,
+  label: "spacePlant"
+};
+if(colliders) addWithCollider(camera, growthIndicator, bounds, colliders);
     
     return plantContainer;
 }
 
-function createCommArray(x, y) {
+function createCommArray(x, y, camera, colliders) {
     // Create main communication array container
     const commContainer = new Container();
     commContainer.x = x;
@@ -4011,11 +5449,28 @@ function createCommArray(x, y) {
     animateReflection();
     
     commContainer.addChild(lensReflection);
+    const bounds = {
+  x: x - 44,
+  y: y - 30,
+  width: 88,
+  height: 125,
+  label: "commArray"
+};
+if(colliders)
+    addWithCollider(camera, commContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "commArray",
+    bounds,
+    message: "A low, intermittent static crackles from the Comm Array's console, a constant reminder of the vast, empty spaces it tries to bridge",
+    bubble: null, 
+});
     
     return commContainer;
 }
 
-function createSignalProcessor(x, y) {
+function createSignalProcessor(x, y, camera, colliders) {
     // Create main signal processor container
     const procContainer = new Container();
     procContainer.x = x;
@@ -4316,11 +5771,27 @@ function createSignalProcessor(x, y) {
     
     procContainer.addChild(leftScreen);
     procContainer.addChild(rightScreen);
+    const bounds={
+  x: x - 52,
+  y: y - 42,
+  width: 104,
+  height: 90,
+  label: "processingArray"
+}
+if(colliders) addWithCollider(camera, procContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "processingArray",
+    bounds,
+    message: "A faint whirring emanates from the Signal Processor, its internal components meticulously refining garbled transmissions into understandable streams",
+    bubble: null, 
+});
     
     return procContainer;
 }
 
-function createMonitoringStation(x, y) {
+function createMonitoringStation(x, y, camera, colliders) {
     // Create main monitoring station container
     const monitorContainer = new Container();
     monitorContainer.x = x;
@@ -4808,11 +6279,28 @@ function createMonitoringStation(x, y) {
         sliderHandles.push(handle);
         monitorContainer.addChild(handle);
     }
+    const bounds = {
+  x: x - 65,    
+  y: y - 45,       
+  width: 130,     
+  height: 120,     
+  label: "monitoringStation"
+};
+
+if(colliders) addWithCollider(camera, monitorContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "monitoringStation",
+    bounds,
+    message: "A low, steady beep emanates from the Monitoring Station, indicating a constant, vigilant watch over the ship's vital signs",
+    bubble: null, 
+});
     
     return monitorContainer;
 }
 
-function createDataBank(x, y) {
+function createDataBank(x, y ,camera, colliders) {
     // Create main data bank container
     const dataContainer = new Container();
     dataContainer.x = x;
@@ -5346,12 +6834,29 @@ function createDataBank(x, y) {
         
         tempSensors.push(tempLED);
         dataContainer.addChild(tempLED);
+        
     }
+    const bounds = {
+  x: x - 45,       // includes cooling fans on the top and cables extending left
+  y: y - 80,       // includes top cooling system (starts at -75) and some margin
+  width: 90,       // from -45 to +45 (cables extend beyond -40/+40)
+  height: 210,     // from -80 (cooling) to +130 (bottom PSU)
+  label: "dataBank"
+};
+if (colliders) addWithCollider(camera, dataContainer, bounds, colliders);
+
+if (!window.interactables) window.interactables = [];
+window.interactables.push({
+  label: "dataBank",
+  bounds,
+  message: "The cool, smooth surface of the Databank console invites interaction, promising access to centuries of collected knowledge and vital ship records",
+  bubble: null,
+});
     
     return dataContainer;
 }
 
-function createMedBed(x, y) {
+function createMedBed(x, y, camera, colliders) {
     // Create main medical bed container
     const medBedContainer = new Container();
     medBedContainer.x = x;
@@ -5663,11 +7168,28 @@ function createMedBed(x, y) {
         patientData.push(dataPoint);
         medBedContainer.addChild(dataPoint);
     }
-    
+    const bounds = {
+  x: x - 100,
+  y: y - 40,
+  width: 190,
+  height: 150,
+  label: "medbed"
+};
+
+if(colliders){
+    addWithCollider(camera, medBedContainer, bounds, colliders);
+}
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "medbed",
+    bounds,
+    message: "Critical care array engaged. Monitoring neural and physiological functions.",
+    bubble: null,
+});
     return medBedContainer;
 }
 
-function createMedScanner(x, y) {
+function createMedScanner(x, y, camera, colliders) {
     // Create main medical scanner container
     const scannerContainer = new Container();
     scannerContainer.x = x;
@@ -6005,11 +7527,29 @@ function createMedScanner(x, y) {
         calibrationParticles.push(particle);
         scannerContainer.addChild(particle);
     }
+    const bounds = {
+  x: x - 40,         // Left of scanner base
+  y: y - 70,         // Top of scanner head
+  width: 90,        // Covers all elements (arm, UI, cables)
+  height: 140,
+  label: "medscanner"
+};
+if(colliders){
+    addWithCollider(camera, scannerContainer, bounds, colliders);
+}
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    bounds,
+    message: "The Medscanner hums softly, its diagnostic light currently off, awaiting a patient",
+    bubble: null,
+});
+
     
     return scannerContainer;
 }
 
-function createMedStorage(x, y) {
+function createMedStorage(x, y, camera, colliders) {
     // Create main medical storage container
     const medContainer = new Container();
     medContainer.x = x;
@@ -6127,11 +7667,21 @@ function createMedStorage(x, y) {
     
     // Add graphics to container
     medContainer.addChild(graphics);
+    const bounds = {
+  x: x - 30,
+  y: y - 25,
+  width: 60,
+  height: 58,
+  label: "medstorage"
+};
+if(colliders){
+    addWithCollider(camera, medContainer, bounds, colliders);
+}
     
     return medContainer;
 }
 
-function createEmergencyKit(x, y) {
+function createEmergencyKit(x, y,camera, colliders) {
     // Create main emergency kit container
     const emergencyContainer = new Container();
     emergencyContainer.x = x;
@@ -6291,11 +7841,21 @@ function createEmergencyKit(x, y) {
     
     // Add graphics to container
     emergencyContainer.addChild(graphics);
+    const bounds = {
+  x: x - 30,
+  y: y - 25,
+  width: 60,
+  height: 58,
+  label: "emergencykit"
+};
+if(colliders){
+    addWithCollider(camera, emergencyContainer, bounds, colliders);
+}
     
     return emergencyContainer;
 }
 
-function createLabWorkstation(x, y) {
+function createLabWorkstation(x, y, camera, colliders) {
     // Create main lab workstation container
     const labContainer = new Container();
     labContainer.x = x;
@@ -6618,11 +8178,29 @@ function createLabWorkstation(x, y) {
     
     // Add graphics to container
     labContainer.addChild(graphics);
+    const bounds = {
+  x: x - 70,
+  y: y - 35,
+  width: 140,
+  height: 90,
+  label: "labworkstation"
+};
+if(colliders){
+    addWithCollider(camera, labContainer, bounds, colliders);
+}
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "labworkstation",
+    bounds,
+    message: "The holographic interface of the Lab Workstation flickers almost imperceptibly, displaying fragmented data from a recent, complex experiment",
+    bubble: null,
+});
     
     return labContainer;
 }
 
-function createSpecimenContainer(x, y) {
+function createSpecimenContainer(x, y, camera, colliders) {
     // Create main specimen container
     const specimenContainer = new Container();
     specimenContainer.x = x;
@@ -6871,11 +8449,26 @@ function createSpecimenContainer(x, y) {
         // This can be called from external animation loops if needed
         animationTime += delta * 0.01;
     };
-    
+    const bounds = {
+  x: x - 50,
+  y: y - 45,
+  width: 100,
+  height: 92,
+  label: "specimencontainer"
+};
+if(colliders) addWithCollider(camera, specimenContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "specimencontainer",
+    bounds,
+    message: "A faint, unsettling glow emanates from within the Specimen Container, hinting at something biological and very much alive (or recently so)",
+    bubble: null,
+});
     return specimenContainer;
 }
 
-function createAnalysisEquipment(x, y) {
+function createAnalysisEquipment(x, y, camera, colliders) {
     // Create main analysis equipment container
     const analysisContainer = new Container();
     analysisContainer.x = x;
@@ -7184,11 +8777,27 @@ function createAnalysisEquipment(x, y) {
         // This can be called from external animation loops if needed
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 65,
+  y: y - 45,
+  width: 130,
+  height: 105,
+  label: "analysisequipment"
+};
+if(colliders) addWithCollider(camera, analysisContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = []; 
+    window.interactables.push({
+    label: "analysisequipment",  
+    bounds,
+    message: "The Analysis Equipment's many indicator lights are dark, its complex processes paused until a new dataset is uploaded",
+    bubble: null,
+});
     
     return analysisContainer;
 }
 
-function createEngineeringConsole(x, y) {
+function createEngineeringConsole(x, y, camera, colliders) {
     // Create main engineering console container
     const consoleContainer = new Container();
     consoleContainer.x = x;
@@ -7587,11 +9196,27 @@ function createEngineeringConsole(x, y) {
     consoleContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 90,       // includes left-side sliders, ports, and glow margin
+  y: y - 60,       // includes top housing, buttons, and animated hub pulses
+  width: 180,      // from -90 to +90: includes wide control panels and buttons
+  height: 120,     // from -60 (top edge) to +60 (support base and LEDs)
+  label: "engineeringConsole"
+};
+if(colliders) addWithCollider(camera, consoleContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "engineeringConsole",
+    bounds,
+    message: "A faint scent of hot metal and ozone hangs around the Engineering Console, hinting at the immense power flowing through the ship's core",
+    bubble: null, 
+});
     
     return consoleContainer;
 }
 
-function createPowerDistribution(x, y) {
+function createPowerDistribution(x, y, camera, colliders) {
     const distributionContainer = new Container();
     distributionContainer.x = x;
     distributionContainer.y = y;
@@ -7845,11 +9470,27 @@ function createPowerDistribution(x, y) {
     distributionContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 95,       // accounts for left regulation panel and glow/margin beyond -85
+  y: y - 60,       // includes top housing and animated power core (core center at -20, radius 25+10 pulse)
+  width: 190,      // from -95 to +95: includes left/right panels, glow, matrix, and switches
+  height: 135,     // from -60 (top) to +75 (bottom support legs and glow)
+  label: "powerDistribution"
+};
+if(colliders) addWithCollider(camera, distributionContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "powerDistribution",
+    bounds,
+    message: "The faint scent of energized plasma lingers around the Power Distribution conduits, a subtle reminder of the immense forces contained within",
+    bubble: null, 
+});
     
     return distributionContainer;
 }
 
-function createRepairStation(x, y) {
+function createRepairStation(x, y, camera, colliders) {
     const repairContainer = new Container();
     repairContainer.x = x;
     repairContainer.y = y;
@@ -8153,11 +9794,27 @@ function createRepairStation(x, y) {
     repairContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 95,       // accounts for left panel at -85 and margin for glow/effects
+  y: y - 50,       // top housing reaches around -45, plus animated beam slightly above
+  width: 190,      // from -95 to +95: includes both control panels and tool calibration
+  height: 95,      // from -50 to +45: includes status display and animated completion dots
+  label: "repairStation"
+};
+if(colliders) addWithCollider(camera, repairContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "repairStation",
+    bounds,
+    message: "A faint scent of lubricant and solder wafts from the Repair Station, hinting at recent repairs or ongoing maintenance",
+    bubble: null,
+});
     
     return repairContainer;
 }
 
-function createCargoContainer(x, y) {
+function createCargoContainer(x, y, camera, colliders) {
     const cargoContainer = new Container();
     cargoContainer.x = x;
     cargoContainer.y = y;
@@ -8303,6 +9960,22 @@ function createCargoContainer(x, y) {
     graphics.endFill();
     
     cargoContainer.addChild(graphics);
+    const bounds = {
+  x: x - 65,        // Accounts for container body (-60) and outer parts like corner posts and lifting points
+  y: y - 30,        // Container body is -25, with top corner posts at -27 and slight margin
+  width: 130,       // From -65 to +65 includes full width and lifting points on both ends
+  height: 60,       // From -30 to +30 includes vertical margin, bottom rails, and top posts
+  label: "cargoContainer"
+};
+if(colliders) addWithCollider(camera, cargoContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "cargoContainer",
+    bounds,
+    message: "A large, open-top container for storing cargo",
+    bubble: null, 
+});
     
     return cargoContainer;
 }
@@ -8548,7 +10221,7 @@ function createLoadingEquipment(x, y) {
     return loadingContainer;
 }
 
-function createStorageLocker(x, y) {
+function createStorageLocker(x, y, camera, colliders) {
     const lockerContainer = new Container();
     lockerContainer.x = x;
     lockerContainer.y = y;
@@ -8721,11 +10394,20 @@ function createStorageLocker(x, y) {
     graphics.endFill();
     
     lockerContainer.addChild(graphics);
+    const bounds = {
+  x: x - 28,        // -25 (main body) - margin for hinges and side panels
+  y: y - 32,        // -30 (top of locker) - margin for top stroke and rounded corners
+  width: 56,        // From -28 to +28
+  height: 64,       // From -32 to +32, includes base/floor mount and ID plate
+  label: "storageLocker"
+};
+
+if(colliders) addWithCollider(camera, lockerContainer, bounds, colliders);
     
     return lockerContainer;
 }
 
-function createReactorCore(x, y) {
+function createReactorCore(x, y,camera, colliders) {
   console.log("createReactorCore");
     // Create main reactor core container
     const reactorContainer = new Container();
@@ -8948,11 +10630,28 @@ function createReactorCore(x, y) {
     reactorContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 70,         // Outer radius (65) + margin for animated plasma rings and power indicators
+  y: y - 70,
+  width: 130,        // Total width including outermost static and animated parts
+  height: 140,
+  label: "reactorCore"
+};
+
+if(colliders) addWithCollider(camera, reactorContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "reactorCore",
+    bounds,
+    message: "The Reactor Core pulses with immense, contained power, its faint hum resonating through the deck plating",
+    bubble: null,
+});
     
     return reactorContainer;
 }
 
-function createCoolingSystem(x, y) {
+function createCoolingSystem(x, y, camera, colliders) {
     // Create main cooling system container
     const coolingContainer = new Container();
     coolingContainer.x = x;
@@ -9206,11 +10905,28 @@ function createCoolingSystem(x, y) {
     coolingContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 75,         // Encompasses the rounded edges, pipe protrusions, and valve reach
+  y: y - 55,         // Covers pumps, pipes, indicators, and top margins
+  width: 150,        // Total width across entire housing + outer pipes and valves
+  height: 110,       // Total height including lower return pipes and emergency injection
+  label: "coolingSystem"
+};
+
+if(colliders) addWithCollider(camera, coolingContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "coolingSystem",
+    bounds,
+    message: "A low, steady whoosh emanates from the Cooling System vents, as internal fluids circulate to prevent critical systems from overheating",
+    bubble: null,
+});
     
     return coolingContainer;
 }
 
-function createReactorControlPanel(x, y) {
+function createReactorControlPanel(x, y, camera, colliders) {
     const reactorContainer = new Container();
     reactorContainer.x = x;
     reactorContainer.y = y;
@@ -9454,11 +11170,28 @@ function createReactorControlPanel(x, y) {
     reactorContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 95,             // Left-most edge includes outer left panel + padding
+  y: y - 60,             // Top-most edge includes housing and gauge
+  width: 190,            // Full width including both side panels and status indicators
+  height: 120,           // Full height from top of reactor to bottom status panel
+  label: "reactorControlPanel"
+};
+
+if(colliders) addWithCollider(camera, reactorContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "reactorControlPanel",
+    bounds,
+    message: "The large, physical overrides on the Reactor Control Panel are locked, a testament to the immense power they manage",
+    bubble: null,
+});
     
     return reactorContainer;
 }
 
-function createWarningSystem(x, y) {
+function createWarningSystem(x, y, camera, colliders) {
     const warningContainer = new Container();
     warningContainer.x = x;
     warningContainer.y = y;
@@ -9718,11 +11451,28 @@ function createWarningSystem(x, y) {
     warningContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 75,
+  y: y - 55,
+  width: 150,
+  height: 115,
+  label: "warningSystem"
+};
+
+if(colliders) addWithCollider(camera, warningContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "warningSystem",
+    bounds,
+    message: "A faint, almost imperceptible red glow pulses from within the Warning System's console, a constant pre-diagnostic check",
+    bubble: null,
+});
     
     return warningContainer;
 }
 
-function createSpaceBunk(x, y) {
+function createSpaceBunk(x, y, camera, colliders) {
     // Create main bunk container
     const bunkContainer = new Container();
     bunkContainer.x = x;
@@ -9913,11 +11663,28 @@ function createSpaceBunk(x, y) {
     bunkContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 85,
+  y: y - 45,
+  width: 170,
+  height: 100,
+  label: "spaceBunk"
+};
+
+if(colliders) addWithCollider(camera, bunkContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "spaceBunk",
+    bounds,
+    message: "Small, personalized trinkets are tucked into a recess of the Space Bunk, a small comfort in the vastness of space",
+    bubble: null,
+});
     
     return bunkContainer;
 }
 
-function createPersonalLocker(x, y) {
+function createPersonalLocker(x, y, camera,colliders) {
     // Create main locker container
     const lockerContainer = new Container();
     lockerContainer.x = x;
@@ -10164,11 +11931,18 @@ function createPersonalLocker(x, y) {
     lockerContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
-    
+    const bounds = {
+  x: x - 35,
+  y: y - 65,
+  width: 70,
+  height: 130,
+  label: "personalLocker"
+};
+if(colliders) addWithCollider(camera, lockerContainer, bounds, colliders);
     return lockerContainer;
 }
 
-function createRecTerminal(x, y) {
+function createRecTerminal(x, y, camera, colliders) {
     // Create main terminal container
     const terminalContainer = new Container();
     terminalContainer.x = x;
@@ -10505,11 +12279,18 @@ function createRecTerminal(x, y) {
     terminalContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
-    
+    const bounds = {
+  x: x - 55,
+  y: y - 60,
+  width: 110,
+  height: 100,
+  label: "recTerminal"
+};
+if(colliders) addWithCollider(camera, terminalContainer, bounds, colliders);
     return terminalContainer;
 }
 
-function createDiningTable(x, y) {
+function createDiningTable(x, y, camera, colliders) {
     // Create main table container
     const tableContainer = new Container();
     tableContainer.x = x;
@@ -10646,11 +12427,19 @@ function createDiningTable(x, y) {
     tableContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 65,
+  y: y - 40,
+  width: 130,
+  height: 100,
+  label: "diningTable"
+};
+if(colliders) addWithCollider(camera, tableContainer, bounds, colliders);
     
     return tableContainer;
 }
 
-function createFoodReplicator(x, y) {
+function createFoodReplicator(x, y, camera, colliders) {
     // Create main replicator container
     const replicatorContainer = new Container();
     replicatorContainer.x = x;
@@ -10847,11 +12636,27 @@ function createFoodReplicator(x, y) {
     replicatorContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 55,
+  y: y - 65,
+  width: 110,
+  height: 135,
+  label: "foodReplicator"
+};
+if(colliders) addWithCollider(camera, replicatorContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "foodReplicator",
+    bounds,
+    message: "The Food Replicator's interface glows invitingly, displaying a vast menu of culinary delights, all just a few commands away.",
+    bubble: null,
+});
     
     return replicatorContainer;
 }
 
-function createBeverageDispenser(x, y) {
+function createBeverageDispenser(x, y, camera, colliders) {
     // Create main dispenser container
     const dispenserContainer = new Container();
     dispenserContainer.x = x;
@@ -11082,11 +12887,26 @@ function createBeverageDispenser(x, y) {
     dispenserContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
-    
+    const bounds = {
+  x: x - 35,
+  y: y - 75,
+  width: 70,
+  height: 155,
+  label: "beverageDispenser"
+};
+if(colliders) addWithCollider(camera, dispenserContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "beverageDispenser",
+    bounds,
+    message: "A faint gurgle can sometimes be heard from within the Beverage Dispenser, indicating its internal reservoirs are full and primed",
+    bubble: null,
+});
     return dispenserContainer;
 }
 
-function createExerciseEquipment(x, y) {
+function createExerciseEquipment(x, y, camera, colliders) {
     // Create main equipment container
     const equipmentContainer = new Container();
     equipmentContainer.x = x;
@@ -11235,11 +13055,19 @@ function createExerciseEquipment(x, y) {
     equipmentContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 50,
+  y: y - 55,
+  width: 100,
+  height: 120,
+  label: "exerciseEquipment"
+};
+if(colliders) addWithCollider(camera, equipmentContainer, bounds, colliders);
     
     return equipmentContainer;
 }
 
-function createGameTable(x, y) {
+function createGameTable(x, y, camera, colliders) {
     // Create main table container
     const tableContainer = new Container();
     tableContainer.x = x;
@@ -11405,11 +13233,27 @@ function createGameTable(x, y) {
     tableContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 75,
+  y: y - 50,
+  width: 150,
+  height: 110,
+  label: "gameTable"
+};
+if(colliders) addWithCollider(camera, tableContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "gameTable",
+    bounds,
+    message: "A faint hum emanates from the Game Table, hinting at the integrated holographic projector waiting to display intricate game worlds",
+    bubble: null,
+});
     
     return tableContainer;
 }
 
-function createEntertainmentConsole(x, y) {
+function createEntertainmentConsole(x, y, camera, colliders) {
     // Create main console container
     const consoleContainer = new Container();
     consoleContainer.x = x;
@@ -11597,6 +13441,22 @@ function createEntertainmentConsole(x, y) {
     consoleContainer.animate = function(delta) {
         animationTime += delta * 0.01;
     };
+    const bounds = {
+  x: x - 95,
+  y: y - 55,
+  width: 190,
+  height: 120,
+  label: "entertainmentConsole"
+};
+if(colliders) addWithCollider(camera, consoleContainer, bounds, colliders);
+
+if(!window.interactables) window.interactables = [];
+window.interactables.push({
+    label: "entertainmentConsole",
+    bounds,
+    message: "The worn surface of the Entertainment Console's control panel suggests many hours of recreational use by the crew",
+    bubble: null,
+});
     
     return consoleContainer;
 }
@@ -12006,6 +13866,288 @@ function createSpaceship(x, y) {
     return spaceshipContainer;
 }
 
+const createStandingAlienNPC = (
+  x,
+  y,
+  camera,
+  colliders,
+  gameState,
+  npcName = "??"
+) => {
+  const npc = new Graphics();
+
+  // Alien color palette
+  const alienSkinColor = 0x7dd3c0;      // Light teal alien skin
+  const alienSkinShadow = 0x5fb3a3;     // Darker teal shadow
+  const suitColor = 0x2c3e50;           // Dark blue-gray suit
+  const suitShadow = 0x1a252f;          // Darker suit shadow
+  const suitAccent = 0x3498db;          // Blue accent/trim
+  const helmetColor = 0x34495e;         // Dark helmet
+  const helmetGlass = 0x85c1e9;         // Light blue glass
+  const gloveColor = 0x2c3e50;          // Same as suit
+  const bootColor = 0x1a1a1a;           // Dark boots
+
+  // Helmet (larger for alien head)
+  npc.beginFill(helmetColor);
+  npc.drawRect(-8, -24, 16, 16);
+  npc.endFill();
+
+  // Helmet glass visor (right side profile)
+  npc.beginFill(helmetGlass);
+  npc.drawRect(-7, -23, 14, 14);
+  npc.endFill();
+
+  // Helmet reflection effect
+  npc.beginFill(0xffffff);
+  npc.drawRect(-6, -22, 4, 6);
+  npc.endFill();
+
+  // Helmet rim/seal
+  npc.beginFill(0x5d6d7e);
+  npc.drawRect(-8, -8, 16, 2);
+  npc.endFill();
+
+  // Alien head inside helmet (visible through visor)
+  npc.beginFill(alienSkinColor);
+  npc.drawRect(-6, -20, 12, 10);
+  npc.endFill();
+
+  // Alien head shadow
+  npc.beginFill(alienSkinShadow);
+  npc.drawRect(-6, -18, 4, 6);
+  npc.endFill();
+
+  // Large alien eye (characteristic big eye)
+  npc.beginFill(0x000000);
+  npc.drawRect(-4, -18, 4, 4);
+  npc.endFill();
+
+  // Eye reflection
+  npc.beginFill(0xffffff);
+  npc.drawRect(-3, -17, 1, 1);
+  npc.endFill();
+
+  // Small alien nostril
+  npc.beginFill(alienSkinShadow);
+  npc.drawRect(-2, -14, 1, 1);
+  npc.endFill();
+
+  // Helmet breathing apparatus
+  npc.beginFill(0x95a5a6);
+  npc.drawRect(-3, -12, 6, 2);
+  npc.endFill();
+
+  // Breathing apparatus details
+  npc.beginFill(0x7f8c8d);
+  npc.drawRect(-2, -11, 1, 1);
+  npc.drawRect(1, -11, 1, 1);
+  npc.endFill();
+
+  // Space suit torso
+  npc.beginFill(suitColor);
+  npc.drawRect(-10, -6, 20, 20);
+  npc.endFill();
+
+  // Suit shadow/depth
+  npc.beginFill(suitShadow);
+  npc.drawRect(-10, 12, 20, 2);
+  npc.endFill();
+
+  // Chest control panel
+  npc.beginFill(suitAccent);
+  npc.drawRect(-8, -4, 16, 6);
+  npc.endFill();
+
+  // Control panel buttons
+  npc.beginFill(0xe74c3c);
+  npc.drawRect(-6, -2, 2, 2);
+  npc.endFill();
+
+  npc.beginFill(0x27ae60);
+  npc.drawRect(-3, -2, 2, 2);
+  npc.endFill();
+
+  npc.beginFill(0xf39c12);
+  npc.drawRect(1, -2, 2, 2);
+  npc.endFill();
+
+  npc.beginFill(0x8e44ad);
+  npc.drawRect(4, -2, 2, 2);
+  npc.endFill();
+
+  // Control panel screen
+  npc.beginFill(0x2ecc71);
+  npc.drawRect(-7, 1, 14, 2);
+  npc.endFill();
+
+  // Suit trim/seams
+  npc.beginFill(suitAccent);
+  npc.drawRect(-10, 4, 20, 1);
+  npc.drawRect(-10, 8, 20, 1);
+  npc.endFill();
+
+  // Left arm (visible arm in profile)
+  npc.beginFill(suitColor);
+  npc.drawRect(-12, -2, 4, 12);
+  npc.endFill();
+
+  // Left arm shadow
+  npc.beginFill(suitShadow);
+  npc.drawRect(-12, 8, 4, 2);
+  npc.endFill();
+
+  // Right arm (partially visible)
+  npc.beginFill(suitColor);
+  npc.drawRect(8, 0, 4, 10);
+  npc.endFill();
+
+  // Right arm shadow
+  npc.beginFill(suitShadow);
+  npc.drawRect(8, 8, 4, 2);
+  npc.endFill();
+
+  // Gloves
+  npc.beginFill(gloveColor);
+  npc.drawRect(-12, 10, 4, 4);
+  npc.drawRect(8, 10, 4, 4);
+  npc.endFill();
+
+  // Glove cuffs
+  npc.beginFill(suitAccent);
+  npc.drawRect(-12, 10, 4, 1);
+  npc.drawRect(8, 10, 4, 1);
+  npc.endFill();
+
+  // Utility belt
+  npc.beginFill(0x34495e);
+  npc.drawRect(-10, 14, 20, 3);
+  npc.endFill();
+
+  // Belt pouches/tools
+  npc.beginFill(0x95a5a6);
+  npc.drawRect(-8, 15, 3, 2);
+  npc.drawRect(-2, 15, 3, 2);
+  npc.drawRect(4, 15, 3, 2);
+  npc.endFill();
+
+  // Legs
+  npc.beginFill(suitColor);
+  npc.drawRect(-8, 17, 7, 16);
+  npc.drawRect(1, 17, 7, 16);
+  npc.endFill();
+
+  // Leg shadows
+  npc.beginFill(suitShadow);
+  npc.drawRect(-8, 31, 7, 2);
+  npc.drawRect(1, 31, 7, 2);
+  npc.endFill();
+
+  // Leg joints/knee pads
+  npc.beginFill(suitAccent);
+  npc.drawRect(-7, 24, 5, 2);
+  npc.drawRect(2, 24, 5, 2);
+  npc.endFill();
+
+  // Space boots
+  npc.beginFill(bootColor);
+  npc.drawRect(-9, 33, 8, 4);
+  npc.drawRect(1, 33, 8, 4);
+  npc.endFill();
+
+  // Boot treads
+  npc.beginFill(0x2c3e50);
+  npc.drawRect(-9, 36, 8, 1);
+  npc.drawRect(1, 36, 8, 1);
+  npc.endFill();
+
+  // Oxygen tank/life support backpack (visible from side)
+  npc.beginFill(0x7f8c8d);
+  npc.drawRect(10, -4, 3, 12);
+  npc.endFill();
+
+  // Backpack details
+  npc.beginFill(0x95a5a6);
+  npc.drawRect(10, -2, 3, 2);
+  npc.drawRect(10, 2, 3, 2);
+  npc.drawRect(10, 6, 3, 2);
+  npc.endFill();
+
+  // Oxygen hose
+  npc.beginFill(0x34495e);
+  npc.drawRect(7, -6, 2, 1);
+  npc.drawRect(6, -7, 2, 1);
+  npc.drawRect(5, -8, 2, 1);
+  npc.endFill();
+
+  // Helmet antenna
+  npc.beginFill(0x95a5a6);
+  npc.drawRect(-2, -26, 1, 2);
+  npc.endFill();
+
+  // Antenna tip (blinking light)
+  npc.beginFill(0xe74c3c);
+  npc.drawRect(-1.5, -27, 1, 1);
+  npc.endFill();
+
+  // Name tag with alien styling
+  const nameTag = new Text({
+    text: npcName,
+    style: new TextStyle({
+      fontSize: 10,
+      fill: 0x7dd3c0,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  npc.addChild(nameTag);
+
+  // Position the NPC
+  npc.x = x;
+  npc.y = y;
+
+  // Add to scene
+  if (gameState && gameState.camera) {
+    gameState.camera.addChild(npc);
+  }
+
+  const bounds = {
+    x: x - 15,
+    y: y - 30,
+    width: 30,
+    height: 70,
+    label: `standing-alien-npc-${npcName}`,
+  };
+
+  if (camera && colliders) {
+    addWithCollider(camera, npc, bounds, colliders);
+  }
+
+  // Add to interactables (for Z key / text bubble)
+  if (!window.interactables) window.interactables = [];
+  window.interactables.push({
+    label: `standing-alien-npc-${npcName}`,
+    bounds,
+    message: "Tf is this...",
+    bubble: null,
+  });
+
+  // NPC properties
+  npc.npcName = npcName;
+  npc.isSitting = false;
+  npc.isAlien = true;
+  npc.facing = "left"; // Side-faced to the left (right side visible)
+
+  return npc;
+};
+
 const populateRooms = (gameState) => {
   const { camera, TILE_SIZE } = gameState;
   
@@ -12032,8 +14174,8 @@ const populateRooms = (gameState) => {
     ],
     // Row 3: Living quarters
     [
-      { type: 'quarters', width: 350, height: 350, name: 'Crew Quarters A' },
-      { type: 'quarters', width: 350, height: 350, name: 'Crew Quarters B' },
+      { type: 'quartersa', width: 350, height: 350, name: 'Crew Quarters A' },
+      { type: 'quartersb', width: 350, height: 350, name: 'Crew Quarters B' },
       { type: 'cafeteria', width: 450, height: 350, name: 'Mess Hall' },
       { type: 'recreation', width: 450, height: 350, name: 'Recreation' }
     ]
@@ -12058,6 +14200,7 @@ const populateRooms = (gameState) => {
             offsetX + width / 2 -20,
             offsetY + height / 2 -30,
             camera,
+            gameState.colliders
           ));
           
           // Navigation consoles (front)
@@ -12065,6 +14208,7 @@ const populateRooms = (gameState) => {
             offsetX + width / 2 - 90,
             offsetY + 55,
             camera,
+            gameState.colliders
           ));
           
           // // Side control stations
@@ -12121,20 +14265,6 @@ const populateRooms = (gameState) => {
             camera,
             gameState.colliders
           ));
-          
-        //   // Star charts/displays
-        //   camera.addChild(createStarChart(
-        //     offsetX + 50,
-        //     offsetY + 50,
-        //     camera,
-        //     gameState.colliders
-        //   ));
-        //   camera.addChild(createStarChart(
-        //     offsetX + width - 50,
-        //     offsetY + 50,
-        //     camera,
-        //     gameState.colliders
-        //   ));
           
         //   // Atmospheric plants (space plants)
           camera.addChild(createSpacePlant(
@@ -12219,14 +14349,6 @@ const populateRooms = (gameState) => {
             camera,
             gameState.colliders
           ));
-          
-        //   // Drug synthesizer
-        //   camera.addChild(createDrugSynthesizer(
-        //     offsetX + width - 100,
-        //     offsetY + 150,
-        //     camera,
-        //     gameState.colliders
-        //   ));
           
         //   // Medical storage
           camera.addChild(createMedStorage(
@@ -12430,7 +14552,7 @@ const populateRooms = (gameState) => {
           ));
           break;
 
-        case 'quarters': // Crew Quarters
+        case 'quartersa': // Crew Quarters
           // Bunk beds
           camera.addChild(createSpaceBunk(
             offsetX + 100,
@@ -12444,7 +14566,13 @@ const populateRooms = (gameState) => {
             camera,
             gameState.colliders
           ));
-          
+          //Mysterious npc
+           camera.addChild(createStandingAlienNPC(  
+            offsetX + 60,
+            offsetY + 100,
+            camera,
+            gameState.colliders
+          ));
           // Personal storage
           camera.addChild(createPersonalLocker(
             offsetX + width - 60,
@@ -12452,12 +14580,37 @@ const populateRooms = (gameState) => {
             camera,
             gameState.colliders
           ));
-        //   camera.addChild(createPersonalLocker(
-        //     offsetX + width - 60,
-        //     offsetY + 200,
-        //     camera,
-        //     gameState.colliders
-        //   ));
+          
+          // Recreation terminal
+          camera.addChild(createRecTerminal(
+            offsetX + width - 60,
+            offsetY + 5,
+            camera,
+            gameState.colliders
+          ));
+          break;
+
+        case 'quartersb': // Crew Quarters
+          // Bunk beds
+          camera.addChild(createSpaceBunk(
+            offsetX + 100,
+            offsetY + 5,
+            camera,
+            gameState.colliders
+          ));
+          camera.addChild(createSpaceBunk(
+            offsetX + 100,
+            offsetY + 200,
+            camera,
+            gameState.colliders
+          ));
+          // Personal storage
+          camera.addChild(createPersonalLocker(
+            offsetX + width - 60,
+            offsetY + 200,
+            camera,
+            gameState.colliders
+          ));
           
           // Recreation terminal
           camera.addChild(createRecTerminal(
@@ -12732,6 +14885,215 @@ const setupInput = (gameState, app) => {
 //   }
 // };
 
+   const createTextBubble = (x, y, text, duration = 3000, parent) => {
+        const container = new Container();
+
+        const padding = 16;
+        const fontSize = 13;
+        const cornerRadius = 12;
+        const tailHeight = 8;
+
+        const textStyle = new TextStyle({
+          fontSize,
+          fill: 0x2c3e50,
+          fontFamily: "Arial, sans-serif",
+          fontWeight: "500",
+          wordWrap: true,
+          wordWrapWidth: 220,
+          lineHeight: fontSize * 1.4,
+          letterSpacing: 0.3,
+        });
+
+        const label = new Text(text, textStyle);
+
+        const bubbleWidth = Math.max(label.width + padding * 2, 80);
+        const bubbleHeight = label.height + padding * 2;
+
+        // Shadow
+        const shadow = new Graphics();
+        shadow.beginFill(0x000000, 0.15);
+        shadow.drawRoundedRect(6, 6, bubbleWidth, bubbleHeight, cornerRadius);
+        shadow.beginFill(0x000000, 0.08);
+        shadow.drawRoundedRect(4, 4, bubbleWidth, bubbleHeight, cornerRadius);
+        shadow.beginFill(0x000000, 0.04);
+        shadow.drawRoundedRect(2, 2, bubbleWidth, bubbleHeight, cornerRadius);
+        shadow.endFill();
+
+        // Main bubble
+        const bubble = new Graphics();
+        bubble.beginFill(0xffffff);
+        bubble.drawRoundedRect(0, 0, bubbleWidth, bubbleHeight, cornerRadius);
+        bubble.endFill();
+        bubble.beginFill(0xf8f9fa, 0.8);
+        bubble.drawRoundedRect(
+          0,
+          0,
+          bubbleWidth,
+          bubbleHeight * 0.6,
+          cornerRadius
+        );
+        bubble.endFill();
+        bubble.lineStyle(1.5, 0xe9ecef, 0.9);
+        bubble.drawRoundedRect(0, 0, bubbleWidth, bubbleHeight, cornerRadius);
+        bubble.lineStyle(0);
+        bubble.beginFill(0xffffff, 0.6);
+        bubble.drawRoundedRect(
+          1,
+          1,
+          bubbleWidth - 2,
+          bubbleHeight * 0.4,
+          cornerRadius - 1
+        );
+        bubble.endFill();
+
+        // Tail
+        const tail = new Graphics();
+        tail.beginFill(0xffffff);
+        tail.lineStyle(1.5, 0xe9ecef, 0.9);
+        const tailX = bubbleWidth / 2 - 6;
+        const tailY = bubbleHeight;
+        tail.moveTo(tailX, tailY);
+        tail.lineTo(tailX + 6, tailY + tailHeight);
+        tail.lineTo(tailX + 12, tailY);
+        tail.closePath();
+        tail.endFill();
+
+        const tailShadow = new Graphics();
+        tailShadow.beginFill(0x000000, 0.1);
+        tailShadow.moveTo(tailX + 2, tailY + 2);
+        tailShadow.lineTo(tailX + 8, tailY + tailHeight + 2);
+        tailShadow.lineTo(tailX + 14, tailY + 2);
+        tailShadow.closePath();
+        tailShadow.endFill();
+
+        const decoration = new Graphics();
+        decoration.beginFill(0x3498db, 0.15);
+        decoration.drawCircle(8, 8, 3);
+        decoration.drawCircle(bubbleWidth - 8, 8, 3);
+        decoration.endFill();
+        decoration.beginFill(0xffffff, 0.8);
+        decoration.drawCircle(bubbleWidth - 12, bubbleHeight - 12, 1);
+        decoration.drawCircle(12, bubbleHeight - 8, 0.8);
+        decoration.endFill();
+
+        label.x = padding;
+        label.y = padding;
+
+        container.addChild(shadow, tailShadow, bubble, tail, decoration, label);
+        let baseY;
+        const shouldFlipDown = y - bubbleHeight - tailHeight < 10;
+        if (shouldFlipDown) {
+          // Below the object
+          baseY = y + tailHeight + 4;
+          tail.scale.y = -1;
+          tail.y = -tail.y - bubbleHeight;
+          tailShadow.scale.y = -1;
+          tailShadow.y = -tailShadow.y - bubbleHeight;
+        } else {
+          // Above the object
+          baseY = y - bubbleHeight - tailHeight;
+        }
+        let baseX = x - bubbleWidth / 2;
+
+        // Prevent going off the left edge
+        if (baseX < 8) {
+          baseX = 8;
+        }
+
+        // Prevent going off the right edge (optional)
+        const screenWidth = window.innerWidth || 800;
+        if (baseX + bubbleWidth > screenWidth - 8) {
+          baseX = screenWidth - bubbleWidth - 8;
+        }
+
+        container.x = baseX;
+
+        container.y = baseY;
+
+        let animationTime = 0;
+        let isAnimating = true;
+        let isDestroyed = false;
+
+        const animate = () => {
+          if (!isAnimating || isDestroyed) return;
+
+          animationTime += 0.1;
+
+          const floatOffset = Math.sin(animationTime) * 1.5;
+          container.y = baseY + floatOffset; // inside animate
+
+          const pulseScale = 1 + Math.sin(animationTime * 2) * 0.02;
+          container.scale.set(pulseScale);
+
+          decoration.alpha = 0.8 + Math.sin(animationTime * 3) * 0.2;
+
+          requestAnimationFrame(animate);
+        };
+
+        const entranceAnimation = () => {
+          let progress = 0;
+          const step = () => {
+            if (isDestroyed) return;
+
+            progress += 0.15;
+            const scale = 0.3 + (1 - 0.3) * (1 - Math.pow(1 - progress, 3));
+            container.scale.set(scale);
+            container.alpha = Math.min(progress, 1);
+
+            if (progress < 1) {
+              requestAnimationFrame(step);
+            } else {
+              animate();
+            }
+          };
+          step();
+        };
+
+        const exitAnimation = () => {
+          if (isDestroyed) return;
+          isAnimating = false;
+          isDestroyed = true;
+
+          let progress = 0;
+          const step = () => {
+            progress += 0.12;
+            if (isDestroyed) {
+              container.alpha = 1 - progress;
+              container.scale.set(1 - progress * 0.3);
+              container.y = baseY - progress * 10; // inside exit step
+            }
+
+            if (progress < 1) {
+              requestAnimationFrame(step);
+            } else {
+              if (parent && parent.children.includes(container)) {
+                parent.removeChild(container);
+              }
+
+              container.destroy({ children: true });
+
+              const interactable = (window.interactables || []).find(
+                (obj) => obj.bubble === container
+              );
+              if (interactable) {
+                interactable.bubble = null;
+              }
+            }
+          };
+          step();
+        };
+
+        if (parent) {
+          parent.addChild(container);
+          entranceAnimation();
+          setTimeout(() => exitAnimation(), duration - 800);
+        }
+        container.zIndex= 999
+
+        return container;
+      };
+
+
    const gameLoop = (gameState, app) => {
         const speed = gameState.playerSpeed || 2;
   const { player, keys, camera, world, ROOM_GRID, colliders } = gameState;
@@ -12882,54 +15244,54 @@ const setupInput = (gameState, app) => {
         });
 
         // ─── Z-Key Elevator Interaction ───
-        // if (keys["KeyZ"] && !window.textBubbleActive) {
-        //   const px = player.x;
-        //   const py = player.y;
+        if (keys["KeyZ"] && !window.textBubbleActive) {
+          const px = player.x;
+          const py = player.y;
 
-        //   const INTERACT_MARGIN = 16;
+          const INTERACT_MARGIN = 16;
 
-        //   const nearby = (window.interactables || []).find((obj) => {
-        //     const b = obj.bounds;
-        //     return (
-        //       player.x + INTERACT_MARGIN > b.x &&
-        //       player.x - INTERACT_MARGIN < b.x + b.width &&
-        //       player.y + INTERACT_MARGIN > b.y &&
-        //       player.y - INTERACT_MARGIN < b.y + b.height
-        //     );
-        //   });
+          const nearby = (window.interactables || []).find((obj) => {
+            const b = obj.bounds;
+            return (
+              player.x + INTERACT_MARGIN > b.x &&
+              player.x - INTERACT_MARGIN < b.x + b.width &&
+              player.y + INTERACT_MARGIN > b.y &&
+              player.y - INTERACT_MARGIN < b.y + b.height
+            );
+          });
 
-        //   if (nearby) {
-        //     console.log("Nearby object:", nearby.label);
+          if (nearby) {
+            console.log("Nearby object:", nearby.label);
 
-        //     // Hide bubble
-        //     if (nearby.bubble && !nearby.bubble.destroyed) {
-        //       nearby.bubble.destroy({ children: true });
-        //       nearby.bubble = null;
-        //       window.textBubbleActive = false;
-        //     } else {
-        //       // Show bubble
-        //       const bubble = createTextBubble(
-        //         player.x,
-        //         player.y - 50,
-        //         nearby.message,
-        //         3000,
-        //         gameState.camera
-        //       );
+            // Hide bubble
+            if (nearby.bubble && !nearby.bubble.destroyed) {
+              nearby.bubble.destroy({ children: true });
+              nearby.bubble = null;
+              window.textBubbleActive = false;
+            } else {
+              // Show bubble
+              const bubble = createTextBubble(
+                player.x,
+                player.y - 50,
+                nearby.message,
+                3000,
+                gameState.camera
+              );
 
-        //       gameState.camera.addChild(bubble);
-        //       nearby.bubble = bubble;
-        //       window.textBubbleActive = true;
+              gameState.camera.addChild(bubble);
+              nearby.bubble = bubble;
+              window.textBubbleActive = true;
 
-        //       // Reset after duration
-        //       setTimeout(() => {
-        //         window.textBubbleActive = false;
-        //         nearby.bubble = null;
-        //       }, 3000);
-        //     }
+              // Reset after duration
+              setTimeout(() => {
+                window.textBubbleActive = false;
+                nearby.bubble = null;
+              }, 3000);
+            }
 
-        //     keys["KeyZ"] = false;
-        //   }
-        // }
+            keys["KeyZ"] = false;
+          }
+        }
       };
 
 
@@ -12943,6 +15305,264 @@ const setupInput = (gameState, app) => {
   }, [loadingPage, space, playerName]);
 
   if (loadingPage) return <LoadingScreen />;
+
+  const handleTeleportWithFade = async (loc) => {
+    const gameState = gameStateRef.current;
+    const { player, world, app, ROOM_GRID } = gameState;
+     const ROOM_WIDTH = gameState.worldWidth || 800;
+     const ROOM_HEIGHT = gameState.worldHeight || 600;
+
+    setShowFade(true);
+    setFadeOpacity(0);
+    setFadeOpacity(1);
+    await new Promise((res) => setTimeout(res, 400));
+
+    // Move player
+    player.x = loc.x;
+    player.y = loc.y;
+
+    // Adjust camera
+    const centerX = app.screen.width / 2;
+    const centerY = app.screen.height / 2;
+    world.x = centerX - loc.x;
+    world.y = centerY - loc.y;
+
+    world.x = Math.max(-(ROOM_WIDTH - app.screen.width), Math.min(0, world.x));
+    world.y = Math.max(
+      -(ROOM_HEIGHT - app.screen.height),
+      Math.min(0, world.y)
+    );
+
+    // ✅ FIXED: Notify other players about the position change
+    // if (socket && socket.connected) {
+    //   // First emit the movement to update server state
+    //   socket.emit("player-move", {
+    //     position: { x: player.x, y: player.y },
+    //     isMoving: false,
+    //     direction: player.direction || "down",
+    //   });
+
+    //   // Add a small delay to ensure the server has updated the position
+    //   await new Promise((res) => setTimeout(res, 100));
+
+    //   console.log(`📡 Sent teleport position update: ${player.x}, ${player.y}`);
+    // }
+
+    // Fade in
+    setFadeOpacity(0);
+    await new Promise((res) => setTimeout(res, 400));
+    setShowFade(false);
+  };
+
+  const changeSpeed = (newspeed) => {
+    setSpeed(newspeed);
+    if (gameStateRef.current) {
+      gameStateRef.current.playerSpeed = newspeed;
+    }
+  };
+
+  const triggerEmote = (emoji) => {
+    const player = gameStateRef.current?.player;
+    const world = gameStateRef.current?.world;
+
+    if (!player || !world) return;
+
+    // If an old emote bubble exists, destroy it
+    if (player.emoteBubble) {
+      world.removeChild(player.emoteBubble);
+      player.emoteBubble.destroy();
+    }
+
+    // Create container for the entire emote bubble
+    const container = new Container();
+    container.x = player.x;
+    container.y = player.y - 60;
+    world.addChild(container);
+
+    // Create bubble background
+    const bubble = new Graphics();
+    bubble.beginFill(0x000000, 0.8);
+    bubble.lineStyle(3, 0xffffff, 1);
+    bubble.drawRoundedRect(-35, -25, 70, 50, 15);
+    bubble.endFill();
+
+    // Add subtle gradient effect
+    bubble.beginFill(0x333333, 0.3);
+    bubble.drawRoundedRect(-35, -25, 70, 25, 15);
+    bubble.endFill();
+
+    // Create bubble tail
+    const tail = new Graphics();
+    tail.beginFill(0x000000, 0.8);
+    tail.lineStyle(3, 0xffffff, 1);
+    tail.moveTo(0, 20);
+    tail.lineTo(-8, 35);
+    tail.lineTo(8, 35);
+    tail.closePath();
+    tail.endFill();
+
+    container.addChild(bubble);
+    container.addChild(tail);
+
+    // Create emoji text
+    const style = new TextStyle({
+      fontSize: 28,
+      fill: "white",
+      fontWeight: "bold",
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 2,
+    });
+
+    const text = new Text(emoji, style);
+    text.anchor.set(0.5);
+    text.x = 0;
+    text.y = -5;
+    container.addChild(text);
+
+    // Initial state
+    container.alpha = 0;
+    container.scale.set(0.3);
+
+    player.emoteBubble = container;
+
+    // Enhanced animation with easing
+    const startTime = Date.now();
+    const totalDuration = 3000;
+    const phaseInDuration = 400;
+    const phaseOutDuration = 500;
+    const holdDuration = totalDuration - phaseInDuration - phaseOutDuration;
+
+    // Easing functions
+    const easeOutBack = (t) => {
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
+
+    const easeInCubic = (t) => t * t * t;
+
+    const animate = () => {
+      if (!player.emoteBubble) return;
+
+      const now = Date.now();
+      const elapsed = now - startTime;
+
+      // Update position to follow player
+      const targetX = player.x;
+      const targetY = player.y - 60;
+
+      // Smooth position interpolation
+      container.x += (targetX - container.x) * 0.15;
+      container.y += (targetY - container.y) * 0.15;
+
+      if (elapsed < phaseInDuration) {
+        // Phase In: Bounce in effect
+        const progress = elapsed / phaseInDuration;
+        const easedProgress = easeOutBack(progress);
+
+        container.alpha = progress;
+        container.scale.set(0.3 + easedProgress * 0.7);
+
+        // Subtle float animation
+        const floatOffset = Math.sin(elapsed * 0.01) * 2;
+        container.y = targetY + floatOffset;
+      } else if (elapsed < phaseInDuration + holdDuration) {
+        // Hold Phase: Gentle floating
+        container.alpha = 1;
+        container.scale.set(1);
+
+        const holdElapsed = elapsed - phaseInDuration;
+        const floatOffset = Math.sin(holdElapsed * 0.005) * 3;
+        const bobOffset = Math.sin(holdElapsed * 0.008) * 1.5;
+
+        container.y = targetY + floatOffset;
+        container.x = targetX + bobOffset;
+
+        // Subtle scale pulsing
+        const pulseScale = 1 + Math.sin(holdElapsed * 0.006) * 0.05;
+        container.scale.set(pulseScale);
+      } else if (elapsed < totalDuration) {
+        // Phase Out: Fade and shrink
+        const fadeProgress =
+          (elapsed - phaseInDuration - holdDuration) / phaseOutDuration;
+        const easedFade = easeInCubic(fadeProgress);
+
+        container.alpha = 1 - easedFade;
+        container.scale.set(1 - easedFade * 0.3);
+
+        // Float up while fading
+        const floatUp = easedFade * 20;
+        container.y = targetY - floatUp;
+      } else {
+        // Animation complete
+        world.removeChild(container);
+        container.destroy();
+        player.emoteBubble = null;
+        return;
+      }
+
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+    // socket.emit("player-emote", {
+    //   id: socket.id,
+    //   emoji,
+    // });
+  };
+
+  const changeAvatar = (avatarKey) => {
+    const gameState = gameStateRef.current;
+    const createFn = avatarMap[avatarKey];
+    if (!createFn || !gameState || !gameState.camera) return;
+
+    // 1. Save current position
+    const previousX = gameState.player?.x ?? 400;
+    const previousY = gameState.player?.y ?? 300;
+
+    if (gameState.player) {
+      if (gameState.player._tickerFn) {
+        Ticker.shared.remove(gameState.player._tickerFn);
+      }
+      gameState.camera.removeChild(gameState.player);
+      gameState.player.destroy({ children: true });
+      gameState.player = null;
+    }
+
+    // 3. Create new avatar
+    const newPlayer = createFn(gameState, playerName);
+
+    // 4. Restore previous position
+    newPlayer.x = previousX;
+    newPlayer.y = previousY;
+
+    // socket.emit("avatar-change", {
+    //   avatarKey: avatarKey,
+    //   x: newPlayer.x,
+    //   y: newPlayer.y,
+    //   playerName: playerName,
+    // });
+  };
+
+  const teleportLocations = [
+  { label: 'Command Bridge', x: 400, y: 300 },
+  { label: 'Observation Deck', x: 800, y: 250 },
+  { label: 'Comms Array', x: 1200, y: 200 },
+  { label: 'Medical Bay', x: 425, y: 675 },
+  { label: 'Research Lab', x: 920, y: 635 },
+  { label: 'Corridor A', x: 1400, y: 675 },
+  { label: 'Engineering Bay', x: 350, y: 1225 },
+  { label: 'Cargo Hold', x: 825, y: 1200 },
+  { label: 'Reactor Core', x: 1400, y: 1200 },
+  { label: 'Crew Quarters A', x: 175, y: 1580 },
+  { label: 'Crew Quarters B', x: 575, y: 1580 },
+  { label: 'Mess Hall', x: 1000, y: 1580 },
+  { label: 'Recreation', x: 1350, y: 1550 }
+];
+
 
   return (
     <div
@@ -13144,19 +15764,20 @@ const setupInput = (gameState, app) => {
           </div>
         </div>
 
-        {/* {showToolbar && (
+        {showToolbar && (
         <LeftToolbar
           space={space}
           playerName={playerName}
           gameStateRef={gameStateRef}
           onTeleport={handleTeleportWithFade}
+          teleportLocations={teleportLocations}
           changeSpeed={changeSpeed}
           wallHackEnabled={wallHackEnabled}
           setWallHackEnabled={setWallHackEnabled}
           triggerEmote={triggerEmote}
           changeAvatar={changeAvatar}
         />
-      )} */}
+      )}
 
         {/* Mini Map */}
         {/* <MetaverseMinimap gameStateRef={gameStateRef} /> */}
