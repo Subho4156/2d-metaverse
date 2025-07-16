@@ -3526,7 +3526,7 @@ useEffect(() => {
         socket.on("existing-players", (players) => {
           console.log("📥 Received existing players:", players);
           console.log("🆔 My socket ID:", gameState.socketId);
-          // const updated = [];
+          const updated = [];
 
           for (const id in players) {
             if (id === gameState.socketId) {
@@ -3545,14 +3545,14 @@ useEffect(() => {
             );
             gameState.otherPlayers[id] = container;
             gameState.camera.addChild(container);
-            // updated.push(data.name);
+            updated.push(data.name);
           }
           if (!isOwner) {
             setTimeout(() => {
               socket.emit("requestPermissions");
             }, 500);
           }
-          // setOnlinePlayers([playerName, ...updated]);
+          setOnlinePlayers([playerName, ...updated]);
         });
 
         socket.on("player-joined", (data) => {
@@ -3576,7 +3576,7 @@ useEffect(() => {
           );
           gameState.otherPlayers[data.id] = container;
           gameState.camera.addChild(container);
-          // setOnlinePlayers(prev => [...prev, data.name]);
+          setOnlinePlayers(prev => [...prev, data.name]);
           console.log("➕ Added new player:", data.id);
 
           // ✅ Send current permissions to new player (if owner)
@@ -3714,9 +3714,9 @@ useEffect(() => {
           if (player) {
             gameState.camera.removeChild(player);
             player.destroy();
-            // const name = player.playerName || "Unknown";
+            const name = player.playerName || "Unknown";
             delete gameState.otherPlayers[id];
-            // setOnlinePlayers(prev => prev.filter(n => n !== name));
+            setOnlinePlayers(prev => prev.filter(n => n !== name));
           }
         });
 
@@ -10580,12 +10580,12 @@ useEffect(() => {
         {/* Mini Map */}
         <MetaverseMinimap gameStateRef={gameStateRef} />
 
-        {/* Player List
+        Player List
       <div
         style={{
           position: "absolute",
           bottom: "20px",
-          right: "20px",
+          left: "20px",
           background: "rgba(0,0,0,0.8)",
           borderRadius: "8px",
           padding: "12px",
@@ -10626,7 +10626,7 @@ useEffect(() => {
             {name} {index === 0 && "(You)"}
           </div>
         ))}
-      </div> */}
+      </div>
       </div>
         
     </div>
