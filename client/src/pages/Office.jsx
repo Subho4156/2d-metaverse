@@ -10360,14 +10360,22 @@ useEffect(() => {
   { label: "Game Room", x: 1200, y: 800 },
 ];
 
+  const avatarOptions = [
+  { src: "/assets/avatar5.png", label: "Spiderman", width: 40, height: 50 },
+  { src: "/assets/avatar4.png", label: "Batman", width: 20, height: 45 },
+  { src: "/assets/avatar2.png", label: "Male", width: 25, height: 45 },
+  { src: "/assets/avatar3.png", label: "Female", width: 25, height: 45 },
+];
   return (
     <div
       style={{
         position: "relative",
-        width: "100vw",
-        height: "100vh",
+        width: "125vw", // 100 / 0.8
+        height: "125vh",
         overflow: "hidden",
         background: "#1a1a2e",
+        transform: "scale(0.8)",
+        transformOrigin: "top left",
       }}
     >
       {showBackWarning && (
@@ -10562,6 +10570,7 @@ useEffect(() => {
             gameStateRef={gameStateRef}
             onTeleport={handleTeleportWithFade}
             teleportLocations={teleportLocations}
+            avatarOptions={avatarOptions}
             changeSpeed={changeSpeed}
             wallHackEnabled={wallHackEnabled}
             setWallHackEnabled={setWallHackEnabled}
@@ -10580,53 +10589,52 @@ useEffect(() => {
         {/* Mini Map */}
         <MetaverseMinimap gameStateRef={gameStateRef} />
 
-        Player List
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          left: "20px",
-          background: "rgba(0,0,0,0.8)",
-          borderRadius: "8px",
-          padding: "12px",
-          pointerEvents: "auto",
-        }}
-      >
         <div
           style={{
-            color: "white",
-            fontSize: "12px",
-            fontWeight: "bold",
-            marginBottom: "8px",
+            position: "absolute",
+            bottom: "20px",
+            left: "20px",
+            background: "rgba(0,0,0,0.8)",
+            borderRadius: "8px",
+            padding: "12px",
+            pointerEvents: "auto",
           }}
         >
-          👥 Online Players ({onlinePlayers.length})
-        </div>
-         {onlinePlayers.map((name, index) => (
-
           <div
-            key={name}
             style={{
-              color: index === 0 ? "#3498DB" : "#BDC3C7",
-              fontSize: "11px",
-              marginBottom: "4px",
-              display: "flex",
-              alignItems: "center",
+              color: "white",
+              fontSize: "12px",
+              fontWeight: "bold",
+              marginBottom: "8px",
             }}
           >
-            <div
-              style={{
-                width: "8px",
-                height: "8px",
-                borderRadius: "50%",
-                background: index === 0 ? "#27AE60" : "#95A5A6",
-                marginRight: "8px",
-              }}
-            />
-            {name} {index === 0 && "(You)"}
+            👥 Online Players ({onlinePlayers.length})
           </div>
-        ))}
-      </div>
+          {onlinePlayers.map((name, index) => (
+            <div
+              key={name}
+              style={{
+                color: index === 0 ? "#3498DB" : "#BDC3C7",
+                fontSize: "11px",
+                marginBottom: "4px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  background: index === 0 ? "#27AE60" : "#95A5A6",
+                  marginRight: "8px",
+                }}
+              />
+              {name} {index === 0 && "(You)"}
+            </div>
+          ))}
+                
+        </div>
       </div>
         
     </div>

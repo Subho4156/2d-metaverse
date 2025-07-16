@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getSpaceById } from "../api";
 import { getUser } from "../api";
+import socket from "../socket";
 import LoadingScreen from "../components/LoadingScreen";
 import {
   Application,
@@ -12,26 +13,37 @@ import {
   Ticker,
 } from "pixi.js";
 import LeftToolbar from "../components/Toolbar";
+import useUser from "../hooks/useUser";
+import AdminPanel from "../components/AdminPanel";
 
 
 function SpaceStation() {
-  const [showFade, setShowFade] = useState(false);
-  const [speed, setSpeed] = useState(6);
-  const [wallHackEnabled, setWallHackEnabled] = useState(false);
-  const [fadeOpacity, setFadeOpacity] = useState(0);
-  const { id } = useParams();
-  const [space, setSpace] = useState(null);
-  const [loadingPage, setLoadingPage] = useState(true);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessage, setChatMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [playerName, setPlayerName] = useState("Player");
-  const canvasRef = useRef(null);
-  const appRef = useRef(null);
-  const [avatarType, setAvatarType] = useState("null");
-  const [showBackWarning, setShowBackWarning] = useState(false);
-  const [onlinePlayers, setOnlinePlayers] = useState([]);
-  const [showToolbar, setShowToolbar] = useState(true);
+   const [showFade, setShowFade] = useState(false);
+   const [speed, setSpeed] = useState(2);
+   const [wallHackEnabled, setWallHackEnabled] = useState(false);
+   const [fadeOpacity, setFadeOpacity] = useState(0);
+   const { id } = useParams();
+   const [space, setSpace] = useState(null);
+   const [loadingPage, setLoadingPage] = useState(true);
+   const [chatOpen, setChatOpen] = useState(false);
+   const [chatMessage, setChatMessage] = useState("");
+   const [messages, setMessages] = useState([]);
+   const [playerName, setPlayerName] = useState("Player");
+   const canvasRef = useRef(null);
+   const appRef = useRef(null);
+   const [avatarType, setAvatarType] = useState("null");
+   const [showBackWarning, setShowBackWarning] = useState(false);
+   const [onlinePlayers, setOnlinePlayers] = useState([]);
+   const [showToolbar, setShowToolbar] = useState(true);
+   const [hackPermissions, setHackPermissions] = useState({
+     wallhack: false,
+     speedup: false,
+     teleport: false,
+   });
+   const { user, loading } = useUser();
+ 
+   const currentUserId = user?._id;
+   const isOwner = space?.creator?.toString?.() === currentUserId;
 
   const gameStateRef = useRef({
     colliders: [],
@@ -59,335 +71,458 @@ function SpaceStation() {
     height: 45,
   };
 
+    const handlePermissionsChange = (newPermissions) => {
+    console.log("🔧 Admin updating permissions:", newPermissions);
+    
+    // Update local state
+    setHackPermissions(newPermissions);
+    
+    // Broadcast to all users in the space
+    if (socket && isOwner) {
+      socket.emit("hackPermissionsUpdate", {
+        permissions: newPermissions,
+        targetUserId: "all" // Send to all users
+      });
+      
+      console.log("📡 Broadcasted permissions to all users");
+    }
+  };
+
     const createGirlPlayer = (gameState, playerName = "You") => {
-      const player = new Graphics();
-      const legLeft = new Graphics();
-      const legRight = new Graphics();
-      const armLeft = new Graphics();
-      const armRight = new Graphics();
-  
-      // Professional color palette for office girl
-      const skinColor = 0xf4c2a1;
-      const skinShadow = 0xe6b596;
-      const blouseColor = 0xffffff; // White blouse
-      const blouseShadow = 0xe8e8e8;
-      const suitColor = 0x2c3e50; // Navy blue suit
-      const suitShadow = 0x1a252f;
-      const hairColor = 0x4a4a4a; // Dark brown/black hair
-      const hairHighlight = 0x666666;
-      const shoeColor = 0x000000; // Black heels
-      const stockingColor = 0xf5deb3; // Nude stockings
-  
-      // Player body (white blouse)
-      player.beginFill(blouseColor);
-      player.drawRect(-8, -5, 16, 18);
-      player.endFill();
-  
-      // Blouse shadow/depth
-      player.beginFill(blouseShadow);
-      player.drawRect(-8, 11, 16, 2);
-      player.endFill();
-  
-      // Professional collar
-      player.beginFill(blouseShadow);
-      player.drawRect(-7, -4, 14, 3);
-      player.endFill();
-  
-      // Suit jacket/blazer
-      player.beginFill(suitColor);
-      player.drawRect(-9, -3, 18, 16);
-      player.endFill();
-  
-      // Jacket shadow
-      player.beginFill(suitShadow);
-      player.drawRect(-9, 11, 18, 2);
-      player.endFill();
-  
-      // Jacket lapels
-      player.beginFill(suitShadow);
-      player.drawRect(-8, -2, 6, 8);
-      player.drawRect(2, -2, 6, 8);
-      player.endFill();
-  
-      // Showing white blouse underneath
-      player.beginFill(blouseColor);
-      player.drawRect(-2, -2, 4, 8);
-      player.endFill();
-  
-      // Head with better shading
-      player.beginFill(skinColor);
-      player.drawRect(-6, -18, 12, 12);
-      player.endFill();
-  
-      // Face shadow
-      player.beginFill(skinShadow);
-      player.drawRect(-6, -8, 12, 2);
-      player.endFill();
-  
-      // Professional hair (neat bun/updo)
-      player.beginFill(hairColor);
-      player.drawRect(-7, -19, 14, 7);
-      player.endFill();
-  
-      // Hair bun at back
-      player.beginFill(hairColor);
-      player.drawRect(-3, -21, 6, 4);
-      player.endFill();
-  
-      // Hair highlights (subtle)
-      player.beginFill(hairHighlight);
-      player.drawRect(-6, -18, 3, 4);
-      player.endFill();
-  
-      // Side part
-      player.beginFill(hairHighlight);
-      player.drawRect(-1, -19, 1, 6);
-      player.endFill();
-  
-      // Eyes (professional makeup)
-      player.beginFill(0xffffff);
-      player.drawRect(-4, -15, 2, 2);
-      player.drawRect(2, -15, 2, 2);
-      player.endFill();
-  
-      // Eye pupils
-      player.beginFill(0x000000);
-      player.drawRect(-3.5, -14.5, 1, 1);
-      player.drawRect(2.5, -14.5, 1, 1);
-      player.endFill();
-  
-      // Subtle eyeliner
-      player.beginFill(0x000000);
-      player.drawRect(-4, -16, 2, 0.5);
-      player.drawRect(2, -16, 2, 0.5);
-      player.endFill();
-  
-      // Nose
-      player.beginFill(skinShadow);
-      player.drawRect(-0.5, -12, 1, 1);
-      player.endFill();
-  
-      // Professional lipstick (subtle)
-      player.beginFill(0xd63384);
-      player.drawRect(-1, -10, 2, 1);
-      player.endFill();
-  
-      // Arms in suit jacket
-      armLeft.beginFill(suitColor);
-      armLeft.drawRect(-10, -2, 3, 12);
-      armLeft.endFill();
-  
-      // Jacket cuffs
-      armLeft.beginFill(suitShadow);
-      armLeft.drawRect(-10, 8, 3, 2);
-      armLeft.endFill();
-  
-      // Hand showing
-      armLeft.beginFill(skinColor);
-      armLeft.drawRect(-9, 10, 2, 3);
-      armLeft.endFill();
-  
-      armRight.beginFill(suitColor);
-      armRight.drawRect(7, -2, 3, 12);
-      armRight.endFill();
-  
-      armRight.beginFill(suitShadow);
-      armRight.drawRect(7, 8, 3, 2);
-      armRight.endFill();
-  
-      armRight.beginFill(skinColor);
-      armRight.drawRect(7, 10, 2, 3);
-      armRight.endFill();
-  
-      player.addChild(armLeft);
-      player.addChild(armRight);
-  
-      // Professional pencil skirt
-      player.beginFill(suitColor);
-      player.drawRect(-7, 13, 14, 10);
-      player.endFill();
-  
-      // Skirt shadow
-      player.beginFill(suitShadow);
-      player.drawRect(-7, 21, 14, 2);
-      player.endFill();
-  
-      // Legs with stockings
-      legLeft.beginFill(stockingColor);
-      legLeft.drawRect(-5, 23, 4, 6);
-      legLeft.endFill();
-  
-      legRight.beginFill(stockingColor);
-      legRight.drawRect(1, 23, 4, 6);
-      legRight.endFill();
-  
-      player.addChild(legLeft);
-      player.addChild(legRight);
-  
-      // Professional heels
-      const shoeLeft = new Graphics();
-      shoeLeft.beginFill(shoeColor);
-      shoeLeft.drawRect(-6, 29, 5, 3);
-      shoeLeft.endFill();
-  
-      // Heel
-      shoeLeft.beginFill(shoeColor);
-      shoeLeft.drawRect(-3, 32, 2, 2);
-      shoeLeft.endFill();
-  
-      // Shoe highlight
-      shoeLeft.beginFill(0x333333);
-      shoeLeft.drawRect(-6, 29, 5, 1);
-      shoeLeft.endFill();
-  
-      const shoeRight = new Graphics();
-      shoeRight.beginFill(shoeColor);
-      shoeRight.drawRect(1, 29, 5, 3);
-      shoeRight.endFill();
-  
-      // Heel
-      shoeRight.beginFill(shoeColor);
-      shoeRight.drawRect(2, 32, 2, 2);
-      shoeRight.endFill();
-  
-      // Shoe highlight
-      shoeRight.beginFill(0x333333);
-      shoeRight.drawRect(1, 29, 5, 1);
-      shoeRight.endFill();
-  
-      player.addChild(shoeLeft);
-      player.addChild(shoeRight);
-  
-      // Name tag
-      let tickerFn = null;
-      // Name tag with better styling
-      const nameTag = new Text({
-        text: playerName,
-        style: new TextStyle({
-          fontSize: 12,
-          fill: 0xffffff,
-          fontFamily: "Arial",
-          stroke: { color: 0x000000, width: 2 },
-          dropShadow: {
-            color: 0x000000,
-            blur: 2,
-            angle: Math.PI / 4,
-            distance: 2,
-          },
-        }),
-      });
-      nameTag.anchor.set(0.5);
-      nameTag.y = -35;
-      player.addChild(nameTag);
-  
-      // Initial position
-      player.x = 400;
-      player.y = 300;
-  
-      // Add to scene
-      gameState.camera.addChild(player);
-      gameState.player = player;
-  
-      // Enhanced animation state
-      let walking = false;
-      let walkFrame = 0;
-      let direction = "down";
-      const walkSpeed = 0.3;
-      const legSwingAmount = 4;
-      const armSwingAmount = 3;
-      const bodyBobAmount = 1;
-  
-      tickerFn = () => {
-        if (!player || !player.parent) return; // prevent stale access
-        if (walking) {
-          walkFrame += walkSpeed;
-  
-          const legAngle = Math.sin(walkFrame) * legSwingAmount;
-          const armAngle = Math.sin(walkFrame) * armSwingAmount;
-          const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
-  
-          // Leg animation (opposite swing)
-          legLeft.y = 0 + legAngle;
-          legRight.y = 0 - legAngle;
-  
-          // Arm animation (opposite to legs for natural walking)
-          armLeft.y = 0 - armAngle * 0.7;
-          armRight.y = 0 + armAngle * 0.7;
-  
-          // Slight arm rotation
-          armLeft.rotation = -armAngle * 0.1;
-          armRight.rotation = armAngle * 0.1;
-  
-          // Body bobbing
-          player.children.forEach((child) => {
-            if (
-              child !== legLeft &&
-              child !== legRight &&
-              child !== shoeLeft &&
-              child !== shoeRight
-            ) {
-              child.y += Math.sin(walkFrame * 2) * 0.3;
-            }
-          });
-  
-          // Directional facing (flip sprite)
-          if (direction === "left") {
-            player.scale.x = -1;
-          } else if (direction === "right") {
-            player.scale.x = 1;
-          }
-          nameTag.scale.x = 1 / player.scale.x;
-        } else {
-          // Return to idle position smoothly
-          legLeft.y += (0 - legLeft.y) * 0.1;
-          legRight.y += (0 - legRight.y) * 0.1;
-          armLeft.y += (0 - armLeft.y) * 0.1;
-          armRight.y += (0 - armRight.y) * 0.1;
-          armLeft.rotation += (0 - armLeft.rotation) * 0.1;
-          armRight.rotation += (0 - armRight.rotation) * 0.1;
-  
-          // Reset body parts to original positions
-          // Body bobbing (exclude nameTag)
-          player.children.forEach((child) => {
-            if (
-              child !== legLeft &&
-              child !== legRight &&
-              child !== shoeLeft &&
-              child !== shoeRight &&
-              child !== nameTag
-            ) {
-              child.y += Math.sin(walkFrame * 2) * 0.3;
-            }
-          });
-        }
-      };
-  
-      // Ticker-based enhanced animation
-      Ticker.shared.add(tickerFn);
-      player._tickerFn = tickerFn;
-  
-      // Enhanced movement API
-      player.walk = (dir) => {
-        walking = true;
-        direction = dir;
-        const speed = 2;
-  
-        if (dir === "left") player.x -= speed;
-        if (dir === "right") player.x += speed;
-        if (dir === "up") player.y -= speed;
-        if (dir === "down") player.y += speed;
-      };
-  
-      player.stop = () => {
-        walking = false;
-      };
-  
-      // Store original positions for smooth transitions
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+
+  // Space station color palette
+  const skinColor = 0xf4c2a1;
+  const skinShadow = 0xe6b596;
+  const suitPrimary = 0x2c3e50; // Dark blue-gray suit
+  const suitSecondary = 0x34495e; // Lighter blue-gray
+  const suitAccent = 0x3498db; // Bright blue accents
+  const suitHighlight = 0x5dade2; // Light blue highlights
+  const helmetColor = 0x85929e; // Metallic helmet
+  const helmetReflection = 0xaeb6bf;
+  const visorColor = 0x1a1a2e; // Dark visor with slight blue tint
+  const visorReflection = 0x16213e;
+  const hairColor = 0x8b4513; // Auburn/brown hair
+  const hairHighlight = 0xa0522d;
+  const bootColor = 0x2c3e50; // Dark space boots
+  const bootAccent = 0x3498db; // Blue boot details
+  const glowColor = 0x00ffff; // Cyan glow for tech elements
+
+  // Main spacesuit body
+  player.beginFill(suitPrimary);
+  player.drawRect(-8, -5, 16, 18);
+  player.endFill();
+
+  // Suit paneling and details
+  player.beginFill(suitSecondary);
+  player.drawRect(-7, -4, 14, 2);
+  player.drawRect(-7, 8, 14, 2);
+  player.endFill();
+
+  // Chest control panel
+  player.beginFill(suitSecondary);
+  player.drawRect(-5, -2, 10, 8);
+  player.endFill();
+
+  // Control panel details
+  player.beginFill(suitAccent);
+  player.drawRect(-4, -1, 3, 1);
+  player.drawRect(-4, 1, 3, 1);
+  player.drawRect(-4, 3, 3, 1);
+  player.endFill();
+
+  // Status lights
+  player.beginFill(glowColor);
+  player.drawRect(2, -1, 1, 1);
+  player.drawRect(2, 1, 1, 1);
+  player.endFill();
+
+  // Emergency button
+  player.beginFill(0xff4757);
+  player.drawRect(2, 3, 1, 1);
+  player.endFill();
+
+  // Suit seams and reinforcement
+  player.beginFill(suitHighlight);
+  player.drawRect(-8, -5, 1, 18);
+  player.drawRect(7, -5, 1, 18);
+  player.drawRect(-8, 6, 16, 1);
+  player.endFill();
+
+  // Head with space helmet
+  player.beginFill(helmetColor);
+  player.drawRect(-7, -19, 14, 13);
+  player.endFill();
+
+  // Helmet reflections
+  player.beginFill(helmetReflection);
+  player.drawRect(-6, -18, 3, 10);
+  player.drawRect(3, -18, 3, 10);
+  player.endFill();
+
+  // Visor
+  player.beginFill(visorColor);
+  player.drawRect(-6, -17, 12, 9);
+  player.endFill();
+
+  // Visor reflection
+  player.beginFill(visorReflection);
+  player.drawRect(-5, -16, 4, 6);
+  player.endFill();
+
+  // Face visible through visor
+  player.beginFill(skinColor);
+  player.drawRect(-4, -15, 8, 6);
+  player.endFill();
+
+  // Face shadow
+  player.beginFill(skinShadow);
+  player.drawRect(-4, -11, 8, 2);
+  player.endFill();
+
+  // Hair visible in helmet (shorter, practical style)
+  player.beginFill(hairColor);
+  player.drawRect(-3, -16, 6, 4);
+  player.endFill();
+
+  // Hair highlights
+  player.beginFill(hairHighlight);
+  player.drawRect(-2, -15, 2, 3);
+  player.endFill();
+
+  // Eyes
+  player.beginFill(0xffffff);
+  player.drawRect(-3, -14, 1, 1);
+  player.drawRect(2, -14, 1, 1);
+  player.endFill();
+
+  // Eye pupils
+  player.beginFill(0x2980b9);
+  player.drawRect(-2.5, -13.5, 0.5, 0.5);
+  player.drawRect(2.5, -13.5, 0.5, 0.5);
+  player.endFill();
+
+  // Nose
+  player.beginFill(skinShadow);
+  player.drawRect(-0.5, -12, 1, 1);
+  player.endFill();
+
+  // Lips
+  player.beginFill(0xc0392b);
+  player.drawRect(-1, -10, 2, 1);
+  player.endFill();
+
+  // Helmet communication device
+  player.beginFill(suitAccent);
+  player.drawRect(-8, -12, 2, 3);
+  player.endFill();
+
+  // Comm device details
+  player.beginFill(glowColor);
+  player.drawRect(-7, -11, 1, 1);
+  player.endFill();
+
+  // Left arm with suit details
+  armLeft.beginFill(suitPrimary);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+
+  // Arm joint/shoulder pad
+  armLeft.beginFill(suitSecondary);
+  armLeft.drawRect(-10, -2, 3, 3);
+  armLeft.endFill();
+
+  // Arm seams
+  armLeft.beginFill(suitHighlight);
+  armLeft.drawRect(-10, 2, 3, 1);
+  armLeft.drawRect(-10, 6, 3, 1);
+  armLeft.endFill();
+
+  // Space glove
+  armLeft.beginFill(helmetColor);
+  armLeft.drawRect(-9, 10, 2, 3);
+  armLeft.endFill();
+
+  // Glove details
+  armLeft.beginFill(suitAccent);
+  armLeft.drawRect(-9, 10, 2, 1);
+  armLeft.endFill();
+
+  // Right arm (mirror of left)
+  armRight.beginFill(suitPrimary);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+
+  armRight.beginFill(suitSecondary);
+  armRight.drawRect(7, -2, 3, 3);
+  armRight.endFill();
+
+  armRight.beginFill(suitHighlight);
+  armRight.drawRect(7, 2, 3, 1);
+  armRight.drawRect(7, 6, 3, 1);
+  armRight.endFill();
+
+  armRight.beginFill(helmetColor);
+  armRight.drawRect(7, 10, 2, 3);
+  armRight.endFill();
+
+  armRight.beginFill(suitAccent);
+  armRight.drawRect(7, 10, 2, 1);
+  armRight.endFill();
+
+  player.addChild(armLeft);
+  player.addChild(armRight);
+
+  // Lower body suit
+  player.beginFill(suitPrimary);
+  player.drawRect(-7, 13, 14, 10);
+  player.endFill();
+
+  // Lower body paneling
+  player.beginFill(suitSecondary);
+  player.drawRect(-6, 14, 12, 2);
+  player.drawRect(-6, 19, 12, 2);
+  player.endFill();
+
+  // Utility belt
+  player.beginFill(suitAccent);
+  player.drawRect(-7, 16, 14, 2);
+  player.endFill();
+
+  // Belt pouches
+  player.beginFill(suitSecondary);
+  player.drawRect(-6, 16, 2, 2);
+  player.drawRect(-2, 16, 2, 2);
+  player.drawRect(2, 16, 2, 2);
+  player.endFill();
+
+  // Legs with suit details
+  legLeft.beginFill(suitPrimary);
+  legLeft.drawRect(-5, 23, 4, 6);
+  legLeft.endFill();
+
+  // Leg seams
+  legLeft.beginFill(suitHighlight);
+  legLeft.drawRect(-5, 25, 4, 1);
+  legLeft.endFill();
+
+  legRight.beginFill(suitPrimary);
+  legRight.drawRect(1, 23, 4, 6);
+  legRight.endFill();
+
+  legRight.beginFill(suitHighlight);
+  legRight.drawRect(1, 25, 4, 1);
+  legRight.endFill();
+
+  player.addChild(legLeft);
+  player.addChild(legRight);
+
+  // Space boots
+  const bootLeft = new Graphics();
+  bootLeft.beginFill(bootColor);
+  bootLeft.drawRect(-6, 29, 5, 4);
+  bootLeft.endFill();
+
+  // Boot sole (thicker for space)
+  bootLeft.beginFill(0x1a1a1a);
+  bootLeft.drawRect(-6, 32, 5, 2);
+  bootLeft.endFill();
+
+  // Boot details
+  bootLeft.beginFill(bootAccent);
+  bootLeft.drawRect(-6, 29, 5, 1);
+  bootLeft.drawRect(-5, 30, 1, 2);
+  bootLeft.endFill();
+
+  // Magnetic attachment point
+  bootLeft.beginFill(helmetColor);
+  bootLeft.drawRect(-4, 33, 1, 1);
+  bootLeft.endFill();
+
+  const bootRight = new Graphics();
+  bootRight.beginFill(bootColor);
+  bootRight.drawRect(1, 29, 5, 4);
+  bootRight.endFill();
+
+  bootRight.beginFill(0x1a1a1a);
+  bootRight.drawRect(1, 32, 5, 2);
+  bootRight.endFill();
+
+  bootRight.beginFill(bootAccent);
+  bootRight.drawRect(1, 29, 5, 1);
+  bootRight.drawRect(4, 30, 1, 2);
+  bootRight.endFill();
+
+  bootRight.beginFill(helmetColor);
+  bootRight.drawRect(3, 33, 1, 1);
+  bootRight.endFill();
+
+  player.addChild(bootLeft);
+  player.addChild(bootRight);
+
+  // Life support backpack
+  const backpack = new Graphics();
+  backpack.beginFill(suitSecondary);
+  backpack.drawRect(-4, 2, 8, 8);
+  backpack.endFill();
+
+  // Backpack details
+  backpack.beginFill(suitAccent);
+  backpack.drawRect(-3, 3, 6, 1);
+  backpack.drawRect(-3, 7, 6, 1);
+  backpack.endFill();
+
+  // Oxygen indicator
+  backpack.beginFill(0x2ecc71);
+  backpack.drawRect(2, 4, 1, 1);
+  backpack.endFill();
+
+  // Warning light
+  backpack.beginFill(0xf39c12);
+  backpack.drawRect(2, 6, 1, 1);
+  backpack.endFill();
+
+  // Add backpack behind player
+  player.addChildAt(backpack, 0);
+
+  // Name tag with futuristic styling
+  const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: glowColor,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: glowColor,
+        blur: 3,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+
+  // Initial position
+  player.x = 400;
+  player.y = 300;
+
+  // Add to scene
+  gameState.camera.addChild(player);
+  gameState.player = player;
+
+  // Enhanced animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 3; // Slightly less swing for space suit
+  const armSwingAmount = 2; // Reduced for bulky suit
+  const bodyBobAmount = 0.8; // Less bobbing for weightier movement
+
+  let tickerFn = () => {
+    if (!player || !player.parent) return; // prevent stale access
+    if (walking) {
+      walkFrame += walkSpeed;
+
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+
+      // Leg animation (opposite swing)
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+
+      // Slight arm rotation (less for bulky suit)
+      armLeft.rotation = -armAngle * 0.05;
+      armRight.rotation = armAngle * 0.05;
+
+      // Body bobbing (exclude specific parts)
       player.children.forEach((child) => {
-        child.originalY = child.y;
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== bootLeft &&
+          child !== bootRight &&
+          child !== backpack
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
       });
-      return player;
-    };
+
+      // Backpack slight movement
+      backpack.y += Math.sin(walkFrame * 2) * 0.2;
+
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+      backpack.y += (0 - backpack.y) * 0.1;
+
+      // Reset body parts to original positions
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== bootLeft &&
+          child !== bootRight &&
+          child !== nameTag &&
+          child !== backpack
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.3;
+        }
+      });
+    }
+  };
+
+  // Ticker-based enhanced animation
+  Ticker.shared.add(tickerFn);
+  player._tickerFn = tickerFn;
+
+  // Enhanced movement API
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 1.8; // Slightly slower for space suit
+
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+
+  player.stop = () => {
+    walking = false;
+  };
+
+  // Store original positions for smooth transitions
+  player.children.forEach((child) => {
+    child.originalY = child.y;
+  });
+
+  return player;
+};
   
     const createSpidey = (gameState, playerName = "Spiderman") => {
       const player = new Graphics();
@@ -735,7 +870,7 @@ function SpaceStation() {
         webPattern
       );
     };
-  
+   
     // Batman Character Design
     const createBatman = (gameState, playerName = "Batman") => {
       let tickerFn = null;
@@ -1062,310 +1197,397 @@ function SpaceStation() {
     };
   
     // ALTERNATIVE MALE VERSION (CASUAL STYLE)
-    const createMalePlayer = (gameState, playerName = "You") => {
-      let tickerFn = null;
-      const player = new Graphics();
-      const legLeft = new Graphics();
-      const legRight = new Graphics();
-      const armLeft = new Graphics();
-      const armRight = new Graphics();
-  
-      // Enhanced color palette for casual male
-      const skinColor = 0xd4a574; // Slightly different skin tone
-      const skinShadow = 0xc19660;
-      const hoodieColor = 0x27ae60; // Green hoodie
-      const hoodieShadow = 0x229954;
-      const jeansColor = 0x34495e; // Dark blue jeans
-      const jeansShadow = 0x2c3e50;
-      const hairColor = 0x2c3e50; // Dark hair
-      const sneakerColor = 0xff6b6b; // Red sneakers
-  
-      // Player body (hoodie)
-      player.beginFill(hoodieColor);
-      player.drawRect(-9, -5, 18, 22);
-      player.endFill();
-  
-      // Hoodie shadow
-      player.beginFill(hoodieShadow);
-      player.drawRect(-9, 15, 18, 2);
-      player.endFill();
-  
-      // Hoodie pocket
-      player.beginFill(hoodieShadow);
-      player.drawRect(-6, 5, 12, 8);
-      player.endFill();
-  
-      // Hoodie strings
-      player.beginFill(0xffffff);
-      player.drawRect(-2, -3, 1, 8);
-      player.drawRect(1, -3, 1, 8);
-      player.endFill();
-  
-      // Head
-      player.beginFill(skinColor);
-      player.drawRect(-6, -18, 12, 12);
-      player.endFill();
-  
-      // Face shadow
-      player.beginFill(skinShadow);
-      player.drawRect(-6, -8, 12, 2);
-      player.endFill();
-  
-      // Messy hair style
-      player.beginFill(hairColor);
-      player.drawRect(-7, -19, 14, 7);
-      player.endFill();
-  
-      // Hair spikes/texture
-      player.beginFill(0x1a252f);
-      player.drawRect(-6, -18, 2, 3);
-      player.drawRect(-2, -19, 2, 3);
-      player.drawRect(2, -18, 2, 3);
-      player.drawRect(5, -17, 2, 2);
-      player.endFill();
-  
-      // Eyes with different expression
-      player.beginFill(0xffffff);
-      player.drawRect(-4, -15, 2, 2);
-      player.drawRect(2, -15, 2, 2);
-      player.endFill();
-  
-      // Eye pupils
-      player.beginFill(0x000000);
-      player.drawRect(-3.5, -14.5, 1, 1);
-      player.drawRect(2.5, -14.5, 1, 1);
-      player.endFill();
-  
-      // Nose
-      player.beginFill(skinShadow);
-      player.drawRect(-0.5, -12, 1, 1);
-      player.endFill();
-  
-      // Slight smile
-      player.beginFill(skinShadow);
-      player.drawRect(-1, -10, 3, 1);
-      player.endFill();
-  
-      // Arms in hoodie sleeves
-      armLeft.beginFill(hoodieColor);
-      armLeft.drawRect(-11, -2, 4, 14);
-      armLeft.endFill();
-  
-      // Sleeve cuffs
-      armLeft.beginFill(hoodieShadow);
-      armLeft.drawRect(-11, 10, 4, 2);
-      armLeft.endFill();
-  
-      // Hand showing
-      armLeft.beginFill(skinColor);
-      armLeft.drawRect(-10, 12, 2, 3);
-      armLeft.endFill();
-  
-      armRight.beginFill(hoodieColor);
-      armRight.drawRect(7, -2, 4, 14);
-      armRight.endFill();
-  
-      armRight.beginFill(hoodieShadow);
-      armRight.drawRect(7, 10, 4, 2);
-      armRight.endFill();
-  
-      armRight.beginFill(skinColor);
-      armRight.drawRect(8, 12, 2, 3);
-      armRight.endFill();
-  
-      player.addChild(armLeft);
-      player.addChild(armRight);
-  
-      // Jeans
-      legLeft.beginFill(jeansColor);
-      legLeft.drawRect(-7, 17, 6, 10);
-      legLeft.endFill();
-  
-      // Jeans shadow
-      legLeft.beginFill(jeansShadow);
-      legLeft.drawRect(-7, 25, 6, 2);
-      legLeft.endFill();
-  
-      // Jeans stitching
-      legLeft.beginFill(0x5d6d7e);
-      legLeft.drawRect(-6, 17, 1, 10);
-      legLeft.endFill();
-  
-      legRight.beginFill(jeansColor);
-      legRight.drawRect(1, 17, 6, 10);
-      legRight.endFill();
-  
-      legRight.beginFill(jeansShadow);
-      legRight.drawRect(1, 25, 6, 2);
-      legRight.endFill();
-  
-      legRight.beginFill(0x5d6d7e);
-      legRight.drawRect(5, 17, 1, 10);
-      legRight.endFill();
-  
-      player.addChild(legLeft);
-      player.addChild(legRight);
-  
-      // Sneakers
-      const shoeLeft = new Graphics();
-      shoeLeft.beginFill(sneakerColor);
-      shoeLeft.drawRect(-8, 27, 7, 4);
-      shoeLeft.endFill();
-  
-      // Sneaker sole
-      shoeLeft.beginFill(0xffffff);
-      shoeLeft.drawRect(-8, 30, 7, 1);
-      shoeLeft.endFill();
-  
-      // Sneaker details
-      shoeLeft.beginFill(0xffffff);
-      shoeLeft.drawRect(-7, 28, 5, 1);
-      shoeLeft.endFill();
-  
-      const shoeRight = new Graphics();
-      shoeRight.beginFill(sneakerColor);
-      shoeRight.drawRect(1, 27, 7, 4);
-      shoeRight.endFill();
-  
-      shoeRight.beginFill(0xffffff);
-      shoeRight.drawRect(1, 30, 7, 1);
-      shoeRight.endFill();
-  
-      shoeRight.beginFill(0xffffff);
-      shoeRight.drawRect(2, 28, 5, 1);
-      shoeRight.endFill();
-  
-      player.addChild(shoeLeft);
-      player.addChild(shoeRight);
-  
-      // Name tag
-      const nameTag = new Text({
-        text: playerName,
-        style: new TextStyle({
-          fontSize: 12,
-          fill: 0xffffff,
-          fontFamily: "Arial",
-          stroke: { color: 0x000000, width: 2 },
-          dropShadow: {
-            color: 0x000000,
-            blur: 2,
-            angle: Math.PI / 4,
-            distance: 2,
-          },
-        }),
-      });
-      nameTag.anchor.set(0.5);
-      nameTag.y = -35;
-      player.addChild(nameTag);
-  
-      // Initial position
-      player.x = 400;
-      player.y = 300;
-  
-      // Add to scene
-      gameState.camera.addChild(player);
-      gameState.player = player;
-  
-      // Enhanced animation state
-      let walking = false;
-      let walkFrame = 0;
-      let direction = "down";
-      const walkSpeed = 0.3;
-      const legSwingAmount = 4;
-      const armSwingAmount = 3;
-      const bodyBobAmount = 1;
-  
-      tickerFn = () => {
-        if (!player || !player.parent) return; // prevent stale access
-        if (walking) {
-          walkFrame += walkSpeed;
-  
-          const legAngle = Math.sin(walkFrame) * legSwingAmount;
-          const armAngle = Math.sin(walkFrame) * armSwingAmount;
-          const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
-  
-          // Leg animation (opposite swing)
-          legLeft.y = 0 + legAngle;
-          legRight.y = 0 - legAngle;
-  
-          // Arm animation (opposite to legs for natural walking)
-          armLeft.y = 0 - armAngle * 0.7;
-          armRight.y = 0 + armAngle * 0.7;
-  
-          // Slight arm rotation
-          armLeft.rotation = -armAngle * 0.1;
-          armRight.rotation = armAngle * 0.1;
-  
-          // Body bobbing
-          player.children.forEach((child) => {
-            if (
-              child !== legLeft &&
-              child !== legRight &&
-              child !== shoeLeft &&
-              child !== shoeRight
-            ) {
-              child.y += Math.sin(walkFrame * 2) * 0.3;
-            }
-          });
-  
-          // Directional facing (flip sprite)
-          if (direction === "left") {
-            player.scale.x = -1;
-          } else if (direction === "right") {
-            player.scale.x = 1;
-          }
-          nameTag.scale.x = 1 / player.scale.x;
-        } else {
-          // Return to idle position smoothly
-          legLeft.y += (0 - legLeft.y) * 0.1;
-          legRight.y += (0 - legRight.y) * 0.1;
-          armLeft.y += (0 - armLeft.y) * 0.1;
-          armRight.y += (0 - armRight.y) * 0.1;
-          armLeft.rotation += (0 - armLeft.rotation) * 0.1;
-          armRight.rotation += (0 - armRight.rotation) * 0.1;
-  
-          // Reset body parts to original positions
-          // Body bobbing (exclude nameTag)
-          player.children.forEach((child) => {
-            if (
-              child !== legLeft &&
-              child !== legRight &&
-              child !== shoeLeft &&
-              child !== shoeRight &&
-              child !== nameTag
-            ) {
-              child.y += Math.sin(walkFrame * 2) * 0.3;
-            }
-          });
-        }
-      };
-  
-      // Ticker-based enhanced animation
-      Ticker.shared.add(tickerFn);
-      player._tickerFn = tickerFn;
-  
-      // Enhanced movement API
-      player.walk = (dir) => {
-        walking = true;
-        direction = dir;
-        const speed = 2;
-  
-        if (dir === "left") player.x -= speed;
-        if (dir === "right") player.x += speed;
-        if (dir === "up") player.y -= speed;
-        if (dir === "down") player.y += speed;
-      };
-  
-      player.stop = () => {
-        walking = false;
-      };
-  
-      // Store original positions for smooth transitions
+const createMalePlayer = (gameState, playerName = "Commander") => {
+  let tickerFn = null;
+  const player = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+
+  // Space station crew color palette
+  const skinColor = 0xd4a574;
+  const skinShadow = 0xc19660;
+  const suitColor = 0x2c3e50; // Dark blue space suit
+  const suitShadow = 0x1a252f;
+  const suitAccent = 0x3498db; // Bright blue accents
+  const hairColor = 0x4a4a4a; // Gray/silver hair
+  const bootColor = 0x1a1a1a; // Black space boots
+  const helmetRim = 0x5d6d7e; // Metallic helmet rim
+
+  // Player body (space suit torso)
+  player.beginFill(suitColor);
+  player.drawRect(-9, -5, 18, 22);
+  player.endFill();
+
+  // Suit shadow
+  player.beginFill(suitShadow);
+  player.drawRect(-9, 15, 18, 2);
+  player.endFill();
+
+  // Chest control panel
+  player.beginFill(suitAccent);
+  player.drawRect(-7, 2, 14, 8);
+  player.endFill();
+
+  // Control panel buttons
+  player.beginFill(0xe74c3c); // Red button
+  player.drawRect(-5, 4, 2, 2);
+  player.endFill();
+
+  player.beginFill(0x27ae60); // Green button
+  player.drawRect(-1, 4, 2, 2);
+  player.endFill();
+
+  player.beginFill(0xf39c12); // Orange button
+  player.drawRect(3, 4, 2, 2);
+  player.endFill();
+
+  // Status display screen
+  player.beginFill(0x2ecc71);
+  player.drawRect(-6, 7, 12, 2);
+  player.endFill();
+
+  // Suit seams/panels
+  player.beginFill(suitAccent);
+  player.drawRect(-9, -2, 18, 1);
+  player.drawRect(-9, 12, 18, 1);
+  player.endFill();
+
+  // Utility belt
+  player.beginFill(0x34495e);
+  player.drawRect(-8, 14, 16, 3);
+  player.endFill();
+
+  // Belt pouches
+  player.beginFill(0x7f8c8d);
+  player.drawRect(-6, 15, 2, 2);
+  player.drawRect(-1, 15, 2, 2);
+  player.drawRect(4, 15, 2, 2);
+  player.endFill();
+
+  // Head
+  player.beginFill(skinColor);
+  player.drawRect(-6, -18, 12, 12);
+  player.endFill();
+
+  // Face shadow
+  player.beginFill(skinShadow);
+  player.drawRect(-6, -8, 12, 2);
+  player.endFill();
+
+  // Short professional hair
+  player.beginFill(hairColor);
+  player.drawRect(-7, -19, 14, 6);
+  player.endFill();
+
+  // Hair highlights
+  player.beginFill(0x6a6a6a);
+  player.drawRect(-5, -18, 2, 3);
+  player.drawRect(1, -18, 2, 3);
+  player.drawRect(4, -17, 2, 2);
+  player.endFill();
+
+  // Eyes with focused expression
+  player.beginFill(0xffffff);
+  player.drawRect(-4, -15, 2, 2);
+  player.drawRect(2, -15, 2, 2);
+  player.endFill();
+
+  // Eye pupils
+  player.beginFill(0x000000);
+  player.drawRect(-3.5, -14.5, 1, 1);
+  player.drawRect(2.5, -14.5, 1, 1);
+  player.endFill();
+
+  // Nose
+  player.beginFill(skinShadow);
+  player.drawRect(-0.5, -12, 1, 1);
+  player.endFill();
+
+  // Determined expression
+  player.beginFill(skinShadow);
+  player.drawRect(-1, -10, 3, 1);
+  player.endFill();
+
+  // Communication headset
+  player.beginFill(0x34495e);
+  player.drawRect(-7, -16, 2, 1);
+  player.drawRect(5, -16, 2, 1);
+  player.endFill();
+
+  // Headset mic
+  player.beginFill(0x7f8c8d);
+  player.drawRect(-8, -15, 1, 2);
+  player.endFill();
+
+  // Arms in space suit sleeves
+  armLeft.beginFill(suitColor);
+  armLeft.drawRect(-11, -2, 4, 14);
+  armLeft.endFill();
+
+  // Sleeve panels
+  armLeft.beginFill(suitAccent);
+  armLeft.drawRect(-11, 2, 4, 1);
+  armLeft.drawRect(-11, 8, 4, 1);
+  armLeft.endFill();
+
+  // Glove cuffs
+  armLeft.beginFill(suitShadow);
+  armLeft.drawRect(-11, 10, 4, 2);
+  armLeft.endFill();
+
+  // Space gloves
+  armLeft.beginFill(0x2c3e50);
+  armLeft.drawRect(-10, 12, 2, 3);
+  armLeft.endFill();
+
+  // Glove details
+  armLeft.beginFill(suitAccent);
+  armLeft.drawRect(-10, 12, 2, 1);
+  armLeft.endFill();
+
+  armRight.beginFill(suitColor);
+  armRight.drawRect(7, -2, 4, 14);
+  armRight.endFill();
+
+  armRight.beginFill(suitAccent);
+  armRight.drawRect(7, 2, 4, 1);
+  armRight.drawRect(7, 8, 4, 1);
+  armRight.endFill();
+
+  armRight.beginFill(suitShadow);
+  armRight.drawRect(7, 10, 4, 2);
+  armRight.endFill();
+
+  armRight.beginFill(0x2c3e50);
+  armRight.drawRect(8, 12, 2, 3);
+  armRight.endFill();
+
+  armRight.beginFill(suitAccent);
+  armRight.drawRect(8, 12, 2, 1);
+  armRight.endFill();
+
+  player.addChild(armLeft);
+  player.addChild(armRight);
+
+  // Space suit pants
+  legLeft.beginFill(suitColor);
+  legLeft.drawRect(-7, 17, 6, 10);
+  legLeft.endFill();
+
+  // Pants shadow
+  legLeft.beginFill(suitShadow);
+  legLeft.drawRect(-7, 25, 6, 2);
+  legLeft.endFill();
+
+  // Leg panel seams
+  legLeft.beginFill(suitAccent);
+  legLeft.drawRect(-7, 20, 6, 1);
+  legLeft.endFill();
+
+  // Knee protection
+  legLeft.beginFill(0x34495e);
+  legLeft.drawRect(-6, 22, 4, 2);
+  legLeft.endFill();
+
+  legRight.beginFill(suitColor);
+  legRight.drawRect(1, 17, 6, 10);
+  legRight.endFill();
+
+  legRight.beginFill(suitShadow);
+  legRight.drawRect(1, 25, 6, 2);
+  legRight.endFill();
+
+  legRight.beginFill(suitAccent);
+  legRight.drawRect(1, 20, 6, 1);
+  legRight.endFill();
+
+  legRight.beginFill(0x34495e);
+  legRight.drawRect(2, 22, 4, 2);
+  legRight.endFill();
+
+  player.addChild(legLeft);
+  player.addChild(legRight);
+
+  // Space boots
+  const shoeLeft = new Graphics();
+  shoeLeft.beginFill(bootColor);
+  shoeLeft.drawRect(-8, 27, 7, 4);
+  shoeLeft.endFill();
+
+  // Boot sole with tread
+  shoeLeft.beginFill(0x34495e);
+  shoeLeft.drawRect(-8, 30, 7, 1);
+  shoeLeft.endFill();
+
+  // Boot details/buckles
+  shoeLeft.beginFill(0x7f8c8d);
+  shoeLeft.drawRect(-7, 28, 5, 1);
+  shoeLeft.endFill();
+
+  // Magnetic boot indicators
+  shoeLeft.beginFill(0xe74c3c);
+  shoeLeft.drawRect(-3, 29, 1, 1);
+  shoeLeft.endFill();
+
+  const shoeRight = new Graphics();
+  shoeRight.beginFill(bootColor);
+  shoeRight.drawRect(1, 27, 7, 4);
+  shoeRight.endFill();
+
+  shoeRight.beginFill(0x34495e);
+  shoeRight.drawRect(1, 30, 7, 1);
+  shoeRight.endFill();
+
+  shoeRight.beginFill(0x7f8c8d);
+  shoeRight.drawRect(2, 28, 5, 1);
+  shoeRight.endFill();
+
+  shoeRight.beginFill(0xe74c3c);
+  shoeRight.drawRect(4, 29, 1, 1);
+  shoeRight.endFill();
+
+  player.addChild(shoeLeft);
+  player.addChild(shoeRight);
+
+  // Rank insignia on shoulder
+  const rankInsignia = new Graphics();
+  rankInsignia.beginFill(0xffd700);
+  rankInsignia.drawRect(-8, -3, 3, 1);
+  rankInsignia.drawRect(-8, -1, 3, 1);
+  rankInsignia.endFill();
+  player.addChild(rankInsignia);
+
+  // Name tag with space theme
+  const nameTag = new Text({
+    text: playerName,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: 0x3498db,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: 0x000000,
+        blur: 2,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+  player.addChild(nameTag);
+
+  // Initial position
+  player.x = 400;
+  player.y = 300;
+
+  // Add to scene
+  gameState.camera.addChild(player);
+  gameState.player = player;
+
+  // Enhanced animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  const walkSpeed = 0.3;
+  const legSwingAmount = 3; // Slightly reduced for heavier space suit
+  const armSwingAmount = 2.5; // Reduced for bulkier arms
+  const bodyBobAmount = 0.8; // Less bouncy for weighted suit
+
+  tickerFn = () => {
+    if (!player || !player.parent) return;
+    if (walking) {
+      walkFrame += walkSpeed;
+
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+
+      // Leg animation (opposite swing)
+      legLeft.y = 0 + legAngle;
+      legRight.y = 0 - legAngle;
+
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = 0 - armAngle * 0.7;
+      armRight.y = 0 + armAngle * 0.7;
+
+      // Slight arm rotation
+      armLeft.rotation = -armAngle * 0.08; // Reduced rotation for bulkier suit
+      armRight.rotation = armAngle * 0.08;
+
+      // Body bobbing
       player.children.forEach((child) => {
-        child.originalY = child.y;
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight
+        ) {
+          child.y += Math.sin(walkFrame * 2) * 0.25; // Reduced bobbing
+        }
       });
-      return player;
-    };
+
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        player.scale.x = -1;
+      } else if (direction === "right") {
+        player.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / player.scale.x;
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (0 - legLeft.y) * 0.1;
+      legRight.y += (0 - legRight.y) * 0.1;
+      armLeft.y += (0 - armLeft.y) * 0.1;
+      armRight.y += (0 - armRight.y) * 0.1;
+      armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+      armRight.rotation += (0 - armRight.rotation) * 0.1;
+
+      // Reset body parts to original positions (remove the continuous animation)
+      player.children.forEach((child) => {
+        if (
+          child !== legLeft &&
+          child !== legRight &&
+          child !== shoeLeft &&
+          child !== shoeRight &&
+          child !== nameTag &&
+          child.originalY !== undefined
+        ) {
+          child.y += (child.originalY - child.y) * 0.1;
+        }
+      });
+    }
+  };
+
+  // Ticker-based enhanced animation
+  Ticker.shared.add(tickerFn);
+  player._tickerFn = tickerFn;
+
+  // Enhanced movement API
+  player.walk = (dir) => {
+    walking = true;
+    direction = dir;
+    const speed = 1.8; // Slightly slower for heavy space suit
+
+    if (dir === "left") player.x -= speed;
+    if (dir === "right") player.x += speed;
+    if (dir === "up") player.y -= speed;
+    if (dir === "down") player.y += speed;
+  };
+
+  player.stop = () => {
+    walking = false;
+  };
+
+  // Store original positions for smooth transitions
+  player.children.forEach((child) => {
+    child.originalY = child.y;
+  });
+
+  return player;
+};
 
   const createPlayer = (gameState, playerName = "Astronaut") => {
     const player = new Graphics();
@@ -1721,12 +1943,1992 @@ function SpaceStation() {
 
     return player;
 };
+
+const createOtherPlayer = (name, position) => {
+    const container = new Container();
+
+    // Create main body graphics
+    const body = new Graphics();
+    const legLeft = new Graphics();
+    const legRight = new Graphics();
+    const armLeft = new Graphics();
+    const armRight = new Graphics();
+
+    // Different space suit color palette for distinction
+    const suitColor = 0xf0f0f0;        // Slightly whiter suit
+    const suitShadow = 0xd0d0d0;       // Lighter shadow
+    const suitAccent = 0xe74c3c;       // Red accents (vs blue in main player)
+    const helmetColor = 0xffe4e1;      // Light pink helmet tint
+    const helmetShadow = 0xddd0d0;     // Pinkish helmet shadow
+    const visorColor = 0x2c2c2c;       // Slightly lighter visor
+    const visorReflect = 0xffa07a;     // Light salmon reflection
+    const bootColor = 0x8b4513;       // Brown boots (vs gray in main)
+    const gloveColor = 0xfff8dc;       // Cream gloves
+    const tubeColor = 0x32cd32;        // Green life support tubes (vs orange)
+
+    // Main spacesuit body
+    body.beginFill(suitColor);
+    body.drawRect(-10, -5, 20, 22);
+    body.endFill();
+
+    // Body shadow/depth
+    body.beginFill(suitShadow);
+    body.drawRect(-10, 15, 20, 2);
+    body.endFill();
+
+    // Chest control panel (red theme)
+    body.beginFill(suitAccent);
+    body.drawRect(-6, -2, 12, 8);
+    body.endFill();
+
+    // Control panel details (different layout)
+    body.beginFill(0xffff00);  // Yellow lights (vs green)
+    body.drawRect(-4, 1, 2, 1);
+    body.drawRect(2, 1, 2, 1);
+    body.endFill();
+
+    body.beginFill(0x00ff00);  // Green status light (vs red warning)
+    body.drawRect(-1, 0, 2, 1);
+    body.endFill();
+
+    body.beginFill(0x000000);  // Black buttons (different arrangement)
+    body.drawRect(-3, 4, 1, 1);
+    body.drawRect(0, 4, 1, 1);
+    body.drawRect(2, 4, 1, 1);
+    body.endFill();
+
+    // Additional control panel stripe
+    body.beginFill(0xffffff);
+    body.drawRect(-6, 3, 12, 1);
+    body.endFill();
+
+    // Helmet (oval shape - outer shell)
+    body.beginFill(helmetColor);
+    body.drawEllipse(0, -14, 8, 10);
+    body.endFill();
+
+    // Helmet shadow/depth (oval)
+    body.beginFill(helmetShadow);
+    body.drawEllipse(0, -12, 7, 2);
+    body.endFill();
+
+    // Visor (main dark area)
+    body.beginFill(visorColor);
+    body.drawEllipse(0, -14, 6, 8);
+    body.endFill();
+
+    // Visor reflection effect (different position)
+    body.beginFill(visorReflect);
+    body.drawRect(-4, -18, 3, 2);
+    body.endFill();
+
+    // Visor secondary reflection
+    body.beginFill(0xffffff);
+    body.drawRect(-3, -17, 1, 1);
+    body.endFill();
+
+    // Helmet antenna (different style)
+    body.beginFill(0x696969);
+    body.drawRect(-2, -23, 4, 1);
+    body.endFill();
+
+    // Helmet light (different color)
+    body.beginFill(0xff6347);  // Tomato red light
+    body.drawRect(-2, -22, 4, 1);
+    body.endFill();
+
+    // Life support tubes connecting helmet to body (green)
+    body.beginFill(tubeColor);
+    body.drawRect(-7, -8, 2, 6);
+    body.drawRect(5, -8, 2, 6);
+    body.endFill();
+
+    // Arms (separate for animation) - bulky spacesuit arms
+    armLeft.beginFill(suitColor);
+    armLeft.drawRect(-12, -2, 4, 14);
+    armLeft.endFill();
+
+    // Left arm shadow
+    armLeft.beginFill(suitShadow);
+    armLeft.drawRect(-12, 10, 4, 2);
+    armLeft.endFill();
+
+    // Left arm joint (red accent)
+    armLeft.beginFill(suitAccent);
+    armLeft.drawRect(-12, 3, 4, 2);
+    armLeft.endFill();
+
+    // Left glove
+    armLeft.beginFill(gloveColor);
+    armLeft.drawRect(-13, 12, 5, 4);
+    armLeft.endFill();
+
+    // Left arm patch/badge
+    armLeft.beginFill(0xffd700);
+    armLeft.drawRect(-11, 1, 2, 1);
+    armLeft.endFill();
+
+    armRight.beginFill(suitColor);
+    armRight.drawRect(8, -2, 4, 14);
+    armRight.endFill();
+
+    // Right arm shadow
+    armRight.beginFill(suitShadow);
+    armRight.drawRect(8, 10, 4, 2);
+    armRight.endFill();
+
+    // Right arm joint (red accent)
+    armRight.beginFill(suitAccent);
+    armRight.drawRect(8, 3, 4, 2);
+    armRight.endFill();
+
+    // Right glove
+    armRight.beginFill(gloveColor);
+    armRight.drawRect(8, 12, 5, 4);
+    armRight.endFill();
+
+    // Right arm patch/badge
+    armRight.beginFill(0xffd700);
+    armRight.drawRect(9, 1, 2, 1);
+    armRight.endFill();
+
+    // Legs - bulky spacesuit legs
+    legLeft.beginFill(suitColor);
+    legLeft.drawRect(-7, 17, 6, 14);
+    legLeft.endFill();
+
+    // Left leg shadow
+    legLeft.beginFill(suitShadow);
+    legLeft.drawRect(-7, 29, 6, 2);
+    legLeft.endFill();
+
+    // Left leg joint (red accent)
+    legLeft.beginFill(suitAccent);
+    legLeft.drawRect(-7, 22, 6, 2);
+    legLeft.endFill();
+
+    legRight.beginFill(suitColor);
+    legRight.drawRect(1, 17, 6, 14);
+    legRight.endFill();
+
+    // Right leg shadow
+    legRight.beginFill(suitShadow);
+    legRight.drawRect(1, 29, 6, 2);
+    legRight.endFill();
+
+    // Right leg joint (red accent)
+    legRight.beginFill(suitAccent);
+    legRight.drawRect(1, 22, 6, 2);
+    legRight.endFill();
+
+    // Space boots (brown instead of gray)
+    const bootLeft = new Graphics();
+    bootLeft.beginFill(bootColor);
+    bootLeft.drawRect(-8, 31, 8, 5);
+    bootLeft.endFill();
+
+    // Boot treads
+    bootLeft.beginFill(0x000000);
+    bootLeft.drawRect(-8, 35, 8, 1);
+    bootLeft.endFill();
+
+    // Boot highlight
+    bootLeft.beginFill(0xcd853f);
+    bootLeft.drawRect(-8, 31, 8, 1);
+    bootLeft.endFill();
+
+    const bootRight = new Graphics();
+    bootRight.beginFill(bootColor);
+    bootRight.drawRect(0, 31, 8, 5);
+    bootRight.endFill();
+
+    // Boot treads
+    bootRight.beginFill(0x000000);
+    bootRight.drawRect(0, 35, 8, 1);
+    bootRight.endFill();
+
+    // Boot highlight
+    bootRight.beginFill(0xcd853f);
+    bootRight.drawRect(0, 31, 8, 1);
+    bootRight.endFill();
+
+    // Utility belt with space tools (different color)
+    body.beginFill(0x8b0000);  // Dark red belt
+    body.drawRect(-10, 15, 20, 3);
+    body.endFill();
+
+    // Belt pouches (different arrangement)
+    body.beginFill(0x2c2c2c);
+    body.drawRect(-7, 16, 2, 2);
+    body.drawRect(-3, 16, 2, 2);
+    body.drawRect(1, 16, 2, 2);
+    body.drawRect(5, 16, 2, 2);
+    body.endFill();
+
+    // Backpack life support system (different color)
+    body.beginFill(0x228b22);  // Forest green
+    body.drawRect(-6, -3, 12, 6);
+    body.endFill();
+
+    // Backpack details (different pattern)
+    body.beginFill(0x000000);
+    body.drawRect(-4, -2, 1, 1);
+    body.drawRect(-2, -1, 1, 1);
+    body.drawRect(0, -2, 1, 1);
+    body.drawRect(2, -1, 1, 1);
+    body.drawRect(4, -2, 1, 1);
+    body.endFill();
+
+    // Name tag with different color scheme
+    const nameTag = new Text({
+      text: name,
+      style: new TextStyle({
+        fontSize: 12,
+        fill: 0xff6347,  // Tomato red instead of cyan
+        fontFamily: "Arial",
+        stroke: { color: 0x8b0000, width: 2 },
+        dropShadow: {
+          color: 0x8b0000,
+          blur: 3,
+          angle: Math.PI / 4,
+          distance: 2,
+        },
+      }),
+    });
+    nameTag.anchor.set(0.5);
+    nameTag.y = -40;
+
+    // Add all parts to container
+    container.addChild(body);
+    container.addChild(armLeft);
+    container.addChild(armRight);
+    container.addChild(legLeft);
+    container.addChild(legRight);
+    container.addChild(bootLeft);
+    container.addChild(bootRight);
+    container.addChild(nameTag);
+
+    // Position the container
+    container.x = position.x;
+    container.y = position.y;
+
+    // Animation state (matching main player but slightly different)
+    let walking = false;
+    let walkFrame = 0;
+    let direction = "down";
+    let stopTimeout = null;
+    const walkSpeed = 0.22;  // Slightly different speed
+    const legSwingAmount = 1.8;  // Slightly different swing
+    const armSwingAmount = 1.3;
+    const bodyBobAmount = 0.4;
+
+    // Store original positions for smooth transitions
+    const originalPositions = {
+      armLeft: { y: armLeft.y, rotation: armLeft.rotation },
+      armRight: { y: armRight.y, rotation: armRight.rotation },
+      legLeft: { y: legLeft.y },
+      legRight: { y: legRight.y },
+      body: { y: body.y },
+    };
+
+    // Animation ticker function
+    let tickerFn = null;
+
+    tickerFn = () => {
+      if (!container || !container.parent) return;
+
+      if (walking) {
+        walkFrame += walkSpeed;
+
+        const legAngle = Math.sin(walkFrame) * legSwingAmount;
+        const armAngle = Math.sin(walkFrame) * armSwingAmount;
+
+        // Leg animation (more constrained for spacesuit)
+        legLeft.y = originalPositions.legLeft.y + legAngle;
+        legRight.y = originalPositions.legRight.y - legAngle;
+
+        // Arm animation (less dramatic for bulky suit)
+        armLeft.y = originalPositions.armLeft.y - armAngle * 0.5;
+        armRight.y = originalPositions.armRight.y + armAngle * 0.5;
+
+        // Minimal arm rotation for bulky suit
+        armLeft.rotation = -armAngle * 0.05;
+        armRight.rotation = armAngle * 0.05;
+
+        // Subtle body bobbing
+        body.y = originalPositions.body.y + Math.sin(walkFrame * 2) * 0.2;
+
+        // Directional facing
+        if (direction === "left") {
+          container.scale.x = -1;
+        } else if (direction === "right") {
+          container.scale.x = 1;
+        }
+        nameTag.scale.x = 1 / container.scale.x;
+      } else {
+        // Return to idle position smoothly
+        legLeft.y += (originalPositions.legLeft.y - legLeft.y) * 0.1;
+        legRight.y += (originalPositions.legRight.y - legRight.y) * 0.1;
+        armLeft.y += (originalPositions.armLeft.y - armLeft.y) * 0.1;
+        armRight.y += (originalPositions.armRight.y - armRight.y) * 0.1;
+        armLeft.rotation += (originalPositions.armLeft.rotation - armLeft.rotation) * 0.1;
+        armRight.rotation += (originalPositions.armRight.rotation - armRight.rotation) * 0.1;
+        body.y += (originalPositions.body.y - body.y) * 0.1;
+      }
+    };
+
+    // Add ticker for animations
+    Ticker.shared.add(tickerFn);
+    container._tickerFn = tickerFn;
+
+    // Movement API
+    container.walk = (dir) => {
+      walking = true;
+      direction = dir;
+
+      // Clear any existing stop timeout
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+        stopTimeout = null;
+      }
+    };
+
+    container.stop = () => {
+      walking = false;
+
+      // Clear any existing stop timeout
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+        stopTimeout = null;
+      }
+    };
+
+    // Update position method
+    container.updatePosition = (newPosition, isMoving, newDirection) => {
+      // Update position
+      container.x = newPosition.x;
+      container.y = newPosition.y;
+
+      if (isMoving) {
+        container.walk(newDirection);
+      } else {
+        container.stop();
+      }
+
+      // Backup: Auto-stop after 200ms of no updates
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+      }
+
+      stopTimeout = setTimeout(() => {
+        container.stop();
+      }, 200);
+    };
+
+    // Cleanup function
+    container.destroy = () => {
+      if (tickerFn) {
+        Ticker.shared.remove(tickerFn);
+      }
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+      }
+      container.removeChildren();
+    };
+
+    return container;
+};
+
+const createOtherMalePlayer = (name, position) => {
+    const container = new Container();
+
+    // Space station crew color palette (same as createMalePlayer)
+    const skinColor = 0xd4a574;
+    const skinShadow = 0xc19660;
+    const suitColor = 0x2c3e50; // Dark blue space suit
+    const suitShadow = 0x1a252f;
+    const suitAccent = 0x3498db; // Bright blue accents
+    const hairColor = 0x4a4a4a; // Gray/silver hair
+    const bootColor = 0x1a1a1a; // Black space boots
+    const helmetRim = 0x5d6d7e; // Metallic helmet rim
+
+    // Create main body graphics
+    const body = new Graphics();
+    const legLeft = new Graphics();
+    const legRight = new Graphics();
+    const armLeft = new Graphics();
+    const armRight = new Graphics();
+
+    // Player body (space suit torso)
+    body.beginFill(suitColor);
+    body.drawRect(-9, -5, 18, 22);
+    body.endFill();
+
+    // Suit shadow
+    body.beginFill(suitShadow);
+    body.drawRect(-9, 15, 18, 2);
+    body.endFill();
+
+    // Chest control panel
+    body.beginFill(suitAccent);
+    body.drawRect(-7, 2, 14, 8);
+    body.endFill();
+
+    // Control panel buttons
+    body.beginFill(0xe74c3c); // Red button
+    body.drawRect(-5, 4, 2, 2);
+    body.endFill();
+
+    body.beginFill(0x27ae60); // Green button
+    body.drawRect(-1, 4, 2, 2);
+    body.endFill();
+
+    body.beginFill(0xf39c12); // Orange button
+    body.drawRect(3, 4, 2, 2);
+    body.endFill();
+
+    // Status display screen
+    body.beginFill(0x2ecc71);
+    body.drawRect(-6, 7, 12, 2);
+    body.endFill();
+
+    // Suit seams/panels
+    body.beginFill(suitAccent);
+    body.drawRect(-9, -2, 18, 1);
+    body.drawRect(-9, 12, 18, 1);
+    body.endFill();
+
+    // Utility belt
+    body.beginFill(0x34495e);
+    body.drawRect(-8, 14, 16, 3);
+    body.endFill();
+
+    // Belt pouches
+    body.beginFill(0x7f8c8d);
+    body.drawRect(-6, 15, 2, 2);
+    body.drawRect(-1, 15, 2, 2);
+    body.drawRect(4, 15, 2, 2);
+    body.endFill();
+
+    // Head
+    body.beginFill(skinColor);
+    body.drawRect(-6, -18, 12, 12);
+    body.endFill();
+
+    // Face shadow
+    body.beginFill(skinShadow);
+    body.drawRect(-6, -8, 12, 2);
+    body.endFill();
+
+    // Short professional hair
+    body.beginFill(hairColor);
+    body.drawRect(-7, -19, 14, 6);
+    body.endFill();
+
+    // Hair highlights
+    body.beginFill(0x6a6a6a);
+    body.drawRect(-5, -18, 2, 3);
+    body.drawRect(1, -18, 2, 3);
+    body.drawRect(4, -17, 2, 2);
+    body.endFill();
+
+    // Eyes with focused expression
+    body.beginFill(0xffffff);
+    body.drawRect(-4, -15, 2, 2);
+    body.drawRect(2, -15, 2, 2);
+    body.endFill();
+
+    // Eye pupils
+    body.beginFill(0x000000);
+    body.drawRect(-3.5, -14.5, 1, 1);
+    body.drawRect(2.5, -14.5, 1, 1);
+    body.endFill();
+
+    // Nose
+    body.beginFill(skinShadow);
+    body.drawRect(-0.5, -12, 1, 1);
+    body.endFill();
+
+    // Determined expression
+    body.beginFill(skinShadow);
+    body.drawRect(-1, -10, 3, 1);
+    body.endFill();
+
+    // Communication headset
+    body.beginFill(0x34495e);
+    body.drawRect(-7, -16, 2, 1);
+    body.drawRect(5, -16, 2, 1);
+    body.endFill();
+
+    // Headset mic
+    body.beginFill(0x7f8c8d);
+    body.drawRect(-8, -15, 1, 2);
+    body.endFill();
+
+    // Rank insignia on shoulder
+    body.beginFill(0xffd700);
+    body.drawRect(-8, -3, 3, 1);
+    body.drawRect(-8, -1, 3, 1);
+    body.endFill();
+
+    // Arms in space suit sleeves
+    armLeft.beginFill(suitColor);
+    armLeft.drawRect(-11, -2, 4, 14);
+    armLeft.endFill();
+
+    // Sleeve panels
+    armLeft.beginFill(suitAccent);
+    armLeft.drawRect(-11, 2, 4, 1);
+    armLeft.drawRect(-11, 8, 4, 1);
+    armLeft.endFill();
+
+    // Glove cuffs
+    armLeft.beginFill(suitShadow);
+    armLeft.drawRect(-11, 10, 4, 2);
+    armLeft.endFill();
+
+    // Space gloves
+    armLeft.beginFill(0x2c3e50);
+    armLeft.drawRect(-10, 12, 2, 3);
+    armLeft.endFill();
+
+    // Glove details
+    armLeft.beginFill(suitAccent);
+    armLeft.drawRect(-10, 12, 2, 1);
+    armLeft.endFill();
+
+    armRight.beginFill(suitColor);
+    armRight.drawRect(7, -2, 4, 14);
+    armRight.endFill();
+
+    armRight.beginFill(suitAccent);
+    armRight.drawRect(7, 2, 4, 1);
+    armRight.drawRect(7, 8, 4, 1);
+    armRight.endFill();
+
+    armRight.beginFill(suitShadow);
+    armRight.drawRect(7, 10, 4, 2);
+    armRight.endFill();
+
+    armRight.beginFill(0x2c3e50);
+    armRight.drawRect(8, 12, 2, 3);
+    armRight.endFill();
+
+    armRight.beginFill(suitAccent);
+    armRight.drawRect(8, 12, 2, 1);
+    armRight.endFill();
+
+    // Space suit pants
+    legLeft.beginFill(suitColor);
+    legLeft.drawRect(-7, 17, 6, 10);
+    legLeft.endFill();
+
+    // Pants shadow
+    legLeft.beginFill(suitShadow);
+    legLeft.drawRect(-7, 25, 6, 2);
+    legLeft.endFill();
+
+    // Leg panel seams
+    legLeft.beginFill(suitAccent);
+    legLeft.drawRect(-7, 20, 6, 1);
+    legLeft.endFill();
+
+    // Knee protection
+    legLeft.beginFill(0x34495e);
+    legLeft.drawRect(-6, 22, 4, 2);
+    legLeft.endFill();
+
+    legRight.beginFill(suitColor);
+    legRight.drawRect(1, 17, 6, 10);
+    legRight.endFill();
+
+    legRight.beginFill(suitShadow);
+    legRight.drawRect(1, 25, 6, 2);
+    legRight.endFill();
+
+    legRight.beginFill(suitAccent);
+    legRight.drawRect(1, 20, 6, 1);
+    legRight.endFill();
+
+    legRight.beginFill(0x34495e);
+    legRight.drawRect(2, 22, 4, 2);
+    legRight.endFill();
+
+    // Space boots
+    const shoeLeft = new Graphics();
+    shoeLeft.beginFill(bootColor);
+    shoeLeft.drawRect(-8, 27, 7, 4);
+    shoeLeft.endFill();
+
+    // Boot sole with tread
+    shoeLeft.beginFill(0x34495e);
+    shoeLeft.drawRect(-8, 30, 7, 1);
+    shoeLeft.endFill();
+
+    // Boot details/buckles
+    shoeLeft.beginFill(0x7f8c8d);
+    shoeLeft.drawRect(-7, 28, 5, 1);
+    shoeLeft.endFill();
+
+    // Magnetic boot indicators
+    shoeLeft.beginFill(0xe74c3c);
+    shoeLeft.drawRect(-3, 29, 1, 1);
+    shoeLeft.endFill();
+
+    const shoeRight = new Graphics();
+    shoeRight.beginFill(bootColor);
+    shoeRight.drawRect(1, 27, 7, 4);
+    shoeRight.endFill();
+
+    shoeRight.beginFill(0x34495e);
+    shoeRight.drawRect(1, 30, 7, 1);
+    shoeRight.endFill();
+
+    shoeRight.beginFill(0x7f8c8d);
+    shoeRight.drawRect(2, 28, 5, 1);
+    shoeRight.endFill();
+
+    shoeRight.beginFill(0xe74c3c);
+    shoeRight.drawRect(4, 29, 1, 1);
+    shoeRight.endFill();
+
+    // Name tag with space theme
+    const nameTag = new Text({
+      text: name,
+      style: new TextStyle({
+        fontSize: 12,
+        fill: 0x3498db,
+        fontFamily: "Arial",
+        stroke: { color: 0x000000, width: 2 },
+        dropShadow: {
+          color: 0x000000,
+          blur: 2,
+          angle: Math.PI / 4,
+          distance: 2,
+        },
+      }),
+    });
+    nameTag.anchor.set(0.5);
+    nameTag.y = -35;
+
+    // Add all parts to container
+    container.addChild(body);
+    container.addChild(armLeft);
+    container.addChild(armRight);
+    container.addChild(legLeft);
+    container.addChild(legRight);
+    container.addChild(shoeLeft);
+    container.addChild(shoeRight);
+    container.addChild(nameTag);
+    container.nameTag = nameTag;
+    container.nameText = nameTag; // For compatibility
+    container.playerName = name;
+
+    // Position the container
+    container.x = position.x;
+    container.y = position.y;
+
+    // Animation state
+    let walking = false;
+    let walkFrame = 0;
+    let direction = "down";
+    let stopTimeout = null;
+    const walkSpeed = 0.3;
+    const legSwingAmount = 3; // Slightly reduced for heavier space suit
+    const armSwingAmount = 2.5; // Reduced for bulkier arms
+    const bodyBobAmount = 0.8; // Less bouncy for weighted suit
+
+    // Store original positions for smooth transitions
+    const originalPositions = {
+      armLeft: { y: armLeft.y, rotation: armLeft.rotation },
+      armRight: { y: armRight.y, rotation: armRight.rotation },
+      legLeft: { y: legLeft.y },
+      legRight: { y: legRight.y },
+      body: { y: body.y },
+    };
+
+    // Animation ticker function
+    let tickerFn = null;
+
+    tickerFn = () => {
+      if (!container || !container.parent) return; // prevent stale access
+
+      if (walking) {
+        walkFrame += walkSpeed;
+
+        const legAngle = Math.sin(walkFrame) * legSwingAmount;
+        const armAngle = Math.sin(walkFrame) * armSwingAmount;
+        const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+
+        // Leg animation (opposite swing)
+        legLeft.y = originalPositions.legLeft.y + legAngle;
+        legRight.y = originalPositions.legRight.y - legAngle;
+
+        // Arm animation (opposite to legs for natural walking)
+        armLeft.y = originalPositions.armLeft.y - armAngle * 0.7;
+        armRight.y = originalPositions.armRight.y + armAngle * 0.7;
+
+        // Slight arm rotation - reduced for bulkier suit
+        armLeft.rotation = -armAngle * 0.08;
+        armRight.rotation = armAngle * 0.08;
+
+        // Body bobbing - reduced for weighted suit
+        const bodyBobOffset = Math.sin(walkFrame * 2) * 0.25;
+        body.y = originalPositions.body.y + bodyBobOffset;
+
+        // Directional facing (flip sprite)
+        if (direction === "left") {
+          container.scale.x = -1;
+        } else if (direction === "right") {
+          container.scale.x = 1;
+        }
+        nameTag.scale.x = 1 / container.scale.x;
+      } else {
+        // Return to idle position smoothly
+        legLeft.y += (originalPositions.legLeft.y - legLeft.y) * 0.1;
+        legRight.y += (originalPositions.legRight.y - legRight.y) * 0.1;
+        armLeft.y += (originalPositions.armLeft.y - armLeft.y) * 0.1;
+        armRight.y += (originalPositions.armRight.y - armRight.y) * 0.1;
+        armLeft.rotation +=
+          (originalPositions.armLeft.rotation - armLeft.rotation) * 0.1;
+        armRight.rotation +=
+          (originalPositions.armRight.rotation - armRight.rotation) * 0.1;
+        body.y += (originalPositions.body.y - body.y) * 0.1;
+      }
+    };
+
+    // Add ticker for animations
+    Ticker.shared.add(tickerFn);
+    container._tickerFn = tickerFn;
+
+    // Enhanced movement API
+    container.walk = (dir) => {
+      walking = true;
+      direction = dir;
+
+      // Clear any existing stop timeout
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+        stopTimeout = null;
+      }
+    };
+
+    container.stop = () => {
+      walking = false;
+
+      // Clear any existing stop timeout
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+        stopTimeout = null;
+      }
+    };
+
+    // Update position method
+    container.updatePosition = (newPosition, isMoving, newDirection) => {
+      // Update position
+      container.x = newPosition.x;
+      container.y = newPosition.y;
+
+      if (isMoving) {
+        container.walk(newDirection);
+      } else {
+        container.stop();
+      }
+
+      // Backup: Auto-stop after 200ms of no updates
+      if (stopTimeout) {
+        clearTimeout(stopTimeout);
+      }
+
+      stopTimeout = setTimeout(() => {
+        container.stop();
+      }, 200);
+    };
+
+    // Cleanup function
+    container.destroy = () => {
+      if (tickerFn) {
+        Ticker.shared.remove(tickerFn);
+      }
+      container.removeChildren();
+    };
+
+    return container;
+  };
+
+ const createOtherFemalePlayer = (name, position) => {
+  const container = new Container();
+
+  // Space station color palette (same as createSpaceFemalePlayer)
+  const skinColor = 0xf4c2a1;
+  const skinShadow = 0xe6b596;
+  const suitPrimary = 0x2c3e50; // Dark blue-gray suit
+  const suitSecondary = 0x34495e; // Lighter blue-gray
+  const suitAccent = 0x3498db; // Bright blue accents
+  const suitHighlight = 0x5dade2; // Light blue highlights
+  const helmetColor = 0x85929e; // Metallic helmet
+  const helmetReflection = 0xaeb6bf;
+  const visorColor = 0x1a1a2e; // Dark visor with slight blue tint
+  const visorReflection = 0x16213e;
+  const hairColor = 0x8b4513; // Auburn/brown hair
+  const hairHighlight = 0xa0522d;
+  const bootColor = 0x2c3e50; // Dark space boots
+  const bootAccent = 0x3498db; // Blue boot details
+  const glowColor = 0x00ffff; // Cyan glow for tech elements
+
+  // Create main body graphics
+  const body = new Graphics();
+  const legLeft = new Graphics();
+  const legRight = new Graphics();
+  const armLeft = new Graphics();
+  const armRight = new Graphics();
+
+  // Main spacesuit body
+  body.beginFill(suitPrimary);
+  body.drawRect(-8, -5, 16, 18);
+  body.endFill();
+
+  // Suit paneling and details
+  body.beginFill(suitSecondary);
+  body.drawRect(-7, -4, 14, 2);
+  body.drawRect(-7, 8, 14, 2);
+  body.endFill();
+
+  // Chest control panel
+  body.beginFill(suitSecondary);
+  body.drawRect(-5, -2, 10, 8);
+  body.endFill();
+
+  // Control panel details
+  body.beginFill(suitAccent);
+  body.drawRect(-4, -1, 3, 1);
+  body.drawRect(-4, 1, 3, 1);
+  body.drawRect(-4, 3, 3, 1);
+  body.endFill();
+
+  // Status lights
+  body.beginFill(glowColor);
+  body.drawRect(2, -1, 1, 1);
+  body.drawRect(2, 1, 1, 1);
+  body.endFill();
+
+  // Emergency button
+  body.beginFill(0xff4757);
+  body.drawRect(2, 3, 1, 1);
+  body.endFill();
+
+  // Suit seams and reinforcement
+  body.beginFill(suitHighlight);
+  body.drawRect(-8, -5, 1, 18);
+  body.drawRect(7, -5, 1, 18);
+  body.drawRect(-8, 6, 16, 1);
+  body.endFill();
+
+  // Head with space helmet
+  body.beginFill(helmetColor);
+  body.drawRect(-7, -19, 14, 13);
+  body.endFill();
+
+  // Helmet reflections
+  body.beginFill(helmetReflection);
+  body.drawRect(-6, -18, 3, 10);
+  body.drawRect(3, -18, 3, 10);
+  body.endFill();
+
+  // Visor
+  body.beginFill(visorColor);
+  body.drawRect(-6, -17, 12, 9);
+  body.endFill();
+
+  // Visor reflection
+  body.beginFill(visorReflection);
+  body.drawRect(-5, -16, 4, 6);
+  body.endFill();
+
+  // Face visible through visor
+  body.beginFill(skinColor);
+  body.drawRect(-4, -15, 8, 6);
+  body.endFill();
+
+  // Face shadow
+  body.beginFill(skinShadow);
+  body.drawRect(-4, -11, 8, 2);
+  body.endFill();
+
+  // Hair visible in helmet (shorter, practical style)
+  body.beginFill(hairColor);
+  body.drawRect(-3, -16, 6, 4);
+  body.endFill();
+
+  // Hair highlights
+  body.beginFill(hairHighlight);
+  body.drawRect(-2, -15, 2, 3);
+  body.endFill();
+
+  // Eyes
+  body.beginFill(0xffffff);
+  body.drawRect(-3, -14, 1, 1);
+  body.drawRect(2, -14, 1, 1);
+  body.endFill();
+
+  // Eye pupils
+  body.beginFill(0x2980b9);
+  body.drawRect(-2.5, -13.5, 0.5, 0.5);
+  body.drawRect(2.5, -13.5, 0.5, 0.5);
+  body.endFill();
+
+  // Nose
+  body.beginFill(skinShadow);
+  body.drawRect(-0.5, -12, 1, 1);
+  body.endFill();
+
+  // Lips
+  body.beginFill(0xc0392b);
+  body.drawRect(-1, -10, 2, 1);
+  body.endFill();
+
+  // Helmet communication device
+  body.beginFill(suitAccent);
+  body.drawRect(-8, -12, 2, 3);
+  body.endFill();
+
+  // Comm device details
+  body.beginFill(glowColor);
+  body.drawRect(-7, -11, 1, 1);
+  body.endFill();
+
+  // Lower body suit
+  body.beginFill(suitPrimary);
+  body.drawRect(-7, 13, 14, 10);
+  body.endFill();
+
+  // Lower body paneling
+  body.beginFill(suitSecondary);
+  body.drawRect(-6, 14, 12, 2);
+  body.drawRect(-6, 19, 12, 2);
+  body.endFill();
+
+  // Utility belt
+  body.beginFill(suitAccent);
+  body.drawRect(-7, 16, 14, 2);
+  body.endFill();
+
+  // Belt pouches
+  body.beginFill(suitSecondary);
+  body.drawRect(-6, 16, 2, 2);
+  body.drawRect(-2, 16, 2, 2);
+  body.drawRect(2, 16, 2, 2);
+  body.endFill();
+
+  // Left arm with suit details
+  armLeft.beginFill(suitPrimary);
+  armLeft.drawRect(-10, -2, 3, 12);
+  armLeft.endFill();
+
+  // Arm joint/shoulder pad
+  armLeft.beginFill(suitSecondary);
+  armLeft.drawRect(-10, -2, 3, 3);
+  armLeft.endFill();
+
+  // Arm seams
+  armLeft.beginFill(suitHighlight);
+  armLeft.drawRect(-10, 2, 3, 1);
+  armLeft.drawRect(-10, 6, 3, 1);
+  armLeft.endFill();
+
+  // Space glove
+  armLeft.beginFill(helmetColor);
+  armLeft.drawRect(-9, 10, 2, 3);
+  armLeft.endFill();
+
+  // Glove details
+  armLeft.beginFill(suitAccent);
+  armLeft.drawRect(-9, 10, 2, 1);
+  armLeft.endFill();
+
+  // Right arm (mirror of left)
+  armRight.beginFill(suitPrimary);
+  armRight.drawRect(7, -2, 3, 12);
+  armRight.endFill();
+
+  armRight.beginFill(suitSecondary);
+  armRight.drawRect(7, -2, 3, 3);
+  armRight.endFill();
+
+  armRight.beginFill(suitHighlight);
+  armRight.drawRect(7, 2, 3, 1);
+  armRight.drawRect(7, 6, 3, 1);
+  armRight.endFill();
+
+  armRight.beginFill(helmetColor);
+  armRight.drawRect(7, 10, 2, 3);
+  armRight.endFill();
+
+  armRight.beginFill(suitAccent);
+  armRight.drawRect(7, 10, 2, 1);
+  armRight.endFill();
+
+  // Legs with suit details
+  legLeft.beginFill(suitPrimary);
+  legLeft.drawRect(-5, 23, 4, 6);
+  legLeft.endFill();
+
+  // Leg seams
+  legLeft.beginFill(suitHighlight);
+  legLeft.drawRect(-5, 25, 4, 1);
+  legLeft.endFill();
+
+  legRight.beginFill(suitPrimary);
+  legRight.drawRect(1, 23, 4, 6);
+  legRight.endFill();
+
+  legRight.beginFill(suitHighlight);
+  legRight.drawRect(1, 25, 4, 1);
+  legRight.endFill();
+
+  // Space boots
+  const bootLeft = new Graphics();
+  bootLeft.beginFill(bootColor);
+  bootLeft.drawRect(-6, 29, 5, 4);
+  bootLeft.endFill();
+
+  // Boot sole (thicker for space)
+  bootLeft.beginFill(0x1a1a1a);
+  bootLeft.drawRect(-6, 32, 5, 2);
+  bootLeft.endFill();
+
+  // Boot details
+  bootLeft.beginFill(bootAccent);
+  bootLeft.drawRect(-6, 29, 5, 1);
+  bootLeft.drawRect(-5, 30, 1, 2);
+  bootLeft.endFill();
+
+  // Magnetic attachment point
+  bootLeft.beginFill(helmetColor);
+  bootLeft.drawRect(-4, 33, 1, 1);
+  bootLeft.endFill();
+
+  const bootRight = new Graphics();
+  bootRight.beginFill(bootColor);
+  bootRight.drawRect(1, 29, 5, 4);
+  bootRight.endFill();
+
+  bootRight.beginFill(0x1a1a1a);
+  bootRight.drawRect(1, 32, 5, 2);
+  bootRight.endFill();
+
+  bootRight.beginFill(bootAccent);
+  bootRight.drawRect(1, 29, 5, 1);
+  bootRight.drawRect(4, 30, 1, 2);
+  bootRight.endFill();
+
+  bootRight.beginFill(helmetColor);
+  bootRight.drawRect(3, 33, 1, 1);
+  bootRight.endFill();
+
+  // Life support backpack
+  const backpack = new Graphics();
+  backpack.beginFill(suitSecondary);
+  backpack.drawRect(-4, 2, 8, 8);
+  backpack.endFill();
+
+  // Backpack details
+  backpack.beginFill(suitAccent);
+  backpack.drawRect(-3, 3, 6, 1);
+  backpack.drawRect(-3, 7, 6, 1);
+  backpack.endFill();
+
+  // Oxygen indicator
+  backpack.beginFill(0x2ecc71);
+  backpack.drawRect(2, 4, 1, 1);
+  backpack.endFill();
+
+  // Warning light
+  backpack.beginFill(0xf39c12);
+  backpack.drawRect(2, 6, 1, 1);
+  backpack.endFill();
+
+  // Name Tag with futuristic styling
+  const nameTag = new Text({
+    text: name,
+    style: new TextStyle({
+      fontSize: 12,
+      fill: glowColor,
+      fontFamily: "Arial",
+      stroke: { color: 0x000000, width: 2 },
+      dropShadow: {
+        color: glowColor,
+        blur: 3,
+        angle: Math.PI / 4,
+        distance: 2,
+      },
+    }),
+  });
+  nameTag.anchor.set(0.5);
+  nameTag.y = -35;
+
+  // Add all parts to container (backpack first so it's behind)
+  container.addChild(backpack);
+  container.addChild(body);
+  container.addChild(armLeft);
+  container.addChild(armRight);
+  container.addChild(legLeft);
+  container.addChild(legRight);
+  container.addChild(bootLeft);
+  container.addChild(bootRight);
+  container.addChild(nameTag);
+
+  // Store references for compatibility
+  container.nameTag = nameTag;
+  container.nameText = nameTag; // For compatibility
+  container.playerName = name;
+
+  // Position the container
+  container.x = position.x;
+  container.y = position.y;
+
+  // Animation state
+  let walking = false;
+  let walkFrame = 0;
+  let direction = "down";
+  let stopTimeout = null;
+  const walkSpeed = 0.3;
+  const legSwingAmount = 3; // Slightly less swing for space suit
+  const armSwingAmount = 2; // Reduced for bulky suit
+  const bodyBobAmount = 0.8; // Less bobbing for weightier movement
+
+  // Store original positions for smooth transitions
+  const originalPositions = {
+    armLeft: { y: armLeft.y, rotation: armLeft.rotation },
+    armRight: { y: armRight.y, rotation: armRight.rotation },
+    legLeft: { y: legLeft.y },
+    legRight: { y: legRight.y },
+    body: { y: body.y },
+    backpack: { y: backpack.y },
+  };
+
+  // Animation ticker function
+  let tickerFn = null;
+
+  tickerFn = () => {
+    if (!container || !container.parent) return; // prevent stale access
+
+    if (walking) {
+      walkFrame += walkSpeed;
+
+      const legAngle = Math.sin(walkFrame) * legSwingAmount;
+      const armAngle = Math.sin(walkFrame) * armSwingAmount;
+      const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+
+      // Leg animation (opposite swing)
+      legLeft.y = originalPositions.legLeft.y + legAngle;
+      legRight.y = originalPositions.legRight.y - legAngle;
+
+      // Arm animation (opposite to legs for natural walking)
+      armLeft.y = originalPositions.armLeft.y - armAngle * 0.7;
+      armRight.y = originalPositions.armRight.y + armAngle * 0.7;
+
+      // Slight arm rotation (less for bulky suit)
+      armLeft.rotation = -armAngle * 0.05;
+      armRight.rotation = armAngle * 0.05;
+
+      // Body bobbing
+      const bodyBobOffset = Math.sin(walkFrame * 2) * 0.3;
+      body.y = originalPositions.body.y + bodyBobOffset;
+
+      // Backpack slight movement
+      backpack.y = originalPositions.backpack.y + Math.sin(walkFrame * 2) * 0.2;
+
+      // Directional facing (flip sprite)
+      if (direction === "left") {
+        container.scale.x = -1;
+      } else if (direction === "right") {
+        container.scale.x = 1;
+      }
+      nameTag.scale.x = 1 / container.scale.x;
+    } else {
+      // Return to idle position smoothly
+      legLeft.y += (originalPositions.legLeft.y - legLeft.y) * 0.1;
+      legRight.y += (originalPositions.legRight.y - legRight.y) * 0.1;
+      armLeft.y += (originalPositions.armLeft.y - armLeft.y) * 0.1;
+      armRight.y += (originalPositions.armRight.y - armRight.y) * 0.1;
+      armLeft.rotation += (originalPositions.armLeft.rotation - armLeft.rotation) * 0.1;
+      armRight.rotation += (originalPositions.armRight.rotation - armRight.rotation) * 0.1;
+      body.y += (originalPositions.body.y - body.y) * 0.1;
+      backpack.y += (originalPositions.backpack.y - backpack.y) * 0.1;
+    }
+  };
+
+  // Add ticker for animations
+  Ticker.shared.add(tickerFn);
+  container._tickerFn = tickerFn;
+
+  // Enhanced movement API
+  container.walk = (dir) => {
+    walking = true;
+    direction = dir;
+
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+
+  container.stop = () => {
+    walking = false;
+
+    // Clear any existing stop timeout
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+      stopTimeout = null;
+    }
+  };
+
+  // Update position method
+  container.updatePosition = (newPosition, isMoving, newDirection) => {
+    // Update position
+    container.x = newPosition.x;
+    container.y = newPosition.y;
+
+    if (isMoving) {
+      container.walk(newDirection);
+    } else {
+      container.stop();
+    }
+
+    // Backup: Auto-stop after 200ms of no updates
+    if (stopTimeout) {
+      clearTimeout(stopTimeout);
+    }
+
+    stopTimeout = setTimeout(() => {
+      container.stop();
+    }, 200);
+  };
+
+  // Cleanup function
+  container.destroy = () => {
+    if (tickerFn) {
+      Ticker.shared.remove(tickerFn);
+    }
+    container.removeChildren();
+  };
+
+  return container;
+};
+
+  const createOtherSpideyPlayer = (name, position) => {
+    const player = new Graphics();
+    const legLeft = new Graphics();
+    const legRight = new Graphics();
+    const armLeft = new Graphics();
+    const armRight = new Graphics();
+
+    // Enhanced Spiderman color palette
+    const spidermanRed = 0xdc143c;
+    const spidermanRedShadow = 0xa01024;
+    const spidermanRedHighlight = 0xff3050;
+    const spidermanBlue = 0x1e40af;
+    const spidermanBlueShadow = 0x1e3a8a;
+    const spidermanBlueHighlight = 0x3b82f6;
+    const webColor = 0x000000;
+    const eyeColor = 0xffffff;
+    const eyeReflection = 0xe0e0e0;
+    const muscleShadow = 0x8b1538;
+
+    // Create separate graphics objects for emblem and web patterns
+    const emblem = new Graphics();
+    const webPattern = new Graphics();
+
+    // Main body (red suit with muscle definition)
+    player.beginFill(spidermanRed);
+    player.drawRect(-8, -5, 16, 18);
+    player.endFill();
+
+    // Muscle definition on torso
+    player.beginFill(spidermanRedShadow);
+    player.drawRect(-6, -3, 2, 8); // Left pec
+    player.drawRect(4, -3, 2, 8); // Right pec
+    player.drawRect(-2, 2, 4, 6); // Abs
+    player.endFill();
+
+    // Body highlights
+    player.beginFill(spidermanRedHighlight);
+    player.drawRect(-7, -4, 1, 6); // Left highlight
+    player.drawRect(6, -4, 1, 6); // Right highlight
+    player.endFill();
+
+    // Body shadow
+    player.beginFill(spidermanRedShadow);
+    player.drawRect(-8, 11, 16, 2);
+    player.endFill();
+
+    // Enhanced spider emblem on chest
+    emblem.beginFill(webColor);
+    // Spider body (more detailed)
+    emblem.drawRect(-1, -3, 2, 8);
+    emblem.drawRect(-2, -1, 4, 2);
+    // Spider legs (more realistic)
+    emblem.drawRect(-5, -1, 3, 1);
+    emblem.drawRect(2, -1, 3, 1);
+    emblem.drawRect(-4, 1, 2, 1);
+    emblem.drawRect(2, 1, 2, 1);
+    emblem.drawRect(-3, 3, 1, 1);
+    emblem.drawRect(2, 3, 1, 1);
+    // Add spider head
+    emblem.drawRect(-1, -4, 2, 2);
+    emblem.endFill();
+
+    // Enhanced web pattern on torso
+    webPattern.beginFill(webColor);
+    // Vertical web lines
+    for (let i = -6; i <= 6; i += 2) {
+      webPattern.drawRect(i, -4, 1, 16);
+    }
+    // Horizontal web lines
+    for (let i = -4; i <= 12; i += 2) {
+      webPattern.drawRect(-7, i, 14, 1);
+    }
+    // Diagonal web connections
+    for (let i = -6; i <= 4; i += 2) {
+      webPattern.drawRect(i, -3 + Math.abs(i), 1, 1);
+      webPattern.drawRect(i, 1 + Math.abs(i), 1, 1);
+    }
+    webPattern.endFill();
+
+    // Head (full mask with better shape)
+    player.beginFill(spidermanRed);
+    player.drawRect(-6, -18, 12, 12);
+    player.endFill();
+
+    // Head muscle definition
+    player.beginFill(spidermanRedShadow);
+    player.drawRect(-5, -16, 2, 3); // Left cheek
+    player.drawRect(3, -16, 2, 3); // Right cheek
+    player.drawRect(-2, -12, 4, 2); // Jaw line
+    player.endFill();
+
+    // Head highlights
+    player.beginFill(spidermanRedHighlight);
+    player.drawRect(-5, -17, 1, 2);
+    player.drawRect(4, -17, 1, 2);
+    player.endFill();
+
+    // Enhanced web pattern on head
+    player.beginFill(webColor);
+    // Radial web pattern from center
+    for (let i = -5; i <= 5; i += 2) {
+      player.drawRect(i, -18, 1, 12);
+    }
+    for (let i = -17; i <= -7; i += 2) {
+      player.drawRect(-6, i, 12, 1);
+    }
+    // Curved web lines around eyes
+    player.drawRect(-6, -15, 2, 1);
+    player.drawRect(-6, -14, 3, 1);
+    player.drawRect(3, -15, 3, 1);
+    player.drawRect(4, -14, 2, 1);
+    player.endFill();
+
+    // Enhanced Spiderman eyes (larger and more expressive)
+    player.beginFill(eyeColor);
+    // Left eye (teardrop shape)
+    player.drawRect(-5, -16, 4, 5);
+    player.drawRect(-4, -17, 2, 1);
+    player.drawRect(-4, -11, 2, 1);
+    // Right eye
+    player.drawRect(1, -16, 4, 5);
+    player.drawRect(2, -17, 2, 1);
+    player.drawRect(2, -11, 2, 1);
+    player.endFill();
+
+    // Eye reflections
+    player.beginFill(eyeReflection);
+    player.drawRect(-4, -15, 1, 1);
+    player.drawRect(2, -15, 1, 1);
+    player.endFill();
+
+    // Eye outline (more detailed)
+    player.beginFill(webColor);
+    // Left eye outline
+    player.drawRect(-5, -17, 4, 1);
+    player.drawRect(-5, -11, 4, 1);
+    player.drawRect(-5, -16, 1, 5);
+    player.drawRect(-1, -16, 1, 5);
+    player.drawRect(-4, -17, 1, 1);
+    player.drawRect(-2, -17, 1, 1);
+    // Right eye outline
+    player.drawRect(1, -17, 4, 1);
+    player.drawRect(1, -11, 4, 1);
+    player.drawRect(1, -16, 1, 5);
+    player.drawRect(4, -16, 1, 5);
+    player.drawRect(2, -17, 1, 1);
+    player.drawRect(4, -17, 1, 1);
+    player.endFill();
+
+    // Enhanced arms (red with better muscle definition)
+    armLeft.beginFill(spidermanRed);
+    armLeft.drawRect(-10, -2, 3, 12);
+    armLeft.endFill();
+
+    // Muscle definition on arms
+    armLeft.beginFill(spidermanRedShadow);
+    armLeft.drawRect(-9, 0, 1, 8); // Bicep
+    armLeft.endFill();
+
+    armLeft.beginFill(spidermanRedHighlight);
+    armLeft.drawRect(-10, 1, 1, 6);
+    armLeft.endFill();
+
+    // Enhanced web pattern on arms
+    armLeft.beginFill(webColor);
+    armLeft.drawRect(-10, 0, 3, 1);
+    armLeft.drawRect(-10, 3, 3, 1);
+    armLeft.drawRect(-10, 6, 3, 1);
+    armLeft.drawRect(-9, -2, 1, 12);
+    // Diagonal connections
+    armLeft.drawRect(-10, 1, 1, 1);
+    armLeft.drawRect(-8, 2, 1, 1);
+    armLeft.drawRect(-10, 4, 1, 1);
+    armLeft.drawRect(-8, 5, 1, 1);
+    armLeft.endFill();
+
+    // Enhanced hands
+    armLeft.beginFill(spidermanRed);
+    armLeft.drawRect(-9, 10, 2, 3);
+    armLeft.endFill();
+
+    // Hand web pattern
+    armLeft.beginFill(webColor);
+    armLeft.drawRect(-9, 11, 2, 1);
+    armLeft.endFill();
+
+    // Right arm (mirrored)
+    armRight.beginFill(spidermanRed);
+    armRight.drawRect(7, -2, 3, 12);
+    armRight.endFill();
+
+    armRight.beginFill(spidermanRedShadow);
+    armRight.drawRect(8, 0, 1, 8);
+    armRight.endFill();
+
+    armRight.beginFill(spidermanRedHighlight);
+    armRight.drawRect(9, 1, 1, 6);
+    armRight.endFill();
+
+    armRight.beginFill(webColor);
+    armRight.drawRect(7, 0, 3, 1);
+    armRight.drawRect(7, 3, 3, 1);
+    armRight.drawRect(7, 6, 3, 1);
+    armRight.drawRect(8, -2, 1, 12);
+    armRight.drawRect(9, 1, 1, 1);
+    armRight.drawRect(7, 2, 1, 1);
+    armRight.drawRect(9, 4, 1, 1);
+    armRight.drawRect(7, 5, 1, 1);
+    armRight.endFill();
+
+    armRight.beginFill(spidermanRed);
+    armRight.drawRect(7, 10, 2, 3);
+    armRight.endFill();
+
+    armRight.beginFill(webColor);
+    armRight.drawRect(7, 11, 2, 1);
+    armRight.endFill();
+
+    // Enhanced legs (blue suit with muscle definition)
+    legLeft.beginFill(spidermanBlue);
+    legLeft.drawRect(-5, 13, 4, 16);
+    legLeft.endFill();
+
+    // Muscle definition on legs
+    legLeft.beginFill(spidermanBlueShadow);
+    legLeft.drawRect(-4, 15, 1, 12); // Quad muscle
+    legLeft.drawRect(-2, 17, 1, 8); // Inner muscle
+    legLeft.endFill();
+
+    legLeft.beginFill(spidermanBlueHighlight);
+    legLeft.drawRect(-5, 16, 1, 10);
+    legLeft.endFill();
+
+    // Enhanced web pattern on legs
+    legLeft.beginFill(webColor);
+    legLeft.drawRect(-5, 16, 4, 1);
+    legLeft.drawRect(-5, 20, 4, 1);
+    legLeft.drawRect(-5, 24, 4, 1);
+    legLeft.drawRect(-3, 13, 1, 16);
+    // Diagonal connections
+    legLeft.drawRect(-5, 17, 1, 1);
+    legLeft.drawRect(-2, 18, 1, 1);
+    legLeft.drawRect(-5, 21, 1, 1);
+    legLeft.drawRect(-2, 22, 1, 1);
+    legLeft.endFill();
+
+    // Right leg (mirrored)
+    legRight.beginFill(spidermanBlue);
+    legRight.drawRect(1, 13, 4, 16);
+    legRight.endFill();
+
+    legRight.beginFill(spidermanBlueShadow);
+    legRight.drawRect(3, 15, 1, 12);
+    legRight.drawRect(1, 17, 1, 8);
+    legRight.endFill();
+
+    legRight.beginFill(spidermanBlueHighlight);
+    legRight.drawRect(4, 16, 1, 10);
+    legRight.endFill();
+
+    legRight.beginFill(webColor);
+    legRight.drawRect(1, 16, 4, 1);
+    legRight.drawRect(1, 20, 4, 1);
+    legRight.drawRect(1, 24, 4, 1);
+    legRight.drawRect(2, 13, 1, 16);
+    legRight.drawRect(4, 17, 1, 1);
+    legRight.drawRect(1, 18, 1, 1);
+    legRight.drawRect(4, 21, 1, 1);
+    legRight.drawRect(1, 22, 1, 1);
+    legRight.endFill();
+
+    // Enhanced boots
+    const shoeLeft = new Graphics();
+    shoeLeft.beginFill(spidermanRed);
+    shoeLeft.drawRect(-6, 29, 5, 3);
+    shoeLeft.endFill();
+
+    // Boot details
+    shoeLeft.beginFill(spidermanRedShadow);
+    shoeLeft.drawRect(-6, 30, 5, 1);
+    shoeLeft.endFill();
+
+    shoeLeft.beginFill(webColor);
+    shoeLeft.drawRect(-5, 29, 1, 3);
+    shoeLeft.drawRect(-3, 29, 1, 3);
+    shoeLeft.endFill();
+
+    const shoeRight = new Graphics();
+    shoeRight.beginFill(spidermanRed);
+    shoeRight.drawRect(1, 29, 5, 3);
+    shoeRight.endFill();
+
+    shoeRight.beginFill(spidermanRedShadow);
+    shoeRight.drawRect(1, 30, 5, 1);
+    shoeRight.endFill();
+
+    shoeRight.beginFill(webColor);
+    shoeRight.drawRect(2, 29, 1, 3);
+    shoeRight.drawRect(4, 29, 1, 3);
+    shoeRight.endFill();
+
+    // Add all child elements in correct order
+    player.addChild(webPattern); // Web pattern first
+    player.addChild(emblem); // Emblem on top
+    player.addChild(armLeft);
+    player.addChild(armRight);
+    player.addChild(legLeft);
+    player.addChild(legRight);
+    player.addChild(shoeLeft);
+    player.addChild(shoeRight);
+
+    // Name tag
+    const nameTag = new Text({
+      text: name,
+      style: new TextStyle({
+        fontSize: 12,
+        fill: 0xffffff,
+        fontFamily: "Arial",
+        stroke: { color: 0x000000, width: 2 },
+        dropShadow: {
+          color: 0x000000,
+          blur: 2,
+          angle: Math.PI / 4,
+          distance: 2,
+        },
+      }),
+    });
+    nameTag.anchor.set(0.5);
+    nameTag.y = -35;
+    player.addChild(nameTag);
+    player.nameTag = nameTag;
+    player.nameText = nameTag; // For compatibility
+    player.playerName = name;
+
+    // Position the player
+    player.x = position.x;
+    player.y = position.y;
+
+    // Use the provided animation function
+    return setupPlayerAnimationForOtherPlayer(
+      player,
+      legLeft,
+      legRight,
+      armLeft,
+      armRight,
+      shoeLeft,
+      shoeRight,
+      nameTag,
+      null,
+      emblem,
+      webPattern
+    );
+  };
+
+  const createOtherBatmanPlayer = (name, position, gameState) => {
+    const player = new Graphics();
+    const legLeft = new Graphics();
+    const legRight = new Graphics();
+    const armLeft = new Graphics();
+    const armRight = new Graphics();
+
+    // Batman color palette (same as createBatman)
+    const batmanGray = 0x4a5568;
+    const batmanGrayShadow = 0x2d3748;
+    const batmanBlack = 0x1a202c;
+    const batmanBlackShadow = 0x000000;
+    const batmanYellow = 0xffd700;
+    const batmanYellowShadow = 0xe6c200;
+    const batmanBlue = 0x2563eb;
+    const capeColor = 0x1a202c;
+
+    // Cape (behind character) - Ensure this is added first to be at the back
+    const cape = new Graphics();
+    cape.beginFill(capeColor);
+    cape.drawRect(-12, -8, 24, 25);
+    cape.endFill();
+
+    // Cape shadow
+    cape.beginFill(batmanBlackShadow);
+    cape.drawRect(-12, 15, 24, 2);
+    cape.endFill();
+
+    player.addChild(cape); // Add cape first
+
+    // Main body (gray suit)
+    player.beginFill(batmanGray);
+    player.drawRect(-8, -5, 16, 18);
+    player.endFill();
+
+    // Body shadow
+    player.beginFill(batmanGrayShadow);
+    player.drawRect(-8, 11, 16, 2);
+    player.endFill();
+
+    // Head with cowl (drawn after body)
+    player.beginFill(batmanGray);
+    player.drawRect(-6, -18, 12, 12);
+    player.endFill();
+
+    // Batman cowl ears
+    player.beginFill(batmanGray);
+    player.drawRect(-4, -22, 2, 4);
+    player.drawRect(2, -22, 2, 4);
+    player.endFill();
+
+    // Cowl shadow
+    player.beginFill(batmanGrayShadow);
+    player.drawRect(-6, -8, 12, 2);
+    player.endFill();
+
+    // Batman eyes (white slits)
+    player.beginFill(0xffffff);
+    player.drawRect(-4, -15, 2, 1);
+    player.drawRect(2, -15, 2, 1);
+    player.endFill();
+
+    // Mouth (stern expression)
+    player.beginFill(batmanGrayShadow);
+    player.drawRect(-1, -10, 2, 1);
+    player.endFill();
+
+    // Create separate graphics objects for emblem and belt
+    const emblem = new Graphics();
+    const belt = new Graphics();
+
+    // Bat emblem on chest - separate object
+    emblem.beginFill(batmanYellow);
+    emblem.drawRect(-3, -2, 6, 4);
+    emblem.endFill();
+
+    // Bat symbol
+    emblem.beginFill(batmanBlack);
+    // Bat body
+    emblem.drawRect(-1, -1, 2, 2);
+    // Bat wings
+    emblem.drawRect(-3, 0, 2, 1);
+    emblem.drawRect(1, 0, 2, 1);
+    // Wing tips
+    emblem.drawRect(-4, 1, 1, 1);
+    emblem.drawRect(3, 1, 1, 1);
+    emblem.endFill();
+
+    // Utility belt - separate object
+    belt.beginFill(batmanYellow);
+    belt.drawRect(-8, 8, 16, 2);
+    belt.endFill();
+
+    // Belt pouches
+    belt.beginFill(batmanYellowShadow);
+    belt.drawRect(-6, 8, 2, 2);
+    belt.drawRect(-2, 8, 2, 2);
+    belt.drawRect(2, 8, 2, 2);
+    belt.endFill();
+
+    // Belt buckle
+    belt.beginFill(batmanYellowShadow);
+    belt.drawRect(-1, 8, 2, 2);
+    belt.endFill();
+
+    // Add emblem and belt to player
+    player.addChild(emblem);
+    player.addChild(belt);
+
+    // Arms (gray with black gloves)
+    armLeft.beginFill(batmanGray);
+    armLeft.drawRect(-10, -2, 3, 10);
+    armLeft.endFill();
+
+    // Black gloves
+    armLeft.beginFill(batmanBlack);
+    armLeft.drawRect(-10, 8, 3, 5);
+    armLeft.endFill();
+
+    armRight.beginFill(batmanGray);
+    armRight.drawRect(7, -2, 3, 10);
+    armRight.endFill();
+
+    armRight.beginFill(batmanBlack);
+    armRight.drawRect(7, 8, 3, 5);
+    armRight.endFill();
+
+    player.addChild(armLeft);
+    player.addChild(armRight);
+
+    // Legs (gray with black boots)
+    legLeft.beginFill(batmanGray);
+    legLeft.drawRect(-5, 13, 4, 12);
+    legLeft.endFill();
+
+    // Black boots
+    legLeft.beginFill(batmanBlack);
+    legLeft.drawRect(-5, 25, 4, 4);
+    legLeft.endFill();
+
+    legRight.beginFill(batmanGray);
+    legRight.drawRect(1, 13, 4, 12);
+    legRight.endFill();
+
+    legRight.beginFill(batmanBlack);
+    legRight.drawRect(1, 25, 4, 4);
+    legRight.endFill();
+
+    player.addChild(legLeft);
+    player.addChild(legRight);
+
+    // Boots
+    const shoeLeft = new Graphics();
+    shoeLeft.beginFill(batmanBlack);
+    shoeLeft.drawRect(-6, 29, 5, 3);
+    shoeLeft.endFill();
+
+    const shoeRight = new Graphics();
+    shoeRight.beginFill(batmanBlack);
+    shoeRight.drawRect(1, 29, 5, 3);
+    shoeRight.endFill();
+
+    player.addChild(shoeLeft);
+    player.addChild(shoeRight);
+
+    // Name tag
+    const nameTag = new Text({
+      text: name,
+      style: new TextStyle({
+        fontSize: 12,
+        fill: 0xffffff,
+        fontFamily: "Arial",
+        stroke: { color: 0x000000, width: 2 },
+        dropShadow: {
+          color: 0x000000,
+          blur: 2,
+          angle: Math.PI / 4,
+          distance: 2,
+        },
+      }),
+    });
+    nameTag.anchor.set(0.5);
+    nameTag.y = -35;
+    player.addChild(nameTag);
+    player.nameTag = nameTag;
+    player.nameText = nameTag; // For compatibility
+    player.playerName = name;
+
+    // Set initial position
+    player.x = position.x;
+    player.y = position.y;
+
+    // Use the existing setupPlayerAnimation function but modify it to not add to gameState.camera
+    // and not set gameState.player (since this is for other players)
+    const animatedPlayer = setupPlayerAnimationForOtherPlayer(
+      player,
+      legLeft,
+      legRight,
+      armLeft,
+      armRight,
+      shoeLeft,
+      shoeRight,
+      nameTag,
+      cape,
+      emblem,
+      belt
+    );
+
+    return animatedPlayer;
+  };
+
+   const setupPlayerAnimationForOtherPlayer = (
+      player,
+      legLeft,
+      legRight,
+      armLeft,
+      armRight,
+      shoeLeft,
+      shoeRight,
+      nameTag,
+      cape = null,
+      emblem = null,
+      belt = null
+    ) => {
+      // Animation variables
+      let walking = false;
+      let walkFrame = 0;
+      let direction = "down";
+      const walkSpeed = 0.3;
+      const legSwingAmount = 4;
+      const armSwingAmount = 3;
+      const bodyBobAmount = 1;
+  
+      let tickerFn = () => {
+        if (!player || !player.parent) return; // prevent stale access
+  
+        if (walking) {
+          walkFrame += walkSpeed;
+  
+          const legAngle = Math.sin(walkFrame) * legSwingAmount;
+          const armAngle = Math.sin(walkFrame) * armSwingAmount;
+          const bodyBob = Math.abs(Math.sin(walkFrame * 2)) * bodyBobAmount;
+  
+          legLeft.y = 0 + legAngle;
+          legRight.y = 0 - legAngle;
+  
+          armLeft.y = 0 - armAngle * 0.7;
+          armRight.y = 0 + armAngle * 0.7;
+  
+          armLeft.rotation = -armAngle * 0.1;
+          armRight.rotation = armAngle * 0.1;
+  
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight &&
+              child !== cape &&
+              child !== emblem &&
+              child !== belt
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+  
+          if (direction === "left") {
+            player.scale.x = -1;
+          } else if (direction === "right") {
+            player.scale.x = 1;
+          }
+          nameTag.scale.x = 1 / player.scale.x;
+        } else {
+          legLeft.y += (0 - legLeft.y) * 0.1;
+          legRight.y += (0 - legRight.y) * 0.1;
+          armLeft.y += (0 - armLeft.y) * 0.1;
+          armRight.y += (0 - armRight.y) * 0.1;
+          armLeft.rotation += (0 - armLeft.rotation) * 0.1;
+          armRight.rotation += (0 - armRight.rotation) * 0.1;
+  
+          player.children.forEach((child) => {
+            if (
+              child !== legLeft &&
+              child !== legRight &&
+              child !== shoeLeft &&
+              child !== shoeRight &&
+              child !== nameTag &&
+              child !== cape &&
+              child !== emblem &&
+              child !== belt
+            ) {
+              child.y += Math.sin(walkFrame * 2) * 0.3;
+            }
+          });
+        }
+      };
+  
+      Ticker.shared.add(tickerFn);
+      player._tickerFn = tickerFn;
+  
+      player.walk = (dir) => {
+        walking = true;
+        direction = dir;
+        const speed = 2;
+  
+        if (dir === "left") player.x -= speed;
+        if (dir === "right") player.x += speed;
+        if (dir === "up") player.y -= speed;
+        if (dir === "down") player.y += speed;
+      };
+  
+      player.stop = () => {
+        walking = false;
+      };
+  
+      // Add updatePosition method for network synchronization
+      player.updatePosition = (newPosition, isMoving, newDirection) => {
+        player.x = newPosition.x;
+        player.y = newPosition.y;
+  
+        if (isMoving) {
+          player.walk(newDirection);
+        } else {
+          player.stop();
+        }
+      };
+  
+      // Add destroy method for cleanup
+      player.destroy = () => {
+        if (tickerFn) {
+          Ticker.shared.remove(tickerFn);
+        }
+        if (player.parent) {
+          player.parent.removeChild(player);
+        }
+      };
+  
+      player.children.forEach((child) => {
+        child.originalY = child.y;
+      });
+  
+      return player;
+    };
+
  const avatarMap = {
     default: createPlayer,
     Batman: createBatman,
     Spiderman: createSpidey,
     Male: createMalePlayer,
     Female: createGirlPlayer,
+  };
+    const avatarOtherMap = {
+    default: createOtherPlayer,
+    Batman: createOtherBatmanPlayer,
+    Spiderman: createOtherSpideyPlayer,
+    Male: createOtherMalePlayer,
+    Female: createOtherFemalePlayer,
   };
  const createFn = avatarMap[avatarType] || createPlayer;
 
@@ -1768,6 +3970,39 @@ function SpaceStation() {
         }
       }, [wallHackEnabled]);
 
+      useEffect(() => {
+        if (!socket.connected) {
+          socket.connect();
+        }
+      
+        const handleConnect = () => {
+          console.log("🟢 Connected:", socket.id);
+          gameStateRef.current.socketId = socket.id;
+        };
+      
+        socket.on("connect", handleConnect);
+      
+        return () => {
+          socket.off("connect", handleConnect);
+          socket.disconnect(); // ✅ clean disconnect on unmount
+        };
+      }, []);
+
+         useEffect(() => {
+        if (socket && space && !isOwner) {
+          // Request permissions when joining as non-owner
+          const requestPermissions = () => {
+            socket.emit("requestPermissions");
+            console.log("❓ Requested permissions from admin");
+          };
+      
+          // Request permissions after a short delay to ensure connection is stable
+          const timeoutId = setTimeout(requestPermissions, 1500);
+      
+          return () => clearTimeout(timeoutId);
+        }
+      }, [socket, space, isOwner]);
+
   useEffect(() => {
     if (!loadingPage && space && canvasRef.current) {
       const initPixi = async () => {
@@ -1801,24 +4036,24 @@ function SpaceStation() {
               createSpaceStationGrid(gameState);
               populateRooms(gameState);
               createFn(gameState, playerName);
-            //   setupSocketListeners(gameState);
+              setupSocketListeners(gameState);
       
-              // ✅ Now emit player-join after everything is ready
-            //   socket.emit("player-join", {
-            //     name: playerName,
-            //     position: {
-            //       x: gameState.player.x,
-            //       y: gameState.player.y,
-            //     },
-            //     avatarKey: gameState.player.avatarKey,
-            //     spaceId: space._id,
-            //   });
-            //   console.log(
-            //     "🙋 Sending player-join",
-            //     playerName,
-            //     gameState.player.x,
-            //     gameState.player.y
-            //   );
+            //   ✅ Now emit player-join after everything is ready
+              socket.emit("player-join", {
+                name: playerName,
+                position: {
+                  x: gameState.player.x,
+                  y: gameState.player.y,
+                },
+                avatarKey: gameState.player.avatarKey,
+                spaceId: space._id,
+              });
+              console.log(
+                "🙋 Sending player-join",
+                playerName,
+                gameState.player.x,
+                gameState.player.y
+              );
       
               setupInput(gameState, app);
       
@@ -1826,10 +4061,421 @@ function SpaceStation() {
               app.ticker.add(() => gameLoop(gameState, app));
             };
 
-      const addWithCollider = (container, displayObject, bounds, colliders) => {
-        container.addChild(displayObject);
-        colliders.push(bounds);
-      };            
+const setupSocketListeners = (gameState) => {
+  // ✅ Remove any existing listeners first
+  socket.off("existing-players");
+  socket.off("player-joined");
+  socket.off("player-moved");
+  socket.off("player-left");
+  socket.off("avatar-change");
+  socket.off("player-emote");
+  socket.off("hackPermissionsUpdate");
+  socket.off("requestPermissions");
+  socket.off("userJoined");
+
+  socket.on("existing-players", (players) => {
+    console.log("📥 Received existing players:", players);
+    console.log("🆔 My socket ID:", gameState.socketId);
+    const updated = [];
+
+    for (const id in players) {
+      if (id === gameState.socketId) {
+        console.log("⏭️ Skipping own player:", id);
+        continue;
+      }
+
+      const data = players[id];
+      console.log("➕ Adding existing player:", id, data);
+
+      // ✅ Create player with avatarKey if available
+      const container = createOtherPlayerWithAvatar(
+        data.name,
+        data.position,
+        data.avatarKey
+      );
+      gameState.otherPlayers[id] = container;
+      gameState.camera.addChild(container);
+      updated.push(data.name);
+    }
+    if (!isOwner) {
+      setTimeout(() => {
+        socket.emit("requestPermissions");
+      }, 500);
+    }
+    setOnlinePlayers([playerName, ...updated]);
+  });
+
+  socket.on("player-joined", (data) => {
+    console.log("📥 New player joined:", data);
+
+    if (data.id === gameState.socketId) {
+      console.log("⏭️ Skipping own player join event");
+      return;
+    }
+
+    if (gameState.otherPlayers[data.id]) {
+      console.log("⏭️ Player already exists:", data.id);
+      return;
+    }
+
+    // ✅ Create player with avatarKey
+    const container = createOtherPlayerWithAvatar(
+      data.name,
+      data.position,
+      data.avatarKey
+    );
+    gameState.otherPlayers[data.id] = container;
+    gameState.camera.addChild(container);
+    setOnlinePlayers((prev) => [...prev, data.name]);
+    console.log("➕ Added new player:", data.id);
+
+    // ✅ Send current permissions to new player (if owner)
+    if (isOwner) {
+      socket.emit("hackPermissionsUpdate", {
+        permissions: hackPermissions,
+        targetUserId: data.id,
+      });
+    }
+  });
+
+  // ✅ FIXED: Now handles name and avatarKey from server
+  socket.on(
+    "player-moved",
+    ({ id, position, isMoving, direction, name, avatarKey }) => {
+      const gameState = gameStateRef.current;
+      const player = gameState.otherPlayers[id];
+
+      if (player && player.updatePosition) {
+        // Use enhanced updatePosition with movement state
+        player.updatePosition(position, isMoving, direction);
+
+        // ✅ Update name and avatarKey if they've changed
+        if (name && player.nameText) {
+          player.nameText.text = name;
+        }
+
+        // ✅ Store avatarKey for reference
+        if (avatarKey) {
+          player.avatarKey = avatarKey;
+        }
+      } else if (player) {
+        // Fallback
+        player.x = position.x;
+        player.y = position.y;
+
+        if (isMoving) {
+          player.walk(direction);
+        } else {
+          player.stop();
+        }
+
+        // ✅ Update name and avatarKey here too
+        if (name && player.nameText) {
+          player.nameText.text = name;
+        }
+        if (avatarKey) {
+          player.avatarKey = avatarKey;
+        }
+      }
+    }
+  );
+
+  // ✅ FIXED: Simplified avatar change - just recreate the player
+  socket.on("avatar-change", (data) => {
+    const { playerId, avatarKey, position, name } = data;
+
+    // Don't update our own player
+    if (playerId === socket.id) return;
+
+    const gameState = gameStateRef.current;
+    if (!gameState) return;
+
+    const existingPlayer = gameState.otherPlayers[playerId];
+    if (!existingPlayer) return;
+
+    // ✅ Use position from server if available, otherwise use current position
+    const currentPosition = position || {
+      x: existingPlayer.x,
+      y: existingPlayer.y,
+    };
+
+    // ✅ Use name from server if available, otherwise try to get from existing player
+    let currentName = name || "Unknown";
+    if (!name) {
+      if (existingPlayer.nameText?.text) {
+        currentName = existingPlayer.nameText.text;
+      } else if (existingPlayer.nameTag?.text) {
+        currentName = existingPlayer.nameTag.text;
+      } else if (existingPlayer.playerName) {
+        currentName = existingPlayer.playerName;
+      }
+    }
+
+    const wasMoving = existingPlayer.isMoving || false;
+    const currentDirection = existingPlayer.direction || "down";
+
+    console.log(
+      `🔄 Avatar change for ${currentName} (${playerId}) to ${avatarKey}`
+    );
+    console.log(`📍 Using position:`, currentPosition);
+    console.log(`🏃 Was moving:`, wasMoving, `Direction:`, currentDirection);
+
+    // Remove old player
+    gameState.camera.removeChild(existingPlayer);
+    existingPlayer.destroy({ children: true });
+
+    // ✅ Create new avatar with preserved/updated state
+    const newOtherPlayer = createOtherPlayerWithAvatar(
+      currentName,
+      currentPosition,
+      avatarKey
+    );
+
+    // ✅ Restore movement state
+    if (wasMoving) {
+      newOtherPlayer.walk(currentDirection);
+    }
+
+    // Store in game state
+    gameState.otherPlayers[playerId] = newOtherPlayer;
+    gameState.camera.addChild(newOtherPlayer);
+
+    console.log(`✅ Player ${currentName} changed avatar to: ${avatarKey}`);
+  });
+
+  socket.on("player-emote", ({ id, emoji }) => {
+    const gameState = gameStateRef.current;
+    const player = gameState.otherPlayers[id];
+    if (player) {
+      triggerEmoteOnOther(player, emoji);
+    }
+  });
+
+  socket.on("player-left", (id) => {
+    console.log("📤 Player left:", id);
+    const player = gameState.otherPlayers[id];
+    if (player) {
+      gameState.camera.removeChild(player);
+      player.destroy();
+      const name = player.playerName || "Unknown";
+      delete gameState.otherPlayers[id];
+      setOnlinePlayers((prev) => prev.filter((n) => n !== name));
+    }
+  });
+
+  // ✅ NEW: Permission-related socket listeners
+  socket.on("hackPermissionsUpdate", (data) => {
+    console.log("🔧 Received permission update:", data);
+
+    // Only non-owners should update their permissions from server
+    if (!isOwner) {
+      setHackPermissions(data.permissions || data);
+    }
+  });
+
+  socket.on("requestPermissions", (userId) => {
+    console.log("❓ Permission request from:", userId);
+
+    // Only owners should respond to permission requests
+    if (isOwner) {
+      socket.emit("hackPermissionsUpdate", {
+        permissions: hackPermissions,
+        targetUserId: userId,
+      });
+    }
+  });
+
+  // ✅ NEW: Handle when user joins (for permission sync)
+  socket.on("userJoined", (userData) => {
+    console.log("👋 User joined notification:", userData);
+
+    // Send permissions to newly joined user if we're the owner
+    if (isOwner) {
+      setTimeout(() => {
+        socket.emit("hackPermissionsUpdate", {
+          permissions: hackPermissions,
+          targetUserId: userData.id,
+        });
+      }, 1000); // Small delay to ensure they're ready
+    }
+  });
+};
+
+
+      const createOtherPlayerWithAvatar = (name, position, avatarKey) => {
+        let container;
+
+        if (avatarKey && avatarOtherMap[avatarKey]) {
+          // Create with specific avatar
+          const createFn = avatarOtherMap[avatarKey];
+          container = createFn(name, gameStateRef.current);
+        } else {
+          // Fallback to default createOtherPlayer
+          container = createOtherPlayer(name, position);
+        }
+
+        // Set position
+        container.x = position.x;
+        container.y = position.y;
+
+        // Store avatar key for future reference
+        container.avatarKey = avatarKey;
+
+        return container;
+      };
+
+      const triggerEmoteOnOther = (player, emoji) => {
+        const world = gameStateRef.current?.world;
+        if (!player || !world) return;
+
+        // If an old emote bubble exists, destroy it
+        if (player.emoteBubble) {
+          world.removeChild(player.emoteBubble);
+          player.emoteBubble.destroy();
+        }
+
+        // Create container for the entire emote bubble
+        const container = new Container();
+        container.x = player.x;
+        container.y = player.y - 60;
+        world.addChild(container);
+
+        // Create bubble background
+        const bubble = new Graphics();
+        bubble.beginFill(0x000000, 0.8);
+        bubble.lineStyle(3, 0xffffff, 1);
+        bubble.drawRoundedRect(-35, -25, 70, 50, 15);
+        bubble.endFill();
+
+        // Add subtle gradient effect
+        bubble.beginFill(0x333333, 0.3);
+        bubble.drawRoundedRect(-35, -25, 70, 25, 15);
+        bubble.endFill();
+
+        // Create bubble tail
+        const tail = new Graphics();
+        tail.beginFill(0x000000, 0.8);
+        tail.lineStyle(3, 0xffffff, 1);
+        tail.moveTo(0, 20);
+        tail.lineTo(-8, 35);
+        tail.lineTo(8, 35);
+        tail.closePath();
+        tail.endFill();
+
+        container.addChild(bubble);
+        container.addChild(tail);
+        console.log("🚀 Showing emoji:", emoji, typeof emoji);
+
+        // Create emoji text
+        const style = new TextStyle({
+          fontSize: 28,
+          fill: "white",
+          fontWeight: "bold",
+          dropShadow: true,
+          dropShadowColor: "#000000",
+          dropShadowBlur: 4,
+          dropShadowAngle: Math.PI / 6,
+          dropShadowDistance: 2,
+        });
+
+        const text = new Text(emoji, style);
+        text.anchor.set(0.5);
+        text.x = 0;
+        text.y = -5;
+        container.addChild(text);
+
+        // Initial state
+        container.alpha = 0;
+        container.scale.set(0.3);
+
+        player.emoteBubble = container;
+
+        // Enhanced animation with easing
+        const startTime = Date.now();
+        const totalDuration = 3000;
+        const phaseInDuration = 400;
+        const phaseOutDuration = 500;
+        const holdDuration = totalDuration - phaseInDuration - phaseOutDuration;
+
+        // Easing functions
+        const easeOutBack = (t) => {
+          const c1 = 1.70158;
+          const c3 = c1 + 1;
+          return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+        };
+
+        const easeInCubic = (t) => t * t * t;
+
+        const animate = () => {
+          if (!player.emoteBubble) return;
+
+          const now = Date.now();
+          const elapsed = now - startTime;
+
+          // Update position to follow player
+          const targetX = player.x;
+          const targetY = player.y - 60;
+
+          // Smooth position interpolation
+          container.x += (targetX - container.x) * 0.15;
+          container.y += (targetY - container.y) * 0.15;
+
+          if (elapsed < phaseInDuration) {
+            // Phase In: Bounce in effect
+            const progress = elapsed / phaseInDuration;
+            const easedProgress = easeOutBack(progress);
+
+            container.alpha = progress;
+            container.scale.set(0.3 + easedProgress * 0.7);
+
+            // Subtle float animation
+            const floatOffset = Math.sin(elapsed * 0.01) * 2;
+            container.y = targetY + floatOffset;
+          } else if (elapsed < phaseInDuration + holdDuration) {
+            // Hold Phase: Gentle floating
+            container.alpha = 1;
+            container.scale.set(1);
+
+            const holdElapsed = elapsed - phaseInDuration;
+            const floatOffset = Math.sin(holdElapsed * 0.005) * 3;
+            const bobOffset = Math.sin(holdElapsed * 0.008) * 1.5;
+
+            container.y = targetY + floatOffset;
+            container.x = targetX + bobOffset;
+
+            // Subtle scale pulsing
+            const pulseScale = 1 + Math.sin(holdElapsed * 0.006) * 0.05;
+            container.scale.set(pulseScale);
+          } else if (elapsed < totalDuration) {
+            // Phase Out: Fade and shrink
+            const fadeProgress =
+              (elapsed - phaseInDuration - holdDuration) / phaseOutDuration;
+            const easedFade = easeInCubic(fadeProgress);
+
+            container.alpha = 1 - easedFade;
+            container.scale.set(1 - easedFade * 0.3);
+
+            // Float up while fading
+            const floatUp = easedFade * 20;
+            container.y = targetY - floatUp;
+          } else {
+            // Animation complete
+            world.removeChild(container);
+            container.destroy();
+            player.emoteBubble = null;
+            return;
+          }
+
+          requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
+      };
+
+const addWithCollider = (container, displayObject, bounds, colliders) => {
+container.addChild(displayObject);
+colliders.push(bounds);
+};            
 
 
 const createSpaceStationGrid = (gameState) => {
@@ -14780,17 +17426,17 @@ const populateRooms = (gameState) => {
           const movedEnough = distance > 2;
           const timeToUpdate = now - lastEmitTime > 100; // Every 100ms minimum
 
-        //   if (stateChanged || movedEnough || (isMoving && timeToUpdate)) {
-        //     socket.emit("player-move", {
-        //       position: currentPosition,
-        //       isMoving: isMoving,
-        //       direction: currentDirection,
-        //     });
+          if (stateChanged || movedEnough || (isMoving && timeToUpdate)) {
+            socket.emit("player-move", {
+              position: currentPosition,
+              isMoving: isMoving,
+              direction: currentDirection,
+            });
 
-        //     lastPosition = { ...currentPosition };
-        //     lastEmitTime = now;
-        //     isCurrentlyMoving = isMoving;
-        //   }
+            lastPosition = { ...currentPosition };
+            lastEmitTime = now;
+            isCurrentlyMoving = isMoving;
+          }
         };
 
         return emitMovementUpdate;
@@ -15334,19 +17980,19 @@ const setupInput = (gameState, app) => {
     );
 
     // ✅ FIXED: Notify other players about the position change
-    // if (socket && socket.connected) {
-    //   // First emit the movement to update server state
-    //   socket.emit("player-move", {
-    //     position: { x: player.x, y: player.y },
-    //     isMoving: false,
-    //     direction: player.direction || "down",
-    //   });
+    if (socket && socket.connected) {
+      // First emit the movement to update server state
+      socket.emit("player-move", {
+        position: { x: player.x, y: player.y },
+        isMoving: false,
+        direction: player.direction || "down",
+      });
 
-    //   // Add a small delay to ensure the server has updated the position
-    //   await new Promise((res) => setTimeout(res, 100));
+      // Add a small delay to ensure the server has updated the position
+      await new Promise((res) => setTimeout(res, 100));
 
-    //   console.log(`📡 Sent teleport position update: ${player.x}, ${player.y}`);
-    // }
+      console.log(`📡 Sent teleport position update: ${player.x}, ${player.y}`);
+    }
 
     // Fade in
     setFadeOpacity(0);
@@ -15508,10 +18154,10 @@ const setupInput = (gameState, app) => {
     };
 
     requestAnimationFrame(animate);
-    // socket.emit("player-emote", {
-    //   id: socket.id,
-    //   emoji,
-    // });
+    socket.emit("player-emote", {
+      id: socket.id,
+      emoji,
+    });
   };
 
   const changeAvatar = (avatarKey) => {
@@ -15539,12 +18185,12 @@ const setupInput = (gameState, app) => {
     newPlayer.x = previousX;
     newPlayer.y = previousY;
 
-    // socket.emit("avatar-change", {
-    //   avatarKey: avatarKey,
-    //   x: newPlayer.x,
-    //   y: newPlayer.y,
-    //   playerName: playerName,
-    // });
+    socket.emit("avatar-change", {
+      avatarKey: avatarKey,
+      x: newPlayer.x,
+      y: newPlayer.y,
+      playerName: playerName,
+    });
   };
 
   const teleportLocations = [
@@ -15563,18 +18209,24 @@ const setupInput = (gameState, app) => {
   { label: 'Recreation', x: 1350, y: 1550 }
 ];
 
+  const avatarOptions = [
+  { src: "/assets/avatar5.png", label: "Spiderman", width: 40, height: 50 },
+  { src: "/assets/avatar4.png", label: "Batman", width: 20, height: 45 },
+  { src: "/assets/avatar6.png", label: "Male", width: 35, height: 45 },
+  { src: "/assets/avatar7.png", label: "Female", width: 35, height: 45 },
+];
+
 
   return (
     <div
       style={{
         position: "relative",
-        width: "100vw",
-        height: "100vh",
+        width: "125vw", // 100 / 0.8
+        height: "125vh",
         overflow: "hidden",
-        backgroundImage: `url('/assets/space_bg.gif')`,
-        backgroundSize: "cover",       // optional: makes sure the image covers the entire area
-      backgroundPosition: "center",  // optional: centers the image
-      backgroundRepeat: "no-repeat"  // optional: prevents tiling
+        background: "#1a1a2e",
+        transform: "scale(0.8)",
+        transformOrigin: "top left",
       }}
     >
       {showBackWarning && (
@@ -15685,47 +18337,45 @@ const setupInput = (gameState, app) => {
         }}
       >
         {/* 🔥 TOOLBAR TOGGLE BUTTON - Positioned in top-left corner */}
-        {/* <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          pointerEvents: "auto",
-        }}
-      >
-        <button
-          onClick={() => setShowToolbar(!showToolbar)}
+        <div
           style={{
-            background: showToolbar ? "#e74c3c" : "#27ae60",
-            color: "white",
-            border: "2px solid rgba(255,255,255,0.3)",
-            padding: "8px 16px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "bold",
-            fontFamily: "Arial, sans-serif",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-            transition: "all 0.2s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-          }}
-          onMouseOver={(e) => {
-            e.target.style.transform = "scale(1.05)";
-            e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.6)";
-          }}
-          onMouseOut={(e) => {
-            e.target.style.transform = "scale(1)";
-            e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            pointerEvents: "auto",
           }}
         >
-          <span style={{ fontSize: "14px" }}>
-            {showToolbar ? "✕" : "☰"}
-          </span>
-          {showToolbar ? "Hide" : "Show"}
-        </button>
-      </div> */}
+          <button
+            onClick={() => setShowToolbar(!showToolbar)}
+            style={{
+              background: showToolbar ? "#e74c3c" : "#27ae60",
+              color: "white",
+              border: "2px solid rgba(255,255,255,0.3)",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "bold",
+              fontFamily: "Arial, sans-serif",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+              transition: "all 0.2s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = "scale(1.05)";
+              e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.6)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = "scale(1)";
+              e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
+            }}
+          >
+            <span style={{ fontSize: "14px" }}>{showToolbar ? "✕" : "☰"}</span>
+            {showToolbar ? "Hide" : "Show"}
+          </button>
+        </div>
 
         {/* Top Bar */}
         <div
@@ -15765,70 +18415,77 @@ const setupInput = (gameState, app) => {
         </div>
 
         {showToolbar && (
-        <LeftToolbar
-          space={space}
-          playerName={playerName}
-          gameStateRef={gameStateRef}
-          onTeleport={handleTeleportWithFade}
-          teleportLocations={teleportLocations}
-          changeSpeed={changeSpeed}
-          wallHackEnabled={wallHackEnabled}
-          setWallHackEnabled={setWallHackEnabled}
-          triggerEmote={triggerEmote}
-          changeAvatar={changeAvatar}
+          <LeftToolbar
+            space={space}
+            playerName={playerName}
+            gameStateRef={gameStateRef}
+            onTeleport={handleTeleportWithFade}
+            teleportLocations={teleportLocations}
+            avatarOptions={avatarOptions}
+            changeSpeed={changeSpeed}
+            wallHackEnabled={wallHackEnabled}
+            setWallHackEnabled={setWallHackEnabled}
+            triggerEmote={triggerEmote}
+            changeAvatar={changeAvatar}
+            hackPermissions={hackPermissions}
+            isOwner={isOwner}
+          />
+        )}
+
+        <AdminPanel
+          isOwner={isOwner}
+          onPermissionsChange={handlePermissionsChange}
         />
-      )}
 
         {/* Mini Map */}
         {/* <MetaverseMinimap gameStateRef={gameStateRef} /> */}
 
-        {/* Player List
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          right: "20px",
-          background: "rgba(0,0,0,0.8)",
-          borderRadius: "8px",
-          padding: "12px",
-          pointerEvents: "auto",
-        }}
-      >
         <div
           style={{
-            color: "white",
-            fontSize: "12px",
-            fontWeight: "bold",
-            marginBottom: "8px",
+            position: "absolute",
+            bottom: "20px",
+            left: "20px",
+            background: "rgba(0,0,0,0.8)",
+            borderRadius: "8px",
+            padding: "12px",
+            pointerEvents: "auto",
           }}
         >
-          👥 Online Players ({onlinePlayers.length})
-        </div>
-         {onlinePlayers.map((name, index) => (
-
           <div
-            key={name}
             style={{
-              color: index === 0 ? "#3498DB" : "#BDC3C7",
-              fontSize: "11px",
-              marginBottom: "4px",
-              display: "flex",
-              alignItems: "center",
+              color: "white",
+              fontSize: "12px",
+              fontWeight: "bold",
+              marginBottom: "8px",
             }}
           >
-            <div
-              style={{
-                width: "8px",
-                height: "8px",
-                borderRadius: "50%",
-                background: index === 0 ? "#27AE60" : "#95A5A6",
-                marginRight: "8px",
-              }}
-            />
-            {name} {index === 0 && "(You)"}
+            👥 Online Players ({onlinePlayers.length})
           </div>
-        ))}
-      </div> */}
+          {onlinePlayers.map((name, index) => (
+            <div
+              key={name}
+              style={{
+                color: index === 0 ? "#3498DB" : "#BDC3C7",
+                fontSize: "11px",
+                marginBottom: "4px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  background: index === 0 ? "#27AE60" : "#95A5A6",
+                  marginRight: "8px",
+                }}
+              />
+              {name} {index === 0 && "(You)"}
+            </div>
+          ))}
+                
+        </div>
       </div>
         
     </div>

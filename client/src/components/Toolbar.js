@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { updateSpace } from "../api";
 
-const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport,teleportLocations = [], changeSpeed, wallHackEnabled,
+const LeftToolbar = ({ space, playerName = "Player", gameStateRef, onTeleport,teleportLocations = [],avatarOptions = [], changeSpeed, wallHackEnabled,
   setWallHackEnabled, triggerEmote, changeAvatar, 
    hackPermissions = { wallhack: false, speedup: false, teleport: false },
   isOwner = false
@@ -27,12 +27,6 @@ const lastEmoteTimeRef = useRef(0);
   const canUseSpeedup = hackPermissions.speedup || isOwner;
   const canUseTeleport = hackPermissions.teleport || isOwner;
 
-  const avatarOptions = [
-  { src: "/assets/avatar5.png", label: "Spiderman", width: 40, height: 50 },
-  { src: "/assets/avatar4.png", label: "Batman", width: 20, height: 45 },
-  { src: "/assets/avatar2.png", label: "Male", width: 25, height: 45 },
-  { src: "/assets/avatar3.png", label: "Female", width: 25, height: 45 },
-];
 
   const speedOptions = [
     { value: 2, label: "SLOW", color: "#10b981", icon: "🐌" },
@@ -302,7 +296,7 @@ const handleSave = async (type, value) => {
     <div
       style={{
         position: "absolute",
-        top: "54%",
+        top: "46%",
         transform: "translateY(-50%)",
         width: "300px",
         height: "fit-content",
@@ -492,7 +486,7 @@ const handleSave = async (type, value) => {
     }
   }}
 >
-  {!canUseTeleport ? "Teleport (Disabled)" : "Teleport"}
+  Teleport
 </button>
         {teleportOpen && (
           <div
@@ -609,7 +603,7 @@ const handleSave = async (type, value) => {
     }
   }}
 >
-  {!canUseSpeedup ? "Speed (Disabled)" : "Speed"}
+  Speed
 </button>
         {speedOpen && (
           <div
@@ -909,7 +903,7 @@ const handleSave = async (type, value) => {
     }
   }}
 >
-  {!canUseWallhack ? "Wallhack (Disabled)" : "Wallhack"}
+  Wallhack
 </button>
         {wallhackwindowOpen && (
           <div

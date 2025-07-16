@@ -90,7 +90,16 @@ useEffect(() => {
   return (
     <>
       {/* Outer container for the entire page */}
-      <div className="homepage-container">
+      <div
+        className="homepage-container"
+        style={{
+          width: "125vw", // 100 / 0.8
+          height: "125vh",
+          overflow: "hidden",
+          transform: "scale(0.8)", 
+          transformOrigin: "top left",
+        }}
+      >
         <header className="header">
           <div className="header-brand">
             <svg
@@ -107,9 +116,10 @@ useEffect(() => {
             <h1 className="header-title">MetaVerse X</h1>
           </div>
           <div className="header-user-info">
-           <button
+            <button
               onClick={() => setShowJoinModal(true)} // Open join modal
-              className="join-space-button-up" style={{backgroundColor: "#6366f1"}}
+              className="join-space-button-up"
+              style={{ backgroundColor: "#6366f1" }}
             >
               <span
                 style={{
@@ -180,7 +190,7 @@ useEffect(() => {
             </div>
           </div>
         )}
-        
+
         {/* Create Space Modal */}
         {showModal && (
           <CreateSpace
