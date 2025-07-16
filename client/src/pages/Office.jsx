@@ -14,7 +14,6 @@ import {
 } from "pixi.js";
 import MetaverseMinimap from "../components/Minimap";
 import LeftToolbar from "../components/Toolbar";
-import { io } from "socket.io-client";
 import useUser from "../hooks/useUser";
 import AdminPanel from "../components/AdminPanel";
 
