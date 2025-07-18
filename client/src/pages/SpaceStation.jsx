@@ -18407,7 +18407,7 @@ const setupInput = (gameState, app) => {
             }}
           >
             <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
-              Metaverse X ( v1.0.0 )
+              AetherVerse ( v1.0.3 )
             </div>
             <div style={{ fontSize: "12px", opacity: 0.8 }}>
               Use WASD to move • Press Z to interact

@@ -50,6 +50,7 @@ const JoinSpace = ({ setShowJoinModal, onJoinSpace }) => {
               </label>
               <input
                 id="spaceId"
+                autoComplete="off"
                 type="text"
                 value={spaceId}
                 onChange={(e) => setSpaceId(e.target.value)}
