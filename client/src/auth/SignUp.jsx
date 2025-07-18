@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './signup.css'; // For styling
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -23,6 +23,13 @@ const SignUp = () => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+      useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        navigate("/home"); 
+      }
+    }, []);
+
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,9 +37,10 @@ const SignUp = () => {
     setLoading(true);
     try {
       const res = await signup(formData);   
+      localStorage.setItem("otpEmail", formData.email);
       setTimeout(() => {
       setLoading(false);
-      navigate("/");
+      navigate("/otp");
     }, 1500);  
     } catch (err) {
        const msg = err.response?.data?.message || "Signup failed";
@@ -43,9 +51,15 @@ const SignUp = () => {
 
 
   return (
-    <div className="signup-page-container">
+    <div className="signup-page-container" style={{
+          width: "125vw", // 100 / 0.8
+          height: "125vh",
+          overflow: "hidden",
+          transform: "scale(0.8)", 
+          transformOrigin: "top left",
+        }}>
       <div className="signup-card">
-        <h1 className="logo-title-signup">MetaVerse X</h1>
+        <h1 className="logo-title-signup">AetherVerse</h1>
         {/* Or your actual SVG Logo component */}
 
         <form className="signup-form" onSubmit={handleSubmit}>
@@ -64,7 +78,7 @@ const SignUp = () => {
             <input
               name="email"
               type="text"
-              id="username"
+              id="email"
               placeholder="Enter email"
               autoComplete="off"
               onChange={handleChange}
@@ -94,7 +108,7 @@ const SignUp = () => {
             {loading && !error ? (
               <div className="spinner"></div> // or inline loader text/icon
             ) : (
-              "Join the MetaVerse"
+              "Join AetherVerse"
             )}
           </button>
 

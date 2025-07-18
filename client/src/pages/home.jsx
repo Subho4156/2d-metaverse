@@ -102,18 +102,8 @@ useEffect(() => {
       >
         <header className="header">
           <div className="header-brand">
-            <svg
-              className="header-logo-icon"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.536a.5.5 0 00.707.707l3-3a.5.5 0 000-.707l-3-3a.5.5 0 00-.707.707L13.293 8.5H9.5a.5.5 0 000 1h3.793l-1.647 1.646a.5.5 0 000 .708z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <h1 className="header-title">MetaVerse X</h1>
+           <img src="/metaverse.png" alt="Metaverse Logo" className="header-logo-icon" />
+            <h1 className="header-title">AetherVerse</h1>
           </div>
           <div className="header-user-info">
             <button

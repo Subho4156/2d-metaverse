@@ -6,6 +6,8 @@ import SignUp from "./auth/SignUp";
 import Home from "./pages/home";
 import ProtectedRoute from "./components/protectedRoute";
 import MetaverseRouter from "./pages/MetaverseRouter";
+import OTPVerification from "./auth/OTPVerification";
+
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/otp" element={<OTPVerification />} />
         <Route
           path="/home"
           element={

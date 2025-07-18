@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './login.css'; // For styling
 import { Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -16,6 +16,13 @@ const Login = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/home"); 
+    }
+  }, []);
 
   const handleChange = (e) => {
     setCredentials(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -41,9 +48,15 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page-container">
+    <div className="login-page-container" style={{
+          width: "125vw", // 100 / 0.8
+          height: "125vh",
+          overflow: "hidden",
+          transform: "scale(0.8)", 
+          transformOrigin: "top left",
+        }}>
       <div className="login-card">
-        <h1 className="logo-title">MetaVerse X</h1>
+        <h1 className="logo-title">AetherVerse</h1>
         {/* Or your actual SVG Logo component */}
 
         <form className="login-form" onSubmit={handleSubmit}>
@@ -82,7 +95,7 @@ const Login = () => {
             {loading && !error ? (
               <div className="spinner"></div> // or inline loader text/icon
             ) : (
-              "Enter the MetaVerse"
+              "Enter AetherVerse"
             )}
           </button>
 
@@ -91,7 +104,7 @@ const Login = () => {
               Forgot Password?
             </a>
             <span className="separator">|</span>
-            New to MetaVerse X?{" "}
+            New to AetherVerse?{" "}
             <Link to="/signup" className="signup-link">
               Sign Up
             </Link>
