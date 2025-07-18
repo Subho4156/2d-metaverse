@@ -363,15 +363,21 @@ const handleSave = async (type, value) => {
               fontWeight: "bold",
             }}
           >
-            <EditableField
-              value={spaceName}
-              isEditing={isEditingName}
-              onEdit={setIsEditingName}
-              onSave={(value) => handleSave("name", value)}
-              placeholder="Enter space name"
-              textColor="#ffffff"
-              fieldBackground="rgba(255,255,255,0.08)"
-            />
+            {isOwner ? (
+              <EditableField
+                value={spaceName}
+                isEditing={isEditingName}
+                onEdit={setIsEditingName}
+                onSave={(value) => handleSave("name", value)}
+                placeholder="Enter space name"
+                textColor="#ffffff"
+                fieldBackground="rgba(255,255,255,0.08)"
+              />
+            ) : (
+              <div style={{ padding: "8px 0" }}>
+                {spaceName || "Unnamed Space"}
+              </div>
+            )}
           </div>
         </div>
 
@@ -397,16 +403,22 @@ const handleSave = async (type, value) => {
               lineHeight: "1.6",
             }}
           >
-            <EditableField
-              value={spaceDescription}
-              isEditing={isEditingDescription}
-              onEdit={setIsEditingDescription}
-              onSave={(value) => handleSave("description", value)}
-              multiline={true}
-              placeholder="Describe your space"
-              textColor="#e2e8f0"
-              fieldBackground="rgba(255,255,255,0.08)"
-            />
+           {isOwner ? (
+              <EditableField
+                value={spaceDescription}
+                isEditing={isEditingDescription}
+                onEdit={setIsEditingDescription}
+                onSave={(value) => handleSave("description", value)}
+                multiline={true}
+                placeholder="Describe your space"
+                textColor="#e2e8f0"
+                fieldBackground="rgba(255,255,255,0.08)"
+              />
+            ) : (
+              <div style={{ padding: "8px 0" }}>
+                {spaceDescription || "No description available"}
+              </div>
+            )}
           </div>
         </div>
         <div

@@ -15,6 +15,7 @@ import {
 import LeftToolbar from "../components/Toolbar";
 import useUser from "../hooks/useUser";
 import AdminPanel from "../components/AdminPanel";
+import SpaceStationMinimap from "../components/MetaverseMinimap2";
 
 
 function SpaceStation() {
@@ -18438,7 +18439,7 @@ const setupInput = (gameState, app) => {
         />
 
         {/* Mini Map */}
-        {/* <MetaverseMinimap gameStateRef={gameStateRef} /> */}
+        <SpaceStationMinimap gameStateRef={gameStateRef} />
 
         <div
           style={{
